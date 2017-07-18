@@ -1,0 +1,91 @@
+// ==========================================================================
+// DROP DOWNS
+// ==========================================================================
+
+.drop {
+	position: relative;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	padding: 0;
+
+	//&:hover .drop-list { display: block; }
+	&.drop-large { width: 380px; }
+
+	.drop-component {
+		box-shadow: 0 3px $black-05, 0 4px $black-10;
+		cursor: pointer;
+		padding: 0 40px 0 20px;
+		line-height: 35px;
+		position: relative;
+
+		span {
+			color: $black-40;
+			line-height: 100%;
+		}
+
+		.glyphicon {
+			position: absolute;
+			top: 50%;
+			right: 10px;
+			transform: translateY(-50%);
+		}
+		
+		&.drop-open + .drop-list { display: block; }
+	}
+
+	.drop-list {
+		background-color: $white;
+		border-top: none;
+		position: absolute;
+		top: 100%;
+		padding: 0;
+		width: 100%;
+		z-index: 100;
+		list-style: none;
+		display: none;
+
+		box-sizing: content-box;
+		margin: 0 0 0 -1px;
+
+
+		li {
+			cursor: pointer;
+			padding: 10px 18px;
+			transition: all .15s ease-out;
+
+			&:hover:not(.drop-list-addon) {
+				background-color: $tosca;
+				color: $white;
+			}
+		}
+
+		.drop-list-addon {
+			cursor: default;
+			padding-top: 20px;
+			padding-bottom: 20px;
+			border-top: 1px solid $black-10;
+		}
+
+		.date-range-component
+		{
+			display: flex;
+
+			input {
+				border: 1px solid $black-10;
+				width: 160px;
+				padding: 5px 10px;
+			}
+
+			span { 
+				color: $black-40;
+				margin: 0 10px;
+				line-height: 30px;
+			}
+
+			& + .btn { 
+				display: block;
+				margin-top: 10px;
+			}
+		}
+	}
+}

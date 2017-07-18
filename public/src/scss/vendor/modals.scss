@@ -1,0 +1,84 @@
+// ==========================================================================
+// MODALS
+// ==========================================================================
+
+.mdl {
+	background-color: rgba(94, 110, 141, 0.9);
+	color: #8f9cb5;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s 0s, visibility 0s .3s;
+	z-index: 1000;
+
+	a { cursor: pointer; }
+
+	.mdl-component {
+		background-color: $white;
+		border-radius: .25em .25em .4em .4em;
+		box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -70%);
+		transition: transform .3s ease-in;
+		max-width: 500px;
+	}
+
+
+	.mdl-body {
+		text-align: center;
+		padding: 3em 2em 2em;
+
+		strong { color: #666; }
+	}
+
+	.mdl-footer {
+		display: flex;
+
+		a {
+			background-color: #b6bece;
+			display: block;
+			color: $white;
+			font-size: 16px;
+			text-align: center;
+			min-width: 50%;
+			height: 60px;
+			line-height: 60px;
+			text-transform: uppercase;
+			flex-grow: 1;
+
+			&.remove { background-color: #fc7169; }
+			&.ok { background-color: $tosca; }
+			&:first-child { border-radius: 0 0 0 .25em; }
+			&:last-child { border-radius: 0 0 .25em 0; }
+			&:first-child:last-child { border-radius: 0 0 .25em .25em; }
+		}
+	}
+
+	.mdl-close {
+		position: absolute;
+		top: 5px;
+		right: 12px;
+		font-size: 28px;
+		font-weight: 600;
+		color: #8f9cb5;
+		line-height: 1em;
+	}
+
+	// ==========================================================================
+
+	&.mdl-open {
+		opacity: 1;
+		visibility: visible;
+		transition: opacity 0.3s 0s, visibility 0s 0s;
+
+		.mdl-component {
+			transform: translate(-50%, -50%);
+		}
+	}
+}

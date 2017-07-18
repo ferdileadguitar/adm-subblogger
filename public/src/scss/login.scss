@@ -1,0 +1,73 @@
+@import "vendor.scss";
+@import "vendor/var.scss";
+
+// ==========================================================================
+
+* { box-sizing: border-box; }
+body { 
+	background-color: rgba(94, 110, 141, 0.9);
+	color: #222;
+	font-family: 'Lato', 'Work Sans', sans-serif;
+	line-height: 1.4;
+}
+a { text-decoration: none; }
+
+// ==========================================================================
+// MODALS
+// ==========================================================================
+
+@import "vendor/modals.scss";
+
+// ==========================================================================
+// MAIN BODY
+// ==========================================================================
+
+.main-body {
+	.error {
+		padding: 1em;
+		margin-bottom: 20px;
+	}
+
+	.form-group:last-child { margin-bottom: 0; }
+
+	.spinner {
+		position: relative;
+		top: 1px;
+		margin-right: 5px;
+		animation: spin 1s infinite linear;
+	}
+
+	.mdl-body { padding: 2em; }
+
+	.mdl-footer {
+		a { background-color: $tosca; }
+		.spinner { display: none; }
+	}
+
+	.mdl-overlay {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		cursor: wait;
+		z-index: 100;
+		display: none;
+	}
+
+	// ==========================================================================
+	
+	.processing {
+		.mdl-footer {
+			a { background-color: #b6bece; }
+			.spinner { display: inline-block; }
+		}
+
+		.mdl-overlay { display: block; }
+	}
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+}

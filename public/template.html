@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Content - Keepo Admin</title>
+
+	<!-- Style -->
+	<link rel="stylesheet" href="dist/css/content.css">
+
+</head>
+<body>
+	<header class="main-header">
+		<div class="logo"><a href="//keepo.me"><span>Keepo</span></a></div>
+
+		<nav class="main-nav">
+			<a href="">Contents</a>
+			<a href="">Authors</a>
+			<a href="">Channels &amp; Formats</a>
+			<a href="">Responses</a>
+			<a href="">Embeds</a>
+			<a href="">Tags</a>
+			<a href="">Ads</a>
+			<a href="">Totalizer</a>
+			<a href="">Flush Cache</a>
+			<a href="">Logout</a>
+		</nav>
+	</header>
+
+	<div class="main-body" ng-controller="app-controller">
+		<!-- Tabs -->
+		<div class="tabs" ng-controller="tabs">
+			<header class="tabs-header">
+				<nav class="tabs-nav">
+					<a ng-click="open($event, 'all-contents');" class="box active">All Contents</a>
+					<a ng-click="open($event, 'need-moderation');" class="box">Need Moderation <span class="label label-danger">1,001</span></a>
+					<a ng-click="open($event, 'contributor-only');" class="box">Contributor Only</a>
+				</nav>
+
+				<aside class="adds">
+					<div class="box drop" name="bulk-action" singleaction="bulkAction" ng-controller="dropdown">
+						<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+							<span class="drop-component-text">Bulk Action</span>
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</div>
+
+						<ul class="box drop-list">
+							<li ng-click="select($event, 'asd-1');">Asd 1</li>
+							<li ng-click="select($event, 'asd-2');">Asd 2</li>
+							<li ng-click="select($event, 'asd-3');">Asd 3</li>
+						</ul>
+					</div>
+				</aside>
+			</header>
+
+			<div class="tabs-body">
+				<div id="all-contents" class="tab-component tab-open">
+					<!-- Filters -->
+					<div class="filters">
+						<div class="filter-component">
+							<div class="box drop drop-large" name="filter-dateRange" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">2 Feb 2016 - 22 Feb 2016</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+									<ul class="box drop-list">
+										<div class="date-range-component">
+											<input type="date" ng-model="startDate">
+											<span>-</span>
+											<input type="date" ng-model="endDate">
+										</div>
+										<a class="btn btn-primary" ng-click="selectDate($event)">Select</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="filter-component">
+							<div class="box drop" name="filter-sort" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">Sort by newest</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+						<div class="filter-component">
+							<div class="box drop" name="filter-status" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">All Status</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="filter-component filter-full">
+							<form action="javascript:;" class="box">
+								<input type="text" placeholder="Search Post">
+								<input type="submit" value="Search" class="btn btn-success">
+							</form>
+						</div>
+					</div>
+
+					<!-- Filters -->			
+					<div class="filters">
+						<div class="filter-houder filter-houder-2">
+							<div class="filter-component">
+								<div class="box drop" name="filter-dateRange" ng-controller="dropdown">
+									<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+										<span class="drop-component-text">2 Feb 2016 - 22 Feb 2016</span>
+										<span class="glyphicon glyphicon-chevron-down"></span>
+									</div>
+									<ul class="box drop-list">
+										<li ng-click="select($event, 'asd-1');">Asd 1</li>
+										<li ng-click="select($event, 'asd-2');">Asd 2</li>
+										<li ng-click="select($event, 'asd-3');">Asd 3</li>
+									</ul>
+								</div>
+							</div>
+							<div class="filter-component filter-full">
+								<form action="javascript:;" class="box">
+									<input type="text" placeholder="Search Post">
+									<input type="submit" value="Search" class="btn btn-success">
+								</form>
+							</div>
+						</div>
+						<div class="filter-houder filter-houder-2">
+							<div class="filter-component filter-pull-right">
+								<div class="box drop" name="bulk-action" singleaction="bulkAction" ng-controller="dropdown">
+									<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+										<span class="drop-component-text">Bulk Action</span>
+										<span class="glyphicon glyphicon-chevron-down"></span>
+									</div>
+
+									<ul class="box drop-list">
+										<li ng-click="select($event, 'asd-1');">Asd 1</li>
+										<li ng-click="select($event, 'asd-2');">Asd 2</li>
+										<li ng-click="select($event, 'asd-3');">Asd 3</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Table Flex -->
+					<div class="tbls-houder">
+						<div class="tbls tbls-content">
+							<header class="tbls-header tbls-row">
+								<div class="tbls-col-1"><input type="checkbox"></div>
+								<div class="tbls-col-2">Author</div>
+								<div class="tbls-col-xl">Title</div>
+								<div class="tbls-col-3 clickable">Channel <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Format <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">View <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Share <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Embed <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3">Created</div>
+								<div class="tbls-col-2"></div>
+								<div class="tbls-col-3"></div>
+							</header>
+
+							<div class="tbls-body">
+								<div class="box">
+									<div class="tbls-row">
+										<div class="tbls-col-1"><input type="checkbox"></div>
+										<div class="tbls-col-2"><a href="">Cecilia</a></div>
+										<div class="tbls-col-xl">
+											<div class="tbls-title-box">
+												<figure class="tbls-thumbnail"><img src="//media.keepo.me/20170522180324/300x200--bima-cover.jpg" alt=""></figure>
+												<div class="tbls-title">
+													<div>
+														<article>12 Keyword yang Sebaiknya Jangan Pernah Kamu Search di Google Images</article>
+														<footer>
+															<a href="">Change Title</a>
+															<a href="">View</a>
+															<a href="">Edit Detail</a>
+														</footer>
+													</div>
+													<div class="tbls-tags">
+														<article>kecelakaan-lalu-lintas, kelakuan-absurd, kelakuan-orang-indonesia</article>
+														<footer>
+															<a href="">Edit Tags</a>
+														</footer>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="tbls-col-3">
+											Entertainments
+											<div><a href="">Edit</a></div>
+										</div>
+										<div class="tbls-col-3">Interactive Story</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">
+											<p>14 May 2016 15:24</p>
+											<div><a href="">Edit</a></div>
+										</div>
+										<div class="tbls-col-2 tbls-btn-group">
+											<div><a title="Approve" class="btn-round btn-ok"><span class="glyphicon glyphicon-ok"></span></a></div>
+											<div><a title="Moderate" class="btn-round btn-exclamation"><span></span></a></div>
+											<div><a title="Reject" class="btn-round btn-remove"><span class="glyphicon glyphicon-remove"></span></a></div>
+										</div>
+										<div class="tbls-col-3 tbls-btn-group">
+											<div><a class="btn btn-default">Sticky</a></div>
+											<div><a class="btn btn-default">Premium</a></div>
+											<div><a class="btn btn-danger">Delete</a></div>
+										</div>
+									</div>
+
+									<footer class="tbls-footer">
+										<p>Rejected: <strong>Reason</strong> <a href="">Change Reason</a></p>
+									</footer>
+								</div>
+							</div>
+						</div>
+
+						<footer class="tbls-pagination">
+							<div class="tbls-pagi">
+								<span>Page</span> 
+								<select name="" id="">
+									<option value="">1</option>
+									<option value="">2</option>
+									<option value="">3</option>
+								</select>
+							</div>
+						</footer>
+					</div>
+
+					<!-- Table -->
+					<div class="tbls-houder">
+						<table class="table table-bordered table-striped tbls">
+							<thead class="tbls-header">
+								<tr>
+									<th><input type="checkbox"></th>
+									<th>Author</th>
+									<th>Title</th>
+									<th>Channel <span class="glyphicon glyphicon-sort"></span></th>
+									<th>Format <span class="glyphicon glyphicon-sort"></span></th>
+									<th>View <span class="glyphicon glyphicon-sort"></span></th>
+									<th>Share <span class="glyphicon glyphicon-sort"></span></th>
+									<th>Embed <span class="glyphicon glyphicon-sort"></span></th>
+									<th style="width:8%">Create</th>
+									<th></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><input type="checkbox"></td>
+									<td><a href="">Cecilia</a></td>
+									<td>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae unde soluta quos voluptates veritatis tempora, ex, a eveniet ipsa quam, molestias aut perspiciatis quo ratione! Animi accusantium quod dolores quae.</p>
+									</td>
+									<td>
+										Entertainments
+										<div><a href="">Edit</a></div>
+									</td>
+									<td>Interactive Story</td>
+									<td>999.999.999</td>
+									<td>999.999.999</td>
+									<td>999.999.999</td>
+									<td>
+										14 May 2016 15:24
+										<div><a href="">Edit</a></div>
+									</td>
+									<td class="tbls-btn-group">
+										<div><span class="btn-round btn-ok"><span class="glyphicon glyphicon-ok"></span></span></div>
+										<div><span class="btn-round btn-exclamation"><span></span></span></div>
+										<div><span class="btn-round btn-remove"><span class="glyphicon glyphicon-remove"></span></span></div>
+									</td>
+									<td class="tbls-btn-group">
+										<div><a class="btn btn-default">Sticky</a></div>
+										<div><a class="btn btn-default">Premium</a></div>
+										<div><a class="btn btn-danger">Delete</a></div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<footer class="tbls-pagination">
+							<div class="tbls-pagi">
+								<span>Page</span> 
+								<select name="" id="">
+									<option value="">1</option>
+									<option value="">2</option>
+									<option value="">3</option>
+								</select>
+							</div>
+						</footer>
+					</div>
+				</div>
+
+				<div id="need-moderation" class="tab-component">
+					<!-- Filters -->
+					<div class="filters">
+						<div class="filter-component">
+							<div class="box drop" name="filter-dateRange" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">2 Feb 2016 - 22 Feb 2016</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+						<div class="filter-component">
+							<div class="box drop" name="filter-sort" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">Sort by newest</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+						<div class="filter-component">
+							<div class="box drop" name="filter-status" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">All Status</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="filter-component filter-full">
+							<form action="javascript:;" class="box">
+								<input type="text" placeholder="Search Post">
+								<input type="submit" value="Search" class="btn btn-success">
+							</form>
+						</div>
+					</div>
+
+					<!-- Table Flex -->
+					<div class="tbls-houder">
+						<div class="tbls tbls-content">
+							<header class="tbls-header tbls-row">
+								<div class="tbls-col-1"><input type="checkbox"></div>
+								<div class="tbls-col-2">Author</div>
+								<div class="tbls-col-xl">Title</div>
+								<div class="tbls-col-3 clickable">Channel <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Format <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">View <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Share <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Embed <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3">Created</div>
+								<div class="tbls-col-2"></div>
+								<div class="tbls-col-3"></div>
+							</header>
+
+							<div class="tbls-body">
+								<div class="box">
+									<div class="tbls-row">
+										<div class="tbls-col-1"><input type="checkbox"></div>
+										<div class="tbls-col-2"><a href="">Cecilia</a></div>
+										<div class="tbls-col-xl">
+											<div class="tbls-title-box">
+												<figure class="tbls-thumbnail"><img src="//media.keepo.me/20170522180324/300x200--bima-cover.jpg" alt=""></figure>
+												<div class="tbls-title">
+													<div>
+														<article>12 Keyword yang Sebaiknya Jangan Pernah Kamu Search di Google Images</article>
+														<footer>
+															<a href="">Change Title</a>
+															<a href="">View</a>
+															<a href="">Edit Detail</a>
+														</footer>
+													</div>
+													<div class="tbls-tags">
+														<article>kecelakaan-lalu-lintas, kelakuan-absurd, kelakuan-orang-indonesia</article>
+														<footer>
+															<a href="">Edit Tags</a>
+														</footer>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="tbls-col-3">
+											Entertainments
+											<div><a href="">Edit</a></div>
+										</div>
+										<div class="tbls-col-3">Interactive Story</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">
+											<p>14 May 2016 15:24</p>
+											<div><a href="">Edit</a></div>
+										</div>
+										<div class="tbls-col-2 tbls-btn-group">
+											<div><a title="Approve" class="btn-round btn-ok"><span class="glyphicon glyphicon-ok"></span></a></div>
+											<div><a title="Moderate" class="btn-round btn-exclamation"><span></span></a></div>
+											<div><a title="Reject" class="btn-round btn-remove"><span class="glyphicon glyphicon-remove"></span></a></div>
+										</div>
+										<div class="tbls-col-3 tbls-btn-group">
+											<div><a class="btn btn-default">Sticky</a></div>
+											<div><a class="btn btn-default">Premium</a></div>
+											<div><a class="btn btn-danger">Delete</a></div>
+										</div>
+									</div>
+
+									<footer class="tbls-footer">
+										<p>Rejected: <strong>Reason</strong> <a href="">Change Reason</a></p>
+									</footer>
+								</div>
+							</div>
+						</div>
+
+						<footer class="tbls-pagination">
+							<div class="tbls-pagi">
+								<span>Page</span> 
+								<select name="" id="">
+									<option value="">1</option>
+									<option value="">2</option>
+									<option value="">3</option>
+								</select>
+							</div>
+						</footer>
+					</div>
+				</div>
+
+				<div id="contributor-only" class="tab-component">
+					<!-- Filters -->
+					<div class="filters">
+						<div class="filter-component">
+							<div class="box drop" name="filter-dateRange" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">2 Feb 2016 - 22 Feb 2016</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+						<div class="filter-component">
+							<div class="box drop" name="filter-sort" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">Sort by newest</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+						<div class="filter-component">
+							<div class="box drop" name="filter-status" ng-controller="dropdown">
+								<div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+									<span class="drop-component-text">All Status</span>
+									<span class="glyphicon glyphicon-chevron-down"></span>
+								</div>
+								<ul class="box drop-list">
+									<li ng-click="select($event, 'asd-1');">Asd 1</li>
+									<li ng-click="select($event, 'asd-2');">Asd 2</li>
+									<li ng-click="select($event, 'asd-3');">Asd 3</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="filter-component filter-full">
+							<form action="javascript:;" class="box">
+								<input type="text" placeholder="Search Post">
+								<input type="submit" value="Search" class="btn btn-success">
+							</form>
+						</div>
+					</div>
+
+					<!-- Table Flex -->
+					<div class="tbls-houder">
+						<div class="tbls tbls-content">
+							<header class="tbls-header tbls-row">
+								<div class="tbls-col-1"><input type="checkbox"></div>
+								<div class="tbls-col-2">Author</div>
+								<div class="tbls-col-xl">Title</div>
+								<div class="tbls-col-3 clickable">Channel <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Format <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">View <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Share <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3 clickable">Embed <span class="glyphicon glyphicon-sort"></span></div>
+								<div class="tbls-col-3">Created</div>
+								<div class="tbls-col-2"></div>
+								<div class="tbls-col-3"></div>
+							</header>
+
+							<div class="tbls-body">
+								<div class="box">
+									<div class="tbls-row">
+										<div class="tbls-col-1"><input type="checkbox"></div>
+										<div class="tbls-col-2"><a href="">Cecilia</a></div>
+										<div class="tbls-col-xl">
+											<div class="tbls-title-box">
+												<figure class="tbls-thumbnail"><img src="//media.keepo.me/20170522180324/300x200--bima-cover.jpg" alt=""></figure>
+												<div class="tbls-title">
+													<div>
+														<article>12 Keyword yang Sebaiknya Jangan Pernah Kamu Search di Google Images</article>
+														<footer>
+															<a href="">Change Title</a>
+															<a href="">View</a>
+															<a href="">Edit Detail</a>
+														</footer>
+													</div>
+													<div class="tbls-tags">
+														<article>kecelakaan-lalu-lintas, kelakuan-absurd, kelakuan-orang-indonesia</article>
+														<footer>
+															<a href="">Edit Tags</a>
+														</footer>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="tbls-col-3">
+											Entertainments
+											<div><a href="">Edit</a></div>
+										</div>
+										<div class="tbls-col-3">Interactive Story</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">999.999.999</div>
+										<div class="tbls-col-3">
+											<p>14 May 2016 15:24</p>
+											<div><a href="">Edit</a></div>
+										</div>
+										<div class="tbls-col-2 tbls-btn-group">
+											<div><a title="Approve" class="btn-round btn-ok"><span class="glyphicon glyphicon-ok"></span></a></div>
+											<div><a title="Moderate" class="btn-round btn-exclamation"><span></span></a></div>
+											<div><a title="Reject" class="btn-round btn-remove"><span class="glyphicon glyphicon-remove"></span></a></div>
+										</div>
+										<div class="tbls-col-3 tbls-btn-group">
+											<div><a class="btn btn-default">Sticky</a></div>
+											<div><a class="btn btn-default">Premium</a></div>
+											<div><a class="btn btn-danger">Delete</a></div>
+										</div>
+									</div>
+
+									<footer class="tbls-footer">
+										<p>Rejected: <strong>Reason</strong> <a href="">Change Reason</a></p>
+									</footer>
+								</div>
+							</div>
+						</div>
+
+						<footer class="tbls-pagination">
+							<div class="tbls-pagi">
+								<span>Page</span> 
+								<select name="" id="">
+									<option value="">1</option>
+									<option value="">2</option>
+									<option value="">3</option>
+								</select>
+							</div>
+						</footer>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal -->
+	<div class="mdl mdl-popup">
+		<div class="mdl-component">
+			<article class="mdl-body">
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure earum officiis beatae numquam cumque nihil culpa quis, mollitia voluptate veritatis commodi asperiores doloribus voluptatem accusantium voluptatibus, suscipit ad quasi corporis.</p>
+			</article>
+			<footer class="mdl-footer">
+				<a class="remove">Yes</a>
+				<a>No</a>
+			</footer>
+
+			<a class="mdl-close">&times;</a>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script>var baseURL = 'http://new-admin.keepo.pyo/';</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
+	<script src="dist/js/vendor.js"></script>
+	<script src="dist/js/content.js"></script>
+</body>
+</html>

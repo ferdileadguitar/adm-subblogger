@@ -1,0 +1,68 @@
+// ==========================================================================
+// BUTTONS
+// ==========================================================================
+
+.btn {
+	border-radius: 3px;
+}
+
+.btn-round {
+	border-radius: 50%;
+	cursor: pointer;
+	display: inline-block;
+	height: 40px;
+	width: 40px;
+	line-height: 40px;
+	text-align: center;
+	font-size: 20px;
+	position: relative;
+
+	border-width: 1px;
+	border-style: solid;
+
+	&.btn-ok {
+		background-color: #caf1cc;
+		border-color: #55d259;
+		color: #55d259;
+
+		&:hover {
+			background-color: #55d259;
+			border-color: #caf1cc;
+			color: #caf1cc;
+		}
+	}
+
+	&.btn-exclamation {
+		background-color: #ffe4b4;
+		border-color: #ffa810;
+		color: #ffa810;
+
+		span {
+			background: url('../../dist/css/img/btn-exclamation.png') -8px 0 no-repeat;
+			display: inline-block;
+			height: 25px;
+			width: 8px;
+			transform: translateY(5px);
+		}
+
+		&:hover {
+			background-color: #ffa810;
+			border-color: #ffe4b4;
+			color: #ffe4b4;
+
+			span { background-position: 0px 0px; }
+		}
+	}
+
+	&.btn-remove {
+		background-color: #ffd0c2;
+		border-color: #f5a783;
+		color: #f5a783;
+
+		&:hover {
+			background-color: #f5a783;
+			border-color: #ffd0c2;
+			color: #ffd0c2;
+		}
+	}
+}

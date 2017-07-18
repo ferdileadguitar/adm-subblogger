@@ -1,0 +1,50 @@
+// ==========================================================================
+// FILTERS
+// ==========================================================================
+
+.filters {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: no-wrap;
+	flex-grow: 1;
+
+	padding-bottom: 5px;
+	margin-bottom: 10px;
+
+	.filter-houder {
+		display: flex;
+		flex-wrap: no-wrap;
+
+		&.filter-houder-2 { width: 50%; }
+		&.filter-houder-3 { width: (100% / 3); }
+		&.filter-houder-4 { width: (100% / 4); }
+	}
+
+	.filter-component {
+		margin-left: 10px;
+
+		&:first-child { margin-left: 0; }
+		&.filter-full { width: 100%; }
+		&.filter-pull-right { margin-left: auto; }
+	}
+
+	.drop { min-width: 250px; }
+	.drop-component { line-height: 43px !important; }
+
+	// ==========================================================================
+	
+	form {
+		display: flex;
+		flex-wrap: no-wrap;
+	}
+
+	input { 
+		border: none;
+
+		&:focus { outline: none; }
+		&[type=text] { 
+			padding-left: 5px;
+			width: 100%;
+		}
+	}
+}

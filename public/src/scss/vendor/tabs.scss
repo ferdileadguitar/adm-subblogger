@@ -1,0 +1,53 @@
+// ==========================================================================
+// TABS
+// ==========================================================================
+
+.tabs {
+	header.tabs-header {
+		display: flex;
+		border-bottom: 1px solid $black-10;
+		padding-left: 15px;
+		overflow: visible;
+		width: 100%;
+	}
+
+	nav.tabs-nav {
+		a {
+			background-color: $black-05;
+			color: $black-40;
+			cursor: pointer;
+
+			display: inline-block;
+			border-bottom-right-radius: 0px;
+			border-bottom-left-radius: 0px;
+			line-height: 45px;
+			padding: 0 25px;
+			text-transform: uppercase;
+
+			position: relative;
+			top: 1px;
+
+			&.active { 
+				background-color: $white;
+				border-bottom-color: $white;
+			}
+		}
+
+		.label {
+			position: relative;
+			top: -1px;
+			margin-left: 5px;
+		}
+	}
+
+	aside.adds {
+		margin-left: auto;
+	}
+
+	.tab-component {
+		display: none;
+		padding: 10px 0;
+
+		&.tab-open { display: block; }
+	}
+}
