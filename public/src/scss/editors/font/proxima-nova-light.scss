@@ -1,0 +1,13 @@
+@font-face {
+	font-family: 'proximanovalight';
+	src: image-url('desktop/fonts/proximanovalight/proximanovalight.eot');
+	src: local('proximanovalight'),
+			 image-url('../desktop/fonts/proximanovalight/proximanovalight.woff') format('woff'),
+			 image-url('../desktop/fonts/proximanovalight/proximanovalight.ttf') format('truetype');
+}
+/* use this class to attach this font to any element i.e. <p class="fontsforweb_fontid_12950">Text with this font applied</p> */
+.fontsforweb_fontid_12950 {
+	font-family: 'proximanovalight' !important;
+}
+
+/* Font downloaded from FontsForWeb.com */

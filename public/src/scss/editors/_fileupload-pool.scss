@@ -1,0 +1,167 @@
+
+.fileupload-pool {
+	border: 1px solid $black-20;
+	background-color: $black-05;
+	height: 130px;
+	position: relative;
+
+	&[droppable].over {
+		border-color: $black-80;
+	}
+
+	.helper {
+		color: $black-30;
+		//display: table;
+		height: 100%;
+		position: absolute;
+		width: 100%;
+	}
+
+	.helper_text, .uploading {
+		//display: table-cell;
+		//vertical-align: middle;
+		text-align: center;
+
+		i.icon-photo, span { display: block; }
+		i.icon-photo {
+			font-size: 46px;
+			margin: 0 auto 20px;
+		}
+	}
+
+	.from_url {
+		top: 50%;
+		left: 50%;
+		position: absolute;
+		@include translate(-50%, -50%);
+		width: 50%;
+		z-index: 1;
+
+		input[type=text] {
+			@include box-sizing(border-box);
+			border: none;
+			padding: 10px 120px 10px 20px;
+			width: 100%;
+		}
+
+		a.get-image {
+			cursor: pointer;
+			top: 0px;
+			right: 0;
+			position: absolute;
+			width: 100px;
+			height: 100%;
+		}
+
+		.furl-icon {
+			top: 50% !important;
+			@include translateY(-50%);
+		}
+
+		&.video-image { padding-left: 80px; }
+		&.video { padding-left: 40px; }
+
+		.i-vi {
+			position: absolute;
+			font-size: 26px !important;
+			top: 50%;
+			left: 0;
+			@include translateY(-50%);
+
+			&:nth-child(2) { left: 35px; }
+		}
+	}
+
+	.input-file { display: none; }
+
+	// ==========================================================================
+
+	&.drop {
+		border: 2px dashed $black-20;
+		height: 185px;
+
+		.helper_text, .uploading {
+			padding-top: 20px;
+		}
+
+		.from_url {
+			top: initial;
+			bottom: 20px;
+			@include translate(-50%, 0);
+		}
+	}
+
+	.drop_target {
+		background-color: #f7f9fa;
+		cursor: pointer;
+		display: block;
+		height: 100%;
+		left: 0;
+		top: 0;
+		position: absolute;
+		width: 100%;
+		@include opacity(0);
+	}
+
+	// ==========================================================================
+
+	&.on-progress, &.on-preview {
+		.drop_target, .helper { display: none; }
+	}
+
+	&.on-progress {
+		.uploading {
+			width: 50%;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			@include translate(-50%, -50%);
+		}
+
+		.error-close {
+			font-size: 16px;
+			cursor: pointer;
+		}
+	}
+
+	// ==========================================================================
+
+	&.on-preview {
+		border-color: transparent;
+		height: 420px;
+	}
+
+	.preview {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
+
+		img {
+			min-height: 100%;
+			min-width: 100%;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			@include translate(-50%, -50%);
+		}
+
+		.remove-preview {
+			cursor: pointer;
+			display: block;
+			font-size: 22px;
+			color: $white;
+			background-color: $black-90;
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			height: 40px;
+			width: 40px;
+			line-height: 40px;
+			text-align: center;
+		}
+	}
+
+}

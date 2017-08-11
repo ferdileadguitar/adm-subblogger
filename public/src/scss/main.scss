@@ -43,7 +43,7 @@ a { text-decoration: none; cursor: pointer; }
 		}
 
 		span {
-			background: url('../../dist/css/img/logo.svg') 0 0 no-repeat;
+			background: url('../../img/logo.svg') 0 0 no-repeat;
 			background-size: 100% 100%;
 			display: block;
 			height: 27px;
@@ -86,6 +86,10 @@ a { text-decoration: none; cursor: pointer; }
 	padding: (30px + 60) 40px 25px;
 }
 
+// ==========================================================================
+// EDITOR
+// ==========================================================================
+@import "editors/listicle";
 // ==========================================================================
 // LOADER
 // ==========================================================================

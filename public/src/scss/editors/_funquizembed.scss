@@ -1,0 +1,89 @@
+body,html {margin:0px auto;background:white !important;padding:0px;}
+iframe {background: white;}
+.embed-container {margin:0px !important;padding:0px !important;}
+.funquiz-embed .banner img {width:100%;}
+.funquiz-embed .banner {margin-bottom: 20px;height:auto !important;max-height:470px;overflow:hidden;}
+.funquiz-embed .quiz-text {text-align: center}
+.funquiz-embed .button-area a {
+  -moz-border-radius: 25px;
+  -webkit-border-radius: 25px;
+  border-radius: 25px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: auto;
+  text-transform: uppercase;
+  width: 70%;
+  margin:10px auto;
+  padding:10px 0px;
+  height:45px;
+} 
+
+.quizresult .quiz-text .quiz-title-embed h1 {
+  margin:0px;
+  text-align:left;
+  margin-bottom:5px; 
+}
+
+.funquiz-embed .fun-quiz .social-media a .icon {
+  padding:0px 9px; 
+}
+
+.funquiz-embed .fun-quiz .social-media a .icon i:before {
+  margin-left:0px;
+}
+
+.funquiz-embed .fun-quiz .social-media .line a .icon,.funquiz-embed .fun-quiz .social-media a.embedresult .icon {
+  padding:0px;
+}
+
+.funquiz-embed .quiz-text .text {
+  line-height: 1.7;
+  padding: 0px 20px; 
+}
+
+@media only screen and (min-device-width: 1024px){
+  body,html {max-width:728px;}
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 768px){
+  .funquiz-embed .quiz-text .quiz-title h1 {
+    font-size: 24px;
+  }
+
+  .funquiz-embed .quiz-text .text {
+    font-size: 16px;
+    padding: 0px 10px;
+    line-height: 1.4;
+  }
+
+  .social-media > ul > li > a > span:last-child {
+    display:none !important;
+  }
+
+  .fun-quiz .social-media ul li a {
+    width: 44px;
+    margin: 0px 7px;
+  }
+
+  .social-media:before {
+      content: "SHARE";
+      position: absolute;
+      color: black;
+      left: 10px;
+      margin-top: 10px;
+      font-size: large;
+  }
+
+  .fun-quiz .social-media ul li.embed {
+    display: none;
+  }
+
+  .fun-quiz .social-media ul li.separator {
+    display: none;
+  }
+
+  .fun-quiz .social-media ul {
+    text-align: right;
+    margin-right: 10px;
+  }
+}

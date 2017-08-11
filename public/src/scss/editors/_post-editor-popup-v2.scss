@@ -1,0 +1,379 @@
+@import "template";
+
+
+// ==========================================================================
+// Variables
+// ==========================================================================
+$articleImg: image-url('../icon-post/01-article.jpg');
+$listicleImg: image-url('../icon-post/02-listicle.jpg');
+$galleryImg: image-url('../icon-post/03-gallery.jpg');
+$memeImg: image-url('../icon-post/04-meme.jpg');
+$videoImg: image-url('../icon-post/05-vide.jpg');
+$convoImg: image-url('../icon-post/06-convo.jpg');
+$vsImg: image-url('../icon-post/07-versus.jpg');
+$triviaImg: image-url('../icon-post/08-trivia.jpg');
+$personalityImg: image-url('../icon-post/09-personality.jpg');
+$funquizImg: image-url('../icon-post/10-fun-quiz.jpg');
+$cardClickImg: image-url('../icon-post/11-card-click.jpg');
+$typingQuizImg: image-url('../icon-post/12-typing-quiz.jpg');
+$matchingQuizImg: image-url('../icon-post/13-matching-quiz.jpg');
+$spotObjectImg: image-url('../icon-post/14-spot-the-object.jpg');
+$pollingImg: image-url('../icon-post/15-polling.jpg');
+$takeOrThrowImg: image-url('../icon-post/16-take-or-throw.jpg');
+$captionContestImg: image-url('../icon-post/17-caption-contest.jpg');
+$interactiveStoryImg: image-url('../icon-post/18-interactive-story.jpg');
+$interactiveVideoImg: image-url('../icon-post/19-interactive-video.jpg');
+$chooseYoursImg: image-url('../icon-post/20-choose-yours.jpg');
+$quickTriviaImg: image-url('../icon-post/21-quick-trivia.jpg');
+$quickPersonalityImg: image-url('../icon-post/22-quick-personality.jpg');
+$quickPollImg: image-url('../icon-post/23-quick-poll.jpg');
+$articleBg: #dae5fd;
+$listicleBg: #dfefff;
+$galleryBg: #D5F3FB;
+$memeBg: #d4fbfa;
+$videoBg: #d7f7e9;
+$convoBg: #d5fee1;
+$vsBg: #E4FFD9;
+$triviaBg: #eddcff;
+$personalityBg: #ffdef6;
+$funquizBg: #fedbe2;
+$cardClickBg: #fde8d7;
+$typingQuizBg: #FEEFD7;
+$matchingQuizBg: #fff9c4;
+$spotObjectBg: #f0febd;
+$pollingBg: #ecdad0;
+$takeOrThrowBg: #fff7e0;
+$captionContestBg: #f9fad8;
+$interactiveStoryBg: #e7eed9;
+$interactiveVideoBg: #dbefda;
+$chooseYoursBg: #d7f1ea;
+$quickTriviaBg: #f7ddfc;
+$quickPersonalityBg: #ffd5d5;
+$quickPollBg: #faead7;
+
+
+
+.editor-new-container{
+  position: absolute;
+  top: 20%;
+  display: inline-block;
+  height: 85%;
+  width: 85%;
+  margin: 0 90px;
+  overflow: hidden;
+
+  ul{
+    display: inline-block;
+    margin: 50px 0;
+    li{
+      display: inline-block;
+      border: 1px solid transparent;
+      margin: 3px;
+      border-radius: 5px;
+      width: 155px;
+      height: 160px;
+      position: relative;
+      .icon-post{
+        background-repeat: no-repeat;
+        display: inline-block;
+        width: 100px;
+        height: 90px;
+        background-position: center center;
+      }
+      .text-post{
+        color: $black-30;
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      .view-sample{
+        font-size: 13px;bottom: 0;width: 130px;display: inline-block;text-transform: uppercase;border: 1px solid #dadade;font-weight: bold;width: auto;padding: 5px 10px;margin-top: 8px;
+        a{
+          color: #aaaab5;
+          font-size: 10px;
+        }
+      }
+    }
+    li:hover{
+      box-shadow: 0px 0 0 2px $tosca;
+      height: 155px;
+      width: 155px;
+    }
+    li:nth-child(1), li:nth-child(2), li:nth-child(3), li:nth-child(4), li:nth-child(5), li:nth-child(6){
+      animation: open_item_animation .8s linear forwards;
+    }
+    li:nth-child(7), li:nth-child(8), li:nth-child(9), li:nth-child(10), li:nth-child(11), li:nth-child(12){
+      animation: open_item_animation .5s linear forwards;
+    }
+    li:nth-child(13), li:nth-child(14), li:nth-child(15), li:nth-child(16), li:nth-child(17), li:nth-child(18){
+      animation: open_item_animation .3s linear forwards;
+    }
+    li:nth-child(19), li:nth-child(20), li:nth-child(21), li:nth-child(23), li:nth-child(22){
+      animation: open_item_animation .1s linear forwards;
+    }
+  }
+}
+
+.epi-background-coming-soon{
+  opacity: 0.2;
+  .text-post::after{
+    content: "Coming Soon" !important;
+    text-align: center;
+  }
+}
+
+.epi-background-article{
+  background-color: $articleBg;
+  .text-post::after{
+    content: "Article";
+  }
+  .icon-post{
+    background-image: $articleImg;
+  }
+}
+
+.epi-background-listicle{
+  background-color: $listicleBg;
+  .text-post::after{
+    content: "Listicle";
+  }
+  .icon-post{
+    background-image: $listicleImg;
+  }
+}
+.epi-background-gallery{
+  background-color: $galleryBg;
+  .text-post::after{
+    content: "Gallery";
+  }
+  .icon-post{
+    background-image: $galleryImg;
+  }
+}
+.epi-background-meme{
+  background-color: $memeBg;
+  .text-post::after{
+    content: "Meme";
+  }
+  .icon-post{
+    background-image: $memeImg;
+  }
+}
+.epi-background-video{
+  background-color: $videoBg;
+  .text-post::after{
+    content: "video";
+  }
+  .icon-post{
+    background-image: $videoImg;
+  }
+}
+.epi-background-convo{
+  background-color: $convoBg;
+  .text-post::after{
+    content: "convo";
+  }
+  .icon-post{
+    background-image: $convoImg;
+  }
+}
+.epi-background-vs{
+  background-color: $vsBg;
+  .text-post::after{
+    content: "versus";
+  }
+  .icon-post{
+    background-image: $vsImg;
+  }
+}
+.epi-background-trivia{
+  background-color: $triviaBg;
+  .text-post::after{
+    content: "trivia";
+  }
+  .icon-post{
+    background-image: $triviaImg;
+  }
+}
+.epi-background-personality{
+  background-color: $personalityBg;
+  .text-post::after{
+    content: "personality";
+  }
+  .icon-post{
+    background-image: $personalityImg;
+  }
+}
+.epi-background-funquiz{
+  background-color: $funquizBg;
+  .text-post::after{
+    content: "fun quiz";
+  }
+  .icon-post{
+    background-image: $funquizImg;
+  }
+}
+.epi-background-card-click{
+  background-color: $cardClickBg;
+  .text-post::after{
+    content: "Card click";
+  }
+  .icon-post{
+    background-image: $cardClickImg;
+  }
+}
+.epi-background-typing-quiz{
+  background-color: $typingQuizBg;
+  .text-post::after{
+    content: "typing quiz";
+  }
+  .icon-post{
+    background-image: $typingQuizImg;
+  }
+}
+.epi-background-matching-quiz{
+  background-color: $matchingQuizBg;
+  .text-post::after{
+    content: "matching quiz";
+  }
+  .icon-post{
+    background-image: $matchingQuizImg;
+  }
+}
+.epi-background-spot-object{
+  background-color: $spotObjectBg;
+  .text-post::after{
+    content: "spot the object";
+  }
+  .icon-post{
+    background-image: $spotObjectImg;
+  }
+}
+.epi-background-polling{
+  background-color: $pollingBg;
+  .text-post::after{
+    content: "polling";
+  }
+  .icon-post{
+    background-image: $pollingImg;
+  }
+}
+.epi-background-take-or-throw{
+  background-color: $takeOrThrowBg;
+  .text-post::after{
+    content: "take or throw";
+  }
+  .icon-post{
+    background-image: $takeOrThrowImg;
+  }
+}
+.epi-background-caption-contest{
+  background-color: $captionContestBg;
+  .text-post::after{
+    content: "caption contest";
+  }
+  .icon-post{
+    background-image: $captionContestImg;
+  }
+}
+.epi-background-interactive-story{
+  background-color: $interactiveStoryBg;
+  .text-post::after{
+    content: "interactive story";
+  }
+  .icon-post{
+    background-image: $interactiveStoryImg;
+  }
+}
+.epi-background-interactive-video{
+  background-color: $interactiveVideoBg;
+  .text-post::after{
+    content: "interactive video";
+  }
+  .icon-post{
+    background-image: $interactiveVideoImg;
+  }
+}
+.epi-background-choose-yours{
+  background-color: $chooseYoursBg;
+  .text-post::after{
+    content: "choose yours";
+  }
+  .icon-post{
+    background-image: $chooseYoursImg;
+  }
+}
+.epi-background-quick-trivia{
+  background-color: $quickTriviaBg;
+  .text-post::after{
+    content: "quick trivia";
+  }
+  .icon-post{
+    background-image: $quickTriviaImg;
+  }
+}
+.epi-background-quick-personality{
+  background-color: $quickPersonalityBg;
+  .text-post::after{
+    content: "quick personality";
+  }
+  .icon-post{
+    background-image: $quickPersonalityImg;
+  }
+}
+.epi-background-quick-poll{
+  background-color: $quickPollBg;
+  .text-post::after{
+    content: "quick polling";
+  }
+  .icon-post{
+    background-image: $quickPollImg;
+  }
+}
+.epi-closed {
+  .editor-new-container{
+    li:nth-child(1), li:nth-child(2), li:nth-child(3), li:nth-child(4), li:nth-child(5), li:nth-child(6){
+      animation: closed_item_animation .6s linear forwards;
+    }
+    li:nth-child(7), li:nth-child(8), li:nth-child(9), li:nth-child(10), li:nth-child(11), li:nth-child(12){
+      animation: closed_item_animation .7s linear forwards;
+    }
+    li:nth-child(13), li:nth-child(14), li:nth-child(15), li:nth-child(16), li:nth-child(17), li:nth-child(18){
+      animation: closed_item_animation .8s linear forwards;
+    }
+    li:nth-child(19), li:nth-child(20), li:nth-child(21), li:nth-child(23), li:nth-child(22){
+      animation: closed_item_animation .9s linear forwards;
+    }
+  }
+}
+@keyframes closed_item_animation {
+  from {
+      opacity: 1;
+      transform: rotateZ(0);
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+      animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  to {
+      opacity: 0;
+      transform: translateY(600px) rotateZ(90deg);
+  }
+}
+@keyframes open_item_animation{
+  from {
+      transform: translateY(-400px) rotateZ(-90deg);
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+      animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  to {
+      transform : translateY(0) rotateZ(0);
+  }
+}
+.outline{
+  text-align: center;
+  border-radius: 5px;
+  height: 160px;
+  a{
+    margin: 15px 0;display: inline-block;
+  }
+}

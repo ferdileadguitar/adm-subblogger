@@ -7,7 +7,7 @@ webpackJsonp([1],{
 
 /***/ }),
 
-/***/ 15:
+/***/ 14:
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
@@ -27,7 +27,7 @@ __webpack_require__(10);
 // APP
 // ------------------------------------------------------------------------
 
-new Promise(function(resolve) { resolve(); }).then(function() { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)]; (function(MainApp, joii) {
+Promise.resolve().then(function() { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)]; (function(MainApp, joii) {
 	'use strict';
 
 	var App = joii.Class({ extends: MainApp }, {
@@ -87,4 +87,4 @@ new Promise(function(resolve) { resolve(); }).then(function() { var __WEBPACK_AM
 
 /***/ })
 
-},[15]);
+},[14]);

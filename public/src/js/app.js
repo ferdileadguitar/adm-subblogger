@@ -173,18 +173,18 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 			// Service
 			// ------------------------------------------------------------------------
 			
-			this.application.service('searchService', function(appService) {
+			this.application.service('searchService', ['appService', function(appService) {
 				return {
 					submit: function($scope, $attrs, $event) {
 						appService.localContext['search']($scope.searchInput);
 					}
 				};
-			});
+			}]);
 
 			// Controller
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('search', function($scope, $attrs, searchService) {
+			this.application.controller('search', ['$scope', '$attrs', 'searchService', function($scope, $attrs, searchService) {
 				$scope.submit = function($event) {
 					$event.preventDefault();
 
@@ -193,14 +193,14 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 
 					return false;
 				};
-			});
+			}]);
 		},
 
 		evDropdowns: function() {
 			// Service
 			// ------------------------------------------------------------------------
 			
-			this.application.service('dropdownService', function(appService) {
+			this.application.service('dropdownService', ['appService', function(appService) {
 				return {
 					select: function($scope, $attrs, $event, selected) {
 						var $el = $($event.currentTarget) || $($event.srcElement);
@@ -253,12 +253,12 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 							[date.getFullYear(), date.getMonth() + 1, date.getDate()].join(separator);
 					}
 				};
-			});
+			}]);
 
 			// Controller
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('dropdown', function($scope, $attrs, dropdownService) {
+			this.application.controller('dropdown', ['$scope', '$attrs', 'dropdownService', function($scope, $attrs, dropdownService) {
 				$scope.openList = false;
 
 				$scope.select = function($event, selected) {
@@ -268,14 +268,14 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 				$scope.selectDate = function($event) {
 					dropdownService.selectDate($scope, $attrs, $event);
 				};
-			});
+			}]);
 		},
 
 		evTabs: function() {
 			// Service
 			// ------------------------------------------------------------------------
 			
-			this.application.service('tabService', function(appService) {
+			this.application.service('tabService', ['appService', function(appService) {
 				var tabActive   = {$$el: void 0, name: void 0},
 					rootContext = void 0;
 
@@ -309,16 +309,16 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 						$attrs.$$element.find('.tabs-nav .box').removeClass('active');
 					}
 				};
-			});
+			}]);
 
 			// Controller
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('tabs', function($scope, $attrs, tabService) {
+			this.application.controller('tabs', ['$scope', '$attrs', 'tabService', function($scope, $attrs, tabService) {
 				$scope.openTab = function($event, tabName) {
 					tabService.openTab($attrs, $event, tabName);
 				};
-			});
+			}]);
 		}
 	});
 

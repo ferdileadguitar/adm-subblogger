@@ -7,7 +7,7 @@ webpackJsonp([0],{
 
 /***/ }),
 
-/***/ 14:
+/***/ 13:
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
@@ -27,7 +27,7 @@ __webpack_require__(11);
 // APP
 // ------------------------------------------------------------------------
 
-new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR INJECTION */(function($, _) {var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)]; (function(MainApp, joii) {
+Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)]; (function(MainApp, joii) {
 	'use strict';
 
 	var App = joii.Class({ extends: MainApp }, {
@@ -37,7 +37,7 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 			// Application controller
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('app-controller', function($scope, $attrs, appService, tabService) {
+			this.application.controller('app-controller', ['$scope', '$attrs', 'appService', 'tabService', function($scope, $attrs, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
 
@@ -47,7 +47,6 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 
 				// Local init
 				// ------------------------------------------------------------------------
-				
 				appService.apply({
 					'url': self.baseURL + 'api/contents/',
 					'appContext': $scope, 
@@ -93,6 +92,10 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 				$scope.onTabChange = function() {
 					$scope.$broadcast(tabService.getTabActive().name + 'OnTabChange');
 				};
+
+				$scope.changeTitle = function(data) {
+					console.log(  )
+				};		
 
 				$scope.bulkAction = bulkAction;
 				$scope.setStatus  = setStatus;
@@ -271,7 +274,7 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 					Object.assign(post, data);
 				};
 
-			}).
+			}]).
 			controller('allController', ['$scope', '$attrs', 'appService', self.allController]).
 			controller('moderationController', ['$scope', '$attrs', 'appService', self.moderationController]);
 
@@ -332,6 +335,9 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 							appService.appContext.setPremium(post, (!post.is_premium ? 1 : 0), $scope);
 						};
 
+						$scope.changeTitle = function(data) {
+							angular.element('body').append($compile('<editor-modal></editor-modal>')($scope));
+						};
 						// Local methods
 						// ------------------------------------------------------------------------
 						
@@ -384,6 +390,21 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 				};
 			}]);
 
+			this.application.directive('editorModal', ['appService', function(appService) {
+				return {
+					restrict    : 'E',
+					replace     :  true,
+					templateUrl : 'editorModal',
+					link     : function($scope, $attrs, $element) {
+						// console.log( $scope, feeds );
+						$scope.src = {
+							editor : '../src/js/modules/directive/editor-article.html'
+						};
+						console.log( $scope, self, appService );
+					}	
+
+				}
+			}]);
 			// this.application.directive('body', ['appService', '$compile', function(appService, $compile) {
 			// 	return {
 			// 		restrict: 'E',
@@ -586,4 +607,4 @@ new Promise(function(resolve) { resolve(); }).then(function() { /* WEBPACK VAR I
 
 /***/ })
 
-},[14]);
+},[13]);

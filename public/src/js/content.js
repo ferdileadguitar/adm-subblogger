@@ -16,7 +16,7 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 			// Application controller
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('app-controller', function($scope, $attrs, appService, tabService) {
+			this.application.controller('app-controller', ['$scope', '$attrs', 'appService', 'tabService', function($scope, $attrs, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
 
@@ -26,7 +26,6 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 
 				// Local init
 				// ------------------------------------------------------------------------
-				
 				appService.apply({
 					'url': self.baseURL + 'api/contents/',
 					'appContext': $scope, 
@@ -72,6 +71,10 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 				$scope.onTabChange = function() {
 					$scope.$broadcast(tabService.getTabActive().name + 'OnTabChange');
 				};
+
+				$scope.changeTitle = function(data) {
+					console.log(  )
+				};		
 
 				$scope.bulkAction = bulkAction;
 				$scope.setStatus  = setStatus;
@@ -250,7 +253,7 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 					Object.assign(post, data);
 				};
 
-			}).
+			}]).
 			controller('allController', ['$scope', '$attrs', 'appService', self.allController]).
 			controller('moderationController', ['$scope', '$attrs', 'appService', self.moderationController]);
 
@@ -311,6 +314,9 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 							appService.appContext.setPremium(post, (!post.is_premium ? 1 : 0), $scope);
 						};
 
+						$scope.changeTitle = function(data) {
+							angular.element('body').append($compile('<editor-modal></editor-modal>')($scope));
+						};
 						// Local methods
 						// ------------------------------------------------------------------------
 						
@@ -363,6 +369,21 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 				};
 			}]);
 
+			this.application.directive('editorModal', ['appService', function(appService) {
+				return {
+					restrict    : 'E',
+					replace     :  true,
+					templateUrl : 'editorModal',
+					link     : function($scope, $attrs, $element) {
+						// console.log( $scope, feeds );
+						$scope.src = {
+							editor : '../src/js/modules/directive/editor-article.html'
+						};
+						console.log( $scope, self, appService );
+					}	
+
+				}
+			}]);
 			// this.application.directive('body', ['appService', '$compile', function(appService, $compile) {
 			// 	return {
 			// 		restrict: 'E',

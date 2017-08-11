@@ -1,0 +1,456 @@
+@import "template";
+
+/* ==========================================================================*/
+/* Variables*/
+/* ==========================================================================*/
+
+$articleImg: image-url('../desktop/css/images/editor-icons/article.png');
+$listicleImg: image-url('../desktop/css/images/editor-icons/listicle.png');
+$galleryImg: image-url('../desktop/css/images/editor-icons/gallery.png');
+$memeImg: image-url('../desktop/css/images/editor-icons/meme.png');
+$personalityImg: image-url('../desktop/css/images/editor-icons/personality.png');
+$pollingImg: image-url('../desktop/css/images/editor-icons/polling.png');
+$triviaImg: image-url('../desktop/css/images/editor-icons/trivia.png');
+$videoImg: image-url('../desktop/css/images/editor-icons/video.png');
+
+$editorItemHeight: 160px;
+$editorItemWidth: 160px;
+
+/* ==========================================================================*/
+
+
+
+/* ==========================================================================*/
+/* POST EDITOR POPUP*/
+/* ==========================================================================*/
+
+.editor-popup-container {
+	background-color: $black-02; /*rgba(247, 247, 247, .85);*/
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+
+	/* ==========================================================================*/
+
+	.epi-main-header {
+		overflow: hidden;
+		position: absolute;
+		top: 10%;
+		left: 20%;
+		right: 20%;
+
+		.f-left {
+			float: left;
+			font-size: 36px;
+			font-weight: 600;
+			width: 50%;
+
+			span {
+				font-size: 14px;
+				font-weight: normal;
+			}
+		}
+
+		.f-right {
+			float: right;
+
+			a {
+				@include box-sizing(border-box);
+				display: block;
+				height: 34px;
+				line-height: 34px;
+				margin-top: 10px;
+				width: 145px;
+			}
+		}
+	}
+
+	/* ==========================================================================*/
+
+	.epi-close {
+		display: block;
+		cursor: pointer;
+		position: absolute;
+		top: 2%; /*10%;*/
+		right: 2%;
+		height: 50px;
+		width: 50px;
+
+		&::before,
+		&::after {
+			background-color: #000;
+			content: "";
+			height: 50px;
+			width: 2px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+		}
+
+		&::before { @include transform(translate(-50%, -50%) rotate(45deg)); }
+		&::after { @include transform(translate(-50%, -50%) rotate(-45deg)); }
+	}
+
+	/* ==========================================================================*/
+
+	&.epi-opened {
+		.epi-top { -webkit-animation: editor-popup-top-startup .75s cubic-bezier(0.455, 0.03, 0.615, 0.555); animation: editor-popup-top-startup .75s cubic-bezier(0.455, 0.03, 0.615, 0.555); }
+		.epi-bottom { -webkit-animation: editor-popup-bottom-startup .75s cubic-bezier(0.455, 0.03, 0.615, 0.555); animation: editor-popup-bottom-startup .75s cubic-bezier(0.455, 0.03, 0.615, 0.555); }
+	}
+
+	&.epi-closed {
+		.epi-top {
+			-webkit-animation: editor-popup-top-close .75s cubic-bezier(0.455, 0.03, 0.615, 0.555);
+			        animation: editor-popup-top-close .75s cubic-bezier(0.455, 0.03, 0.615, 0.555);
+			top: 35% !important;
+		}
+		.epi-bottom {
+			-webkit-animation: editor-popup-bottom-close .75s cubic-bezier(0.455, 0.03, 0.615, 0.555);
+			        animation: editor-popup-bottom-close .75s cubic-bezier(0.455, 0.03, 0.615, 0.555);
+			bottom: 10% !important;
+		}
+
+		/* ==========================================================================*/
+
+		.epi-main-header { display: none; }
+		.epi-close { display: none; }
+	}
+
+	&.epi-opened,
+	&.epi-closed {
+		.epi-top,
+		.epi-bottom { -webkit-animation-fill-mode: forwards; animation-fill-mode: forwards; }
+	}
+
+	&.epi-opened {
+		.epi-article { -webkit-animation-delay: 0s; animation-delay: 0s; }
+		.epi-listicle { -webkit-animation-delay: .15s; animation-delay: .15s; }
+		.epi-gallery { -webkit-animation-delay: .30s; animation-delay: .30s; }
+		.epi-video { -webkit-animation-delay: .45s; animation-delay: .45s; }
+		.epi-trivia { -webkit-animation-delay: .15s; animation-delay: .15s; }
+		.epi-quicktrivia { -webkit-animation-delay: .15s; animation-delay: .15s; }
+		.epi-personality { -webkit-animation-delay: .30s; animation-delay: .30s; }
+		.epi-polling { -webkit-animation-delay: .45s; animation-delay: .45s; }
+		.epi-quickpolling { -webkit-animation-delay: .45s; animation-delay: .45s; }
+		.epi-funquiz { -webkit-animation-delay: .45s; animation-delay: .45s; }
+		.epi-meme { -webkit-animation-delay: .60s; animation-delay: .60s; }
+	}
+
+	&.epi-closed {
+		.epi-article { -webkit-animation-delay: .45s; animation-delay: .45s; }
+		.epi-listicle { -webkit-animation-delay: .30s; animation-delay: .30s; }
+		.epi-gallery { -webkit-animation-delay: .15s; animation-delay: .15s; }
+		.epi-video { -webkit-animation-delay: 0s; animation-delay: 0s; }
+		.epi-trivia { -webkit-animation-delay: .60s; animation-delay: .60s; }
+		.epi-quicktrivia { -webkit-animation-delay: .60s; animation-delay: .60s; }
+		.epi-personality { -webkit-animation-delay: .45s; animation-delay: .45s; }
+		.epi-polling { -webkit-animation-delay: .30s; animation-delay: .30s; }
+		.epi-quickpolling { -webkit-animation-delay: .30s; animation-delay: .30s; }
+		.epi-funquiz { -webkit-animation-delay: .30s; animation-delay: .30s; }
+		.epi-meme { -webkit-animation-delay: .15s; animation-delay: .15s; }
+	}
+
+
+}
+
+.editor-popup-item {
+	border: 1px solid #dbdbdb;
+	background-color: #fff;
+	height: $editorItemHeight;
+	width: $editorItemWidth;
+	position: absolute;
+	@include border-radius(50%);
+	@include box-sizing(border-box);
+	@include translate(-50%, -50%);
+	text-align: center;
+	z-index: 101;
+
+	span { display: block; }
+
+	/* ==========================================================================*/
+
+	&.epi-top { top: -35%; }
+	&.epi-bottom { bottom: -75%; }
+
+	&.epi-top,
+	&.epi-bottom { -webkit-animation-fill-mode: forwards; animation-fill-mode: forwards; }
+
+	/* ==========================================================================*/
+
+	.epi-header {
+		background-color: transparent;
+		background-repeat: no-repeat;
+		font-size: 18px;
+		background-position: 50% 20px;
+		padding-top: 90px;
+	}
+
+	.epi-footer {
+		margin-top: 10px;
+		font-size: 10px;
+	}
+
+	.epi-header span,
+	.epi-footer a {
+		color: #9d9da7;
+		position: relative;
+		z-index: 102;
+		@include transition (color .2s linear);
+	}
+
+	.epi-footer a {
+		z-index: 103;
+
+		&::after { content: "[ lihat contoh ]"; }
+		&:hover::after { text-decoration: underline; }
+	}
+	.epi-footer a.coming-soon {
+		&::after { content: " [ coming soon ]" !important; }
+	}
+
+	&::before,
+	&::after,
+	.epi-classy { position: absolute; }
+
+	.epi-classy {
+		height: $editorItemHeight;
+		width: $editorItemWidth;
+		top: 0;
+		left: 0;
+
+		display: block;
+		z-index: 102;
+	}
+
+	&::before,
+	&::after {
+		@include border-radius(50%);
+		@include transition(all .2s ease-out);
+	}
+
+	&::before {
+		content: "";
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+
+		@include transition-delay(.2s);
+	}
+
+	&::after {
+		content: "";
+		top: 50%;
+		left: 50%;
+		height: 0;
+		width: 0;
+		@include translate(-50%, -50%);
+		@include opacity(0);
+	}
+
+	/* ==========================================================================*/
+	&.epi-coming-soon {
+		opacity: 0.5;
+		.epi-header span::after { content: "Coming Soon" !important};
+	}
+	&.epi-article {
+		left: 20%;
+
+		.epi-header { background-image: $articleImg; }
+		.epi-header span::after { content: "Article"; }
+		&::after { background-color: rgba(46, 161, 242, .7); }
+	}
+
+	&.epi-listicle {
+		left: 40%;
+		-webkit-animation-delay: .15s;
+		        animation-delay: .15s;
+
+		.epi-header { background-image: $listicleImg; }
+		.epi-header span::after { content: "Listicle"; }
+		&::after { background-color: rgba(14, 130, 211, .7); }
+	}
+
+	&.epi-gallery {
+		left: 60%;
+		-webkit-animation-delay: .30s;
+		        animation-delay: .30s;
+
+		.epi-header { background-image: $galleryImg; }
+		.epi-header span::after { content: "Gallery"; }
+		&::after { background-color: rgba(52, 104, 175, .7); }
+	}
+
+	&.epi-video {
+		left: 80%;
+		-webkit-animation-delay: .45s;
+		        animation-delay: .45s;
+
+		.epi-header { background-image: $videoImg; }
+		.epi-header span::after { content: "Video"; }
+		&::after { background-color: rgba(106, 71, 255, .7); }
+	}
+
+	&.epi-trivia {
+		left: 20%;
+		-webkit-animation-delay: .45s;
+		        animation-delay: .45s;
+
+		.epi-header { background-image: $triviaImg; }
+		.epi-header span::after { content: "Trivia Quiz"; }
+		&::after { background-color: rgba(134, 100, 233, .7); }
+	}
+
+	&.epi-quicktrivia {
+		left: 20%;
+		-webkit-animation-delay: .45s;
+		        animation-delay: .45s;
+
+		.epi-header { background-image: $triviaImg; }
+		.epi-header span::after { content: "Quick Trivia Quiz"; }
+		&::after { background-color: rgba(134, 100, 233, .7); }
+	}
+
+	&.epi-personality {
+		left: 40%;
+
+		.epi-header { background-image: $personalityImg; font-size: 16px; }
+		.epi-header span::after { content: "Personality Quiz"; }
+		&::after { background-color: rgba(143, 56, 210, .7); }
+	}
+
+	&.epi-polling {
+		left: 60%;
+		-webkit-animation-delay: .15s;
+		        animation-delay: .15s;
+
+		.epi-header { background-image: $pollingImg; }
+		.epi-header span::after { content: "Polling"; }
+		&::after { background-color: rgba(217, 54, 246, .7); }
+	}
+
+	&.epi-quickpolling {
+		left: 80%;
+		-webkit-animation-delay: .15s;
+		        animation-delay: .15s;
+
+		.epi-header { background-image: $pollingImg; }
+		.epi-header span::after { content: "Quick Polling"; }
+		&::after { background-color: rgba(217, 54, 246, .7); }
+	}
+
+	&.epi-funquiz {
+		left: 60%;
+		-webkit-animation-delay: .15s;
+		        animation-delay: .15s;
+
+		.epi-header { background-image: $pollingImg; }
+		.epi-header span::after { content: "Fun Quiz"; }
+		&::after { background-color: rgba(217, 54, 246, .7); }
+	}
+
+	&.epi-meme {
+		left: 80%;
+		-webkit-animation-delay: .30s;
+		        animation-delay: .30s;
+
+		.epi-header { background-image: $memeImg; }
+		.epi-header span::after { content: "Meme"; }
+		&::after { background-color: rgba(250, 134, 195, .65); }
+	}
+
+	/* ==========================================================================*/
+
+	&:hover {
+		.epi-header span,
+		.epi-footer a { color: #fff; }
+
+		&::before {
+			@include box-shadow(0 0 3px rgba(0,0,0,0.3),0 0 0 10px rgba(0,0,0,0.1));
+		}
+
+		&::after {
+			height: 100%;
+			width: 100%;
+			@include opacity(1);
+		}
+	}
+}
+
+/* ==========================================================================*/
+
+
+
+
+/* ==========================================================================*/
+/* Animation*/
+/* ==========================================================================*/
+
+@-webkit-keyframes editor-popup-top-startup {
+	0% { bottom: -35%; }
+	70% { top: 40%; }
+	100% { top: 35%; }
+}
+
+@keyframes editor-popup-top-startup {
+	0% { bottom: -35%; }
+	70% { top: 40%; }
+	100% { top: 35%; }
+}
+
+@-webkit-keyframes editor-popup-bottom-startup {
+	0% { bottom: -35%; }
+	70% { bottom: 15%; }
+	100% { bottom: 10%; }
+}
+
+@keyframes editor-popup-bottom-startup {
+	0% { bottom: -35%; }
+	70% { bottom: 15%; }
+	100% { bottom: 10%; }
+}
+
+@-webkit-keyframes editor-popup-top-close {
+	0% { top: 35%; }
+	30% { top: 40%; }
+	100% { top: -35%; }
+}
+
+@keyframes editor-popup-top-close {
+	0% { top: 35%; }
+	30% { top: 40%; }
+	100% { top: -35%; }
+}
+
+@-webkit-keyframes editor-popup-bottom-close {
+	0% { bottom: 10%; }
+	30% { bottom: 15%; }
+	100% { bottom: -75%; }
+}
+
+@keyframes editor-popup-bottom-close {
+	0% { bottom: 10%; }
+	30% { bottom: 15%; }
+	100% { bottom: -75%; }
+}
+
+/* ==========================================================================*/
+
+
+
+
+
+/* ==========================================================================*/
+/* Media Queries*/
+/* ==========================================================================*/
+
+@media only screen and (min-width: 1360px) {
+	.editor-popup-item {
+		&.epi-bottom { bottom: -75%; }
+	}
+}
+
+/* ==========================================================================*/
