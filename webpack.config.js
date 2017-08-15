@@ -4,7 +4,7 @@ const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const WatchLiveReloadPlugin = require('webpack-watch-livereload-plugin');
 
-console.log( path.resolve(__dirname, "./src/scss") );
+// console.log( path.resolve(__dirname, "./src/scss") );
 
 let ROOT_PATH = path.resolve(__dirname),
 	APP_PATH  = path.resolve(ROOT_PATH, 'public'),
@@ -45,8 +45,7 @@ module.exports = {
                 test: /\.(eot|ttf|woff|woff2)$/,
                 loader: 'file-loader',
                 options : {
-                	outputPath : path.resolve(__dirname , './public/fonts/'),
-                	name : '[name].[ext]',
+                	name : '../../fonts/[name].[ext]',
                 	emitFile : false
                 }
             },
@@ -54,16 +53,20 @@ module.exports = {
             	test: /\.(png|svg|jpe?g)$/, 
             	loader: 'file-loader',
             	options : {
-                	outputPath : path.resolve(__dirname, 'public/img/'),
-                	name : '[name].[ext]',
+            		context : path.resolve(__dirname, 'src'),
+                	name : '../../img/[name].[ext]',
                 	emitFile : false
                 } 
             },
-          	{
-			    test: /\.html$/,
-			    exclude: /node_modules/,
-			    use: [ 'file-loader?name=[name].[ext]!extract-loader!html-loader' ]
+			{
+				test : /\.js$/,
+				exclude : /node_modules/,
 			},
+			{	
+				test : /\.html$/,
+				exclude : /node_modules/,
+				use: [ 'html-loader' ]
+			}
 		],
 	},
 	plugins: [
@@ -71,20 +74,9 @@ module.exports = {
 		new webpack.ProvidePlugin({jQuery: "jquery",$: "jquery","window.jQuery": "jquery"}),
 		new webpack.ProvidePlugin({"_": "underscore"}),
 		new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "js/vendor.js"}),
-		// new UglifyJSPlugin({}, {
-		// 	'compress' : {
-		// 		unsafe_Func : true,
-		// 		conditionals : 'if'
-		// 	}
-		// })
-		// new WatchLiveReloadPlugin({
-		// 	files : [ './src/**/*.js', './src/**/*.scss'],
-		// 	port  : 3000
-		// })
 	],
-	watch: false
+	watch: true
 }
-
 // MODULE
 // npm install --save-dev uglifyjs-webpack-plugin
 // npm install --save-dev webpack-watch-livereload-plugin
@@ -94,6 +86,15 @@ module.exports = {
 // npm install sass-resources-loader
 // npm install compass-mixins --save
 // npm install mixin-loader --save-dev
+// npm install ngtemplate-loader --save-dev
+// npm npm install ng-cache-loader --save-dev
+
+// Exernal Plugin Support
+// npm install handlebars --save-dev
+// npm install medium-editor --save-dev
+// npm install blueimp-file-upload --save-dev
+// npm install jquery-sortable --save-dev
+// npm install medium-editor-insert-plugin --save
 
 // REF
 // https://github.com/shakacode/sass-resources-loader/tree/master/example
