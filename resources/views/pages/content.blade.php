@@ -20,7 +20,7 @@
 
         <aside class="adds">
             <div class="box drop" name="bulk-action" singleaction="bulkAction" ng-controller="dropdown">
-                <div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+                <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                     <span class="drop-component-text">Bulk Action</span>
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </div>
@@ -51,7 +51,7 @@
             <div class="filters">
                 <div class="filter-component">
                     <div class="box drop drop-large" name="filter-dateRange" ng-controller="dropdown">
-                        <div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                             <span class="drop-component-text">All Time</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </div>
@@ -77,7 +77,7 @@
                 </div>
                 <div class="filter-component">
                     <div class="box drop" name="filter-status" ng-controller="dropdown">
-                        <div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                             <span class="drop-component-text">All Status</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </div>
@@ -140,17 +140,17 @@
         <div class="box" ng-class="{'bg-warning': (post.status == -2), 'bg-danger': (post.status == 0), 'bg-success': (post.status == 1), 'with-footer': (! post.status && post.reason), 'tbls-loading': post.loading }">
             <div class="tbls-row">
                 <div class="tbls-col-1"><input type="checkbox" ng-click="onCheck(post)" ng-checked="post.checked"></div>
-                <div class="tbls-col-3"><a href="<% post.user_url %>"><% post.user %></a></div>
+                <div class="tbls-col-3"><a href="<@ post.user_url @>"><@ post.user @></a></div>
                 <div class="tbls-col-xl">
                     <div class="tbls-title-box">
-                        <figure class="tbls-thumbnail" ng-if="post.image"><img ng-src="<% post.image %>"></figure>
+                        <figure class="tbls-thumbnail" ng-if="post.image"><img ng-src="<@ post.image @>"></figure>
                         <div class="tbls-title">
                             <div>
-                                <article><% post.title %></article>
+                                <article><@ post.title @></article>
                                 <footer>
-                                    <a>Change Title</a>
+                                    <a ng-click="setEditor(post, 'title')">Change Title</a>
                                     <a>View</a>
-                                    <a>Edit Detail</a>
+                                    <a ng-click="setEditor(post, post.post_type)" ng-if="post.post_type == 'article' || post.post_type == 'listicle'">Edit Detail</a>
                                 </footer>
                             </div>
                             <div class="tbls-tags">
@@ -163,15 +163,15 @@
                     </div>
                 </div>
                 <div class="tbls-col-3">
-                    <% post.channel %>
+                    <@ post.channel @>
                     <div><a>Edit</a></div>
                 </div>
-                <div class="tbls-col-3"><% post.post_type %></div>
-                <div class="tbls-col-3"><% post.views %></div>
-                <div class="tbls-col-3"><% post.shares || 0 %></div>
-                <div class="tbls-col-3"><% post.embeds || 0 %></div>
+                <div class="tbls-col-3"><@ post.post_type @></div>
+                <div class="tbls-col-3"><@ post.views @></div>
+                <div class="tbls-col-3"><@ post.shares || 0 @></div>
+                <div class="tbls-col-3"><@ post.embeds || 0 @></div>
                 <div class="tbls-col-3">
-                    <p><% post.created %></p>
+                    <p><@ post.created @></p>
                     <div><a>Edit</a></div>
                 </div>
                 <div class="tbls-col-2 tbls-btn-group">
@@ -189,7 +189,7 @@
             </div>
 
             <footer class="tbls-footer" ng-show="!post.status && post.reason">
-                <p>Rejected: <strong><% post.reason %></strong> <a>Change Reason</a></p>
+                <p>Rejected: <strong><@ post.reason @></strong> <a>Change Reason</a></p>
             </footer>
         </div>
     </div>
@@ -203,7 +203,7 @@
             <div class="filters">
                 <div class="filter-component">
                     <div class="box drop drop-large" name="filter-dateRange" ng-controller="dropdown">
-                        <div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                             <span class="drop-component-text">All Time</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </div>
@@ -229,7 +229,7 @@
                 </div>
                 <div class="filter-component" ng-if="controller != 'moderated'">
                     <div class="box drop" name="filter-status" ng-controller="dropdown">
-                        <div class="drop-component <% openList ? 'drop-open' : '' %>" ng-click="openList = (openList ? false : true)">
+                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                             <span class="drop-component-text">All Status</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </div>
@@ -298,12 +298,28 @@
                 <p ng-if="type == 'text' || type == 'delete'" ng-bind-html="text"></p>
             </article>
             <footer class="mdl-footer">
-                <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()"><% okText || 'Yes' %></a>
-                <a ng-click="closeCallback ? callback(closeCallback) : close()"><% cancelText || 'No' %></a>
+                <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()"><@ okText || 'Yes' @></a>
+                <a ng-click="closeCallback ? callback(closeCallback) : close()"><@ cancelText || 'No' @></a>
             </footer>
 
             <a class="mdl-close" ng-click="close()">&times;</a>
         </div>
     </div>
 </script>
+
+<script id="editorModal" type="text/ng-template">
+    <div class="mdl mdl-popup mdl-open">
+        <div class="mdl-component">
+            <article class="mdl-body">
+                <ng-include src="src.editor"></ng-include>
+            </article>
+            <footer class="mdl-footer">
+            </footer>
+
+            <a class="mdl-close" ng-click="close()">&times;</a>
+        </div>
+    </div>
+</script>
+
+
 @endsection

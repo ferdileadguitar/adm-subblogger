@@ -1,0 +1,217 @@
+<div class="main-container" data-app="editors" ng-controller="editorController" ng-cloak>
+  <div class="editor-wrapper">
+    <header class="editor-top"><h2>Post Listicle</h2></header>
+
+    <div class="editor-container" data-editor="editorListicle">
+      <header class="editor-image">
+        <div class="fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>" droppable>
+          <div class="helper">
+            <div class="helper_text">
+              <i class="keepo-icon icon-photo"></i>
+              <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>
+
+              <div class="from_url hidden"><input type="text" id="image-url" placeholder="or get image from URL"><a class="keepo-btn light-btn01 get-image" ng-click="getImage(this)"><i class="icon-cloud-download"></i> Get Image</a></div>
+
+              <div class="input-file"><input type="file" name="file" class="file-upload" data-id="cover_picture"></div>
+            </div>
+          </div>
+
+          <span class="drop_target" title="Click to browse or drag and drop the cover picture here" ng-click="browseFile($event)"></span>
+
+          <div class="preview" ng-show="data.image.id">
+            <img ng-src="<@ data.image.url @>" alt="<@ data.image.name @>">
+            <a class="remove-preview" ng-click="removePreview($event)"><i class="keepo-icon icon-cancel"></i></a>
+          </div>
+
+          <input type="hidden" name="fid" value="<@ data.image.id @>" ng-if="data.image.id">
+          <input type="hidden" name="fn" value="<@ data.image.name @>" ng-if="data.image.name">
+        </div>
+      </header>
+      <!-- end of .editor-image -->
+
+      <div class="editor-body">
+        <header class="eb-header">
+          <h1 id="editor-title" class="eb-title">Listicle</h1>
+          <h2 id="editor-lead" class="eb-lead"><@ data.lead @></h2>
+        </header>
+        <!-- end of .eb-header -->
+
+        <div id="editor-content" class="eb-article text" ondrop="return false;" ng-bind-html="data.content"></div>
+        <!-- end of .eb-article -->
+
+        <div class="eb-listicle" ng-controller="listicleController">
+          <header class="eb-listicle-options options">
+            <span class="option <@ listicleOption == 'ordinal' ? 'active' : '' @>" ng-click="setOrder($event, 'ordinal')">Ordinal (1,2,3)</span>
+            <span class="option <@ listicleOption == 'reverse' ? 'active' : '' @>" ng-click="setOrder($event, 'reverse')">Reverse (3,2,1)</span>
+            <span class="option <@ listicleOption == 'points' ? 'active' : '' @>" ng-click="setOrder($event, 'points')">Point</span>
+          </header>
+
+          <div class="eb-listicle-list">
+            <div class="eb-listicle-separator"><div></div><span class="eb-listicle-separator-trigger" ng-click="addItem($event)"><i class="icon-cancel"></i></span></div>
+            <!-- end of .eb-listicle-separator -->
+
+            <div class="eb-listicle-item <@ item.class @>" ng-repeat-start="item in listicleItems">
+              <span class="listicle-item-numbers lin-<@ listicleOption @>"><@ item.order @>.</span>
+
+              <header class="listicle-item-header">
+                <header class="listicle-item-title-holder">
+                  <h2 class="listicle-item-title"><@ item.title @></h2>
+
+                  <a class="listicle-item-remove" ng-click="removeItem($event)"><i class="icon-cancel"></i></a>
+                </header>
+                <!-- end of .listicle-item-title-holder -->
+
+                <div class="listicle-item-image">
+                  <div class="fileupload-pool drop <@ item.image_str ? 'on-preview' : '' @>" droppable>
+                    <div class="helper">
+                      <div class="helper_text">
+                        <i class="keepo-icon icon-photo"></i>
+                        <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture</span>
+
+                        <div class="from_url video-image hidden"><i class="icon-gallery i-vi"></i> <i class="icon-video i-vi"></i> <input type="text" id="image-url" placeholder="put image or video URL"><a class="keepo-btn light-btn01 get-image" ng-click="getImage($event)"><i class="icon-cloud-download"></i> Add</a></div>
+
+                        <div class="input-file"><input type="file" name="file" class="file-upload" data-id="cover_picture"></div>
+                      </div>
+                    </div>
+
+                    <span class="drop_target" title="Click to browse or drag and drop the cover picture here"  ng-click="browseFile($event)"></span>
+
+                    <div class="preview" ng-show="item.image_str">
+                      <img ng-src="<@ item.image_str @>" alt="">
+                      <a class="remove-preview" ng-click="removeItemPreview($event)"><i class="keepo-icon icon-cancel"></i></a>
+                    </div>
+
+                    <input type="hidden" name="fn" value="<@ item.image_str @>" ng-if="item.image_str">
+                    <input type="hidden" name="fid" value="<@ item.image_id @>" ng-if="item.image_id"/>
+                  </div>
+                </div>
+                <!-- end of .listicle-item-image -->
+              </header>
+              <!-- end of .listicle-item-header -->
+              <div class="listicle-item-content text" ondrop="return false;" ng-bind-html="item.content"></div>
+              <!-- end of .listicle-item-content -->
+            </div>
+            <!-- end of .eb-listicle-item -->
+
+            <div class="eb-listicle-separator" ng-repeat-end><div></div><span class="eb-listicle-separator-trigger" ng-click="addItem($event, 'middle')"><i class="icon-cancel"></i></span></div>
+          </div>
+          <!-- end of .eb-listicle-list -->
+        </div>
+        <!-- end of .eb-listicle -->
+
+        <footer class="eb-footer">
+          <div class="eb-footer-tags eb-footer-components">
+            <tags-input ng-model="tags">
+              <auto-complete source="loadTags($query)"></auto-complete>
+            </tags-input>
+          </div>
+
+          <div class="eb-footer-source eb-footer-components">
+            <input class="components" type="text" name="source" placeholder="Source http://" ng-model="data.source">
+          </div>
+
+          <div class="eb-footer-category eb-footer-components">
+            <div class="eb-category components"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class="icon-down"></i></div>
+
+            <ul class="eb-category-list">
+              <li ng-click="setChannel($event, 'hobbies-channel')">Art &amp; Design</li>
+              <li ng-click="setChannel($event, 'animals-channel')">Cute</li>
+              <li ng-click="setChannel($event, 'creepy-channel')">Creepy</li>
+              <li ng-click="setChannel($event, 'entertainments-channel')">Entertainments</li>
+              <li ng-click="setChannel($event, 'facts-channel')">Facts &amp; History</li>
+              <li ng-click="setChannel($event, 'anime-comic-channel')">Games, Comic &amp; Anime</li>
+              <li ng-click="setChannel($event, 'inspirational-channel')">Inspirational</li>
+              <li ng-click="setChannel($event, 'lifestyle-channel')">Lifestyle</li>
+              <li ng-click="setChannel($event, 'fun-humor-channel')">Fun &amp; Humor</li>
+              <!-- <li ng-click="setChannel($event, 'meme-channel')">Meme</li> -->
+              <li ng-click="setChannel($event, 'news-info-channel')">News &amp; Info</li>
+              <li ng-click="setChannel($event, 'nsfw-channel')">NSFW</li>
+              <li ng-click="setChannel($event, 'wtf-channel')">WTF!</li>
+              <li ng-click="setChannel($event, 'sports-channel')">Sports</li>
+              <li ng-click="setChannel($event, 'tech-channel')">Tech</li>
+              <li ng-click="setChannel($event, 'travelling-channel')">Travelling</li>
+              <li ng-click="setChannel($event, 'unique-weird-channel')">Unique &amp; Weird</li>
+            </ul>
+          </div>
+
+
+          <footer class="eb-footer-notice">
+            <p>Untuk menjaga kualitas konten di Keepo per Maret 2016 setiap postingan akan melewati proses moderasi. Hanya issue terbaik yang menghibur dan antiboring yang bisa masuk di feeds Keepo. Sekalipun tidak lolos proses moderasi kamu tetap bisa melihat postingan kamu di menu "<a href="[[ url($uInfo->slug . '/my-issues') ]]">My Post</a>".</p>
+          </footer>
+        </footer>
+        <!-- end of .eb-footer -->
+      </div>
+      <!-- end of .editor-body -->
+    </div>
+    <!-- end of .editor-container -->
+  </div>
+  <!-- end of .editor-wrapper -->
+
+
+  <footer class="editor-bottom">
+    <span class="helper" ng-if="saveMessage"><@ saveMessage @></span>
+    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="cancelClick()">Cancel</a>
+    @if (empty($post) || ($post->status == -1))
+    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="saveDraft()">Save (to Draft)</a>
+    @endif
+    <a class="keepo-btn rounded-btn animate-btn default-btn01" ng-click="saveClick()">Post</a>
+  </footer>
+  <!-- end of .editor-bottom -->
+
+  <div class="editor-loading">
+    <div id="loader" class="overlay-loader">
+      <div class="loader-background color-flip"></div>
+      <img class="loader-icon spinning-cog" src="[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]" data-cog="cog01">
+    </div>
+  </div>
+  <!-- end of .editor-loading -->
+
+  <div class="editor-message-wrapper" ng-if="message">
+    <div class="editor-message">
+      <header><span><@ message.success ? 'Waiting for moderation' : 'Whoops! Something went wrong :(' @></span><a ng-if="message.error" ng-click="closeMessage($event)"><i class="keepo-icon icon-cancel"></i></a></header>
+      <div class="editor-message-container editor-message-default" ng-if="message.error">
+        <p><@ message.error @></p>
+      </div>
+
+      <div class="editor-message-container editor-message-moderation" ng-if="message.success">
+        <p>Makasih ya Dek sudah bikin konten di Keepo.</p>
+        <p>Cuma konten yang tarbaik dan menghibur yang bisa tampil di Keepo, jadi postingan adek bakalan di-review dalam waktu max 24 jam.</p>
+        <p>Silahkan cek my post dan pilih filter <strong>"unpublished"</strong> untuk melihat status postingan kamu.</p>
+
+        <p style="margin-top:30px;"><a class="keepo-btn rectangle-btn default-btn01" href="[[ url($uInfo->slug . '/my-issues') ]]">Lihat Postingan Saya</a></p>
+      </div>
+    </div>
+  </div>
+  <!-- end of .editor-message-wrapper -->
+
+  @if (@$post)
+  <script type="text/template" id="title-template">{!! html_entity_decode($post->title, ENT_QUOTES) !!}</script>
+  <script type="text/template" id="content-template">{!! json_encode(preg_replace('~\r\n+|\r+|\n+|\t+~ixu', '', $post->content)) !!}</script>
+  <script>
+  	window.editorData = {
+  		title     : document.getElementById('title-template').innerHTML,
+  		lead 		  : '[[ $post->lead ]]',
+      content   : jQuery.parseJSON(document.getElementById('content-template').innerHTML),
+  		source 		: '[[ $post->source ]]',
+  		channel 	: {slug: '[[ $post->channel["slug"] ]]', name: '[[ $post->channel["title"] ]]'},
+  		tags 		  : <?php if (! empty($post->tag)): ?>[{!! $post->tag !!}] <?php else: ?>void 0<?php endif; ?>,
+      status    : Number('[[ $post->status ]]'),
+  		slug 		  : '[[ $post->slug ]]'
+  	};
+
+    @if (@$post->objectFile->id)
+    window.editorData.image = {
+      id: [[ @$post->objectFile->id ]],
+      url: '[[ @$post->objectFile->full_path ]]',
+      name: '[[ @$post->objectFile->file_name ]]'
+    };
+    @endif
+
+    window.listicle = {
+      sort: '{!! @$post->listicle["sort"] !!}',
+      models: {!! @$post->listicle['models'] !!}
+    };
+  </script>
+  @endif
+  <script>window.user = '[[ $uInfo->slug ]]';</script>
+</div>

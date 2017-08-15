@@ -1,7 +1,5 @@
-<div class="main-container" data-app="editors">
+<div class="main-container" editor-article>
   <div class="editor-wrapper">
-    <header class="editor-top"><h2>Post Article</h2></header>
-
     <div class="editor-container" data-editor="article">
       <header class="editor-image">
         <div class="fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>" droppable>
@@ -9,9 +7,6 @@
             <div class="helper_text">
               <i class="keepo-icon icon-photo"></i>
               <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>
-
-              <div class="from_url hidden"><input type="text" id="image-url" placeholder="or get image from URL"><a class="keepo-btn light-btn01 get-image" ng-click="getImage(this)"><i class="icon-cloud-download"></i> Get Image</a></div>
-
               <div class="input-file"><input type="file" name="file" class="file-upload" data-id="cover_picture"></div>
             </div>
           </div>
@@ -73,11 +68,6 @@
               <li ng-click="setChannel($event, 'unique-weird-channel')">Unique &amp; Weird</li>
             </ul>
           </div>
-
-
-          <footer class="eb-footer-notice">
-            <p>Untuk menjaga kualitas konten di Keepo per Maret 2016 setiap postingan akan melewati proses moderasi. Hanya issue terbaik yang menghibur dan antiboring yang bisa masuk di feeds Keepo. Sekalipun tidak lolos proses moderasi kamu tetap bisa melihat postingan kamu di menu "<a href="[[ url($uInfo->slug . '/my-issues') ]]">My Post</a>".</p>
-          </footer>
         </footer>
         <!-- end of .eb-footer -->
       </div>
@@ -89,35 +79,15 @@
 
 
   <footer class="editor-bottom">
-    <span class="helper" ng-if="saveMessage"><@ saveMessage @></span>
     <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="cancelClick()">Cancel</a>
-    @if (empty($post) || ($post->status == -1))
-    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="saveDraft()">Save (to Draft)</a>
-    @endif
-    <a class="keepo-btn rounded-btn animate-btn default-btn01" ng-click="saveClick()">Post</a>
+    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="saveDraft()">Save</a>
   </footer>
   <!-- end of .editor-bottom -->
 
   <div class="editor-loading">
     <div id="loader" class="overlay-loader">
       <div class="loader-background color-flip"></div>
-      <img class="loader-icon spinning-cog" src="[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]" data-cog="cog01">
-    </div>
-  </div>
-  <!-- end of .editor-loading -->
-
-  <div class="editor-message-wrapper" ng-if="message">
-    <div class="editor-message">
-      <header><span><@ message.success ? 'Waiting for moderation' : 'Whoops! Something went wrong :(' @></span><a ng-if="message.error" ng-click="closeMessage($event)"><i class="keepo-icon icon-cancel"></i></a></header>
-      <div class="editor-message-container editor-message-default" ng-if="message.error" ng-bind-html="message.error"></div>
-
-      <div class="editor-message-container editor-message-moderation" ng-if="message.success">
-        <p>Makasih ya Dek sudah bikin konten di Keepo.</p>
-        <p>Cuma konten yang tarbaik dan menghibur yang bisa tampil di Keepo, jadi postingan adek bakalan di-review dalam waktu max 24 jam.</p>
-        <p>Silahkan cek my post dan pilih filter <strong>"unpublished"</strong> untuk melihat status postingan kamu.</p>
-
-        <p style="margin-top:30px;"><a class="keepo-btn rectangle-btn default-btn01" href="[[ url($uInfo->slug . '/my-issues') ]]">Lihat Postingan Saya</a></p>
-      </div>
+      <!-- <img class="loader-icon spinning-cog" src="[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]" data-cog="cog01"> -->
     </div>
   </div>
 </div>

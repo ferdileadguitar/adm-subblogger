@@ -1,11 +1,19 @@
-// SCSS
-// ------------------------------------------------------------------------
+import { css }  from '../scss/main.scss';
+import MainApp  from './app';
+import joii     from 'joii';
 
-require('../scss/main.scss');
+/*TEMPLATES*/
+import mdl_editor from './modules/template/mdl-editor.html';
+import article    from './modules/template/editor-article.html';
+import listicle   from './modules/template/editor-listicle.html';
+import title      from './modules/template/editor-title.html';
+
+/*DIRECTIVE*/
+import articleDirective  from './modules/directive/article.directive.js';
+// import listicleDirective from './modules/directive/listicle.directive.js';
 
 // APP
 // ------------------------------------------------------------------------
-
 require(['./app.js', 'joii'], function(MainApp, joii) {
 	'use strict';
 
@@ -265,15 +273,19 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 			// Startup module
 			// ------------------------------------------------------------------------
 			
-			this.application.run(function($rootScope) {
+			this.application.run(function($rootScope, $templateCache) {
 				// Implement underscore to rootScope
 		        $rootScope._ = _;
+
+		        $templateCache.put('article.html', article);
+		        $templateCache.put('listicle.html', listicle);
+		        $templateCache.put('title.html', title);
 			});
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
 
 		directive: function() {
-			this.application.directive('feeds', ['$compile', 'appService', function($compile, appService) {
+			this.application.directive('feeds', ['$compile', '$rootScope', 'appService', function($compile, $rootScope, appService) {
 				return {
 					restrict: 'E',
 					replace: true,
@@ -281,6 +293,8 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
                     controller: function ($scope, appService) {
                     },
                     link: function($scope, $elements, $attrs) {
+                    	$scope.post = {};
+
                     	$scope.convertTags = function(tags) {
                     		return (tags && tags.length) ? _.map(tags, function(tag) { return tag.title; }).join(', ') : '<em>No tag available</em>';
                     	};
@@ -314,12 +328,14 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 							appService.appContext.setPremium(post, (!post.is_premium ? 1 : 0), $scope);
 						};
 
-						$scope.changeTitle = function(data) {
-							angular.element('body').append($compile('<editor-modal></editor-modal>')($scope));
+						$scope.setEditor = function(post, type) {
+							appService.modalEditor($scope, {
+								data : post,
+								type : type
+							});
+
+							$rootScope.$broadcast('mdl_data', 'test data send');
 						};
-						// Local methods
-						// ------------------------------------------------------------------------
-						
 						
                     }
 				};
@@ -369,31 +385,30 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 				};
 			}]);
 
-			this.application.directive('editorModal', ['appService', function(appService) {
+			this.application.directive('modalEditor', ['appService', function(appService) {
 				return {
 					restrict    : 'E',
 					replace     :  true,
-					templateUrl : 'editorModal',
-					link     : function($scope, $attrs, $element) {
-						// console.log( $scope, feeds );
+					template    : mdl_editor,
+					controller  : function($scope, $element, $rootScope) {
+					// link     : function($scope, $element, $attrs) {
 						$scope.src = {
-							editor : '../src/js/modules/directive/editor-article.html'
+							layout : $scope.type + '.html'
 						};
-						console.log( $scope, self, appService );
+
+						$scope.close = function() {
+							$scope.$destroy();
+						};
+
+						$scope.$on('$destroy', function() {  
+							$element.remove();
+						});
 					}	
 
 				}
 			}]);
-			// this.application.directive('body', ['appService', '$compile', function(appService, $compile) {
-			// 	return {
-			// 		restrict: 'E',
-			// 		replace: true,
-			// 		controller: function($scope, $element) {
-			// 			var asd = $compile('<testdir></testdir>')($scope);
-			// 			$element.find('#asd').append(asd);
-			// 		}
-			// 	};
-			// }]);
+
+			this.application.directive('editorArticle', articleDirective);
 		},
 
 		allController: function($scope, $attrs, appService) {

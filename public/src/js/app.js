@@ -1,8 +1,11 @@
 // SCSS
 // ------------------------------------------------------------------------
 
-
-
+// import { joii } from 'joii';
+// import $ from 'jQuery';
+// import { underscore } from 'underscore';
+// import { angular } from 'angular';
+// import {angular-sanitize 
 // APP
 // ------------------------------------------------------------------------
 
@@ -16,8 +19,8 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 		__construct: function() {
 			this.baseURL = window.baseURL;
 			this.application = angular.module('keepoApp', ['ngSanitize'], function($interpolateProvider) {
-		        $interpolateProvider.startSymbol('<%');
-		        $interpolateProvider.endSymbol('%>');
+		        $interpolateProvider.startSymbol('<@');
+		        $interpolateProvider.endSymbol('@>');
 		    });
 
 		    this.application.config([
@@ -69,7 +72,8 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 					delete: remove,
 					cancel: cancel,
 
-					modal: modal
+					modal: modal,
+					modalEditor: modalEditor
 				};
 
 				// ------------------------------------------------------------------------
@@ -165,6 +169,13 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 					Object.assign(scope, params);
 					
 					angular.element('body').append($compile('<modal></modal>')(scope));
+				}
+
+				function modalEditor(scope, params) {
+					scope               = scope.$new(true);
+					Object.assign(scope, params);
+					
+					angular.element('body').append($compile('<modal-editor></modal-editor>')(scope));	
 				}
 			}]);
 		},
