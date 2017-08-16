@@ -45,7 +45,7 @@
             <input class="components" type="text" name="source" placeholder="Source http://" ng-model="data.source">
           </div>
 
-          <div class="eb-footer-category eb-footer-components">
+          <div class="eb-footer-category eb-footer-components" ng-click="openCategory($event)">
             <div class="eb-category components"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class="icon-down"></i></div>
 
             <ul class="eb-category-list">
@@ -77,10 +77,11 @@
   </div>
   <!-- end of .editor-wrapper -->
 
-
-  <footer class="editor-bottom">
-    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="cancelClick()">Cancel</a>
-    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="saveDraft()">Save</a>
+  <footer class="editor-bottom mdl-footer">
+      <div class="wrap-footer_btn">
+        <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
+        <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
+      </div>
   </footer>
   <!-- end of .editor-bottom -->
 

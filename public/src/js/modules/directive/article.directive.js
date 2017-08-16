@@ -1,25 +1,16 @@
 import helper from './../library/helper.js';
 import MediumEditor from './../../vendor/medium/medium-editor.js';
-import 'imports-loader?$=jquery!jquery-sortable';
-import 'imports-loader?$=jquery!blueimp-file-upload';
-import activateInsertPlugin from 'medium-editor-insert-plugin-webpack';
+import mediumInsert from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
 
 class ArticleEditors {
 
 	constructor($timeout, $http) {
 		this.restrict = 'AE';
-		// this.scope    = {};
-		// this.require  = 'modalEditor';
-		// console.log( this );
 	}
 
 	controller($scope, $element, $attrs, $timeout, $rootScope) {
 		var editors = {title: void 0, lead: void 0, content: void 0};
-
-		$rootScope.$on('mdl_data', function (events, data) {
-		  console.log(data); // 'Data to send'
-		});
-		
+			
 		$scope.tempSave  = void 0;
 		$scope.message   = void 0;
 		$scope.tags      = [];
@@ -162,92 +153,108 @@ class ArticleEditors {
 			$scope.message = void 0;
 		};
 
+		$scope.openCategory = function($event) {
+			var $el = $($event.currentTarget || $event.srcElement);
+
+			$el.find('.eb-category-list').toggleClass('open');
+		}
+
 		// ------------------------------------------------------------------------
-		// $timeout(function() {
-		// 	// Title
-		// 	var editor = new MediumEditor();
-		// 	activateInsertPlugin($);
+		$timeout(function() {
+			// Title
 
-		// 	if ($element.find('.eb-title').length) {
-		// 		var titleEditor = new $this.titleEditorApp($element.find('.eb-title'), {
-		// 			placeholder: 'Title'
-		// 		});
+			if ($element.find('.eb-title').length) {
+				var titleEditor = new $this.titleEditorApp($element.find('.eb-title'), {
+					placeholder: 'Title'
+				});
 
-		// 		editors.title = titleEditor;
-		// 	}
+				editors.title = titleEditor;
+			}
 
-		// 	// Lead
-		// 	if ($element.find('.eb-lead').length) {
-		// 		var titleEditor = new $this.titleEditorApp($element.find('.eb-lead'), {
-		// 			placeholder: 'Subtitle: it will be shown in feed'
-		// 		});
+			// Lead
+			if ($element.find('.eb-lead').length) {
+				var titleEditor = new $this.titleEditorApp($element.find('.eb-lead'), {
+					placeholder: 'Subtitle: it will be shown in feed'
+				});
 
-		// 		editors.lead = titleEditor;
-		// 	}
+				editors.lead = titleEditor;
+			}
 
-		// 	// Content
-		// 	if ($element.find('.eb-article').length) {
-		// 		var contentEditor = new MediumEditor('#editor-content', {
-		// 			toolbar: {
-		// 				buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
-		// 			},
-		// 			paste: {
-		// 				cleanPastedHTML: true,
-		// 				cleanTags: ["meta", "script", "style", "label"]
-		// 			},
-		// 			placeholder: {
-		// 				text: 'Write your content here ------- block the text to show text tool'
-		// 			}
-		// 		});
+			// Content
+			if ($element.find('.eb-article').length) {
+				var contentEditor = new MediumEditor('#editor-content', {
+					toolbar: {
+						buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
+						// static : true,
+						// sticky : false
+					},
+					paste: {
+						cleanPastedHTML: true,
+						cleanTags: ["meta", "script", "style", "label"]
+					},
+					placeholder: {
+						text: 'Write your content here ------- block the text to show text tool'
+					},
+					elementsContainer : document.querySelector('.editor-body'),
+					// static : true
+					// relativeContainer: 'relative',
 
-		// 		$('#editor-content').mediumInsert(
-		// 		{
-		// 	        editor: contentEditor,
-		// 	        addons: {
-		// 	        	images: {
-		// 	        		deleteScript: null,
-		// 	        		autoGrid: 0,
-		// 	        		fileUploadOptions: {
-		// 	        			url: self.uploadCoverUrl+"?type=body",
-		// 	        		},
-		// 	        		styles: {
-		// 	        		    wide: { label: '<span class="icon-align-justify"></span>' },
-		// 	        		    left: null,//{ label: '<span class="icon-align-left"></span>' },
-		// 	        		    right: { label: '<span class="icon-align-right"></span>' },
-		// 	        		    grid: null
-		// 	        		}
-		// 	        	},
-		// 	        	embeds: {
-		// 	        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
-  //       					oembedProxy: '',
-		// 	        		styles: {
-		// 	        		    wide: null,
-		// 	        		    left: null,
-		// 	        		    right: null
-		// 	        		}
-		// 	        	},
-		// 	        	embeds: {
-		// 	        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
-  //       					oembedProxy: '',
-		// 	        		styles: {
-		// 	        		    wide: null,
-		// 	        		    left: null,
-		// 	        		    right: null
-		// 	        		}
-		// 	        	},
-		// 	        }
-		// 	    });
+				});
 
-		// 		editors.content = contentEditor;
-		// 	}
+				mediumInsert($);
+				$('#editor-content').mediumInsert(
+				{
+			        editor: contentEditor,
+			        addons: {
+			        	images: {
+			        		deleteScript: null,
+			        		autoGrid: 0,
+			        		fileUploadOptions: {
+			        			url: self.uploadCoverUrl+"?type=body",
+			        		},
+			        		styles: {
+			        		    wide: { label: '<span class="icon-align-justify"></span>' },
+			        		    left: null,//{ label: '<span class="icon-align-left"></span>' },
+			        		    right: { label: '<span class="icon-align-right"></span>' },
+			        		    grid: null
+			        		},
 
-		// 	// ------------------------------------------------------------------------
+			        	},
+			        	embeds: {
+			        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
+        					oembedProxy: '',
+			        		styles: {
+			        		    wide: null,
+			        		    left: null,
+			        		    right: null
+			        		}
+			        	},
+			        	embeds: {
+			        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
+        					oembedProxy: '',
+			        		styles: {
+			        		    wide: null,
+			        		    left: null,
+			        		    right: null
+			        		}
+			        	},
+			        }
+			    });
+				console.log( $('#editor-content').mediumInsert() );
+			    // $('#editor-content').mediumInsert('options', {
+		     //    	elementsContainer : 'head'
+			    // });
 
-		// 	// Set window.onbeforeunload (Simple, too lazy to check whether the content has been changed :P)
-		// 	window.onbeforeunload = function() {
-		// 		return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
-		// 	};
-		// }, 50);
+				editors.content = contentEditor;
+			}
+
+			// ------------------------------------------------------------------------
+
+			// Set window.onbeforeunload (Simple, too lazy to check whether the content has been changed :P)
+			window.onbeforeunload = function() {
+				return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
+			};
+		}, 50);
 	}
 }
 export default ArticleEditors;

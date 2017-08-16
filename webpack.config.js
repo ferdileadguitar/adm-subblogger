@@ -4,8 +4,6 @@ const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const WatchLiveReloadPlugin = require('webpack-watch-livereload-plugin');
 
-// console.log( path.resolve(__dirname, "./src/scss") );
-
 let ROOT_PATH = path.resolve(__dirname),
 	APP_PATH  = path.resolve(ROOT_PATH, 'public'),
 	BUILD_PATH= path.resolve(APP_PATH, 'dist');
@@ -15,7 +13,7 @@ module.exports = {
 	entry: {
 		login: ["./src/js/app.js", "./src/js/login.js"],
 		content: ["./src/js/app.js", "./src/js/content.js"],
-		vendor: ["jquery", "underscore", "angular", "angular-sanitize", "joii"],
+		vendor: ["underscore", "angular", "angular-sanitize", "joii"],
 	},
 	output: {
 		path    : BUILD_PATH,
@@ -45,8 +43,9 @@ module.exports = {
                 test: /\.(eot|ttf|woff|woff2)$/,
                 loader: 'file-loader',
                 options : {
-                	name : '../../fonts/[name].[ext]',
-                	emitFile : false
+                	name : '[name].[ext]',
+                	emitFile : false,
+                	useRelativePath : true
                 }
             },
             { 
@@ -59,7 +58,7 @@ module.exports = {
                 } 
             },
 			{
-				test : /\.js$/,
+				test    : /\.js$/,
 				exclude : /node_modules/,
 			},
 			{	
@@ -68,6 +67,24 @@ module.exports = {
 				use: [ 'html-loader' ]
 			}
 		],
+	},
+	resolve : {
+		extensions: [".js"],
+		alias : {
+			/*Fuck with this comrs from medium editor plugins, i will fix it soon*/
+			'handlebar'       : path.resolve(__dirname, './public/src/js/vendor/medium/handlebars.runtime.js'),
+			'mediumEditor'    : path.resolve(__dirname, './public/src/js/vendor/medium/medium-editor.js'),
+			'jquerySortable'  : path.resolve(__dirname, './public/src/js/vendor/medium/jquery-sortable.js'),
+
+			'blueimpUpload'   						    	: path.resolve(__dirname, './public/src/js/vendor/bluimp-upload/jquery.fileupload.js'),
+			'vendor/bluimp-upload/jquery.ui.widget' 		: path.resolve(__dirname, './public/src/js/vendor/bluimp-upload/jquery.ui.widget.js'),
+			'vendor/medium/handlebars.runtime' 				: path.resolve(__dirname, './public/src/js/vendor/medium/handlebars.runtime.js'),
+			'vendor/medium/medium-editor' 					: path.resolve(__dirname, './public/src/js/vendor/medium/medium-editor.js'),
+			'vendor/medium/jquery-sortable-min' 			: path.resolve(__dirname, './public/src/js/vendor/medium/jquery-sortable.js'),
+			'vendor/bluimp-upload/jquery.fileupload-ui'    	: path.resolve(__dirname, './public/src/js/vendor/bluimp-upload/jquery.fileupload-ui.js'),
+			'vendor/bluimp-upload/jquery.fileupload' 	   	: path.resolve(__dirname, './public/src/js/vendor/bluimp-upload/jquery.fileupload.js'),
+			'vendor/bluimp-upload/jquery.iframe-transport' 	: path.resolve(__dirname, './public/src/js/vendor/bluimp-upload/jquery.iframe.transport.js'),
+		}
 	},
 	plugins: [
 		new ExtractTextPlugin("css/[name].css"),
@@ -86,8 +103,8 @@ module.exports = {
 // npm install sass-resources-loader
 // npm install compass-mixins --save
 // npm install mixin-loader --save-dev
-// npm install ngtemplate-loader --save-dev
-// npm npm install ng-cache-loader --save-dev
+// *npm install ngtemplate-loader --save-dev
+// *npm npm install ng-cache-loader --save-dev
 
 // Exernal Plugin Support
 // npm install handlebars --save-dev

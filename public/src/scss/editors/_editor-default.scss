@@ -1,4 +1,6 @@
 @import "template";
+@import "fontello";
+
 
 // ==========================================================================
 // Variables
@@ -16,14 +18,35 @@ $defaultColor: #c2c1c6;
 
 .mdl {
 
-	.mdl-component { 
-		overflow: hidden;
-		max-width: 100%!important;
-		width: 100%;
-		height: 100%;
+	&.mdl-editor {
 
-		.mdl-body {
-			text-align: left!important;
+		.mdl-component { 
+			overflow: hidden;
+			max-width: 100%!important;
+			width: 80%;
+			height: 100%;
+
+			.mdl-body {
+				height: 100%;
+				text-align: left!important;
+				padding: 0 2em 2em!important;
+				margin-top: 50px;
+				overflow-y: scroll;
+			}
+
+			.mdl-footer {
+
+				.wrap-footer_btn {
+					width: 30%;
+					@include display-flex;
+					margin: 0 0 0 auto;
+
+					a {
+						width: 150px;
+						min-width: auto!important;
+					}
+				}
+			}
 		}
 	}
 }
@@ -31,12 +54,13 @@ $defaultColor: #c2c1c6;
 [ng-cloak] { display: none; }
 
 .editor-wrapper {
-	margin: 40px auto 0;
-	width: 900px;
+	margin: 0 auto;
+	width: 100%;
 }
 
 .editor-container {
 	padding-bottom: 100px;
+	/*padding-bottom: 0;*/
 
 	[contenteditable],
 	input:focus { outline: none; }
@@ -204,6 +228,7 @@ $defaultColor: #c2c1c6;
 	border: 1px solid $black-10;
 	border-top: none;
 	padding: 60px ((900px - 730) / 2) 100px;
+	position: relative;
 }
 
 .eb-header,
@@ -305,6 +330,10 @@ $defaultColor: #c2c1c6;
 		top: 100%;
 		width: 100%;
 		z-index: 100;
+
+		&.open {
+			display: block;
+		}	
 
 		li {
 			cursor: pointer;
