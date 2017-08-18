@@ -64,15 +64,24 @@ class Post extends Model
 	public static function cleanPaginate($take = 50)
 	{
 		$paginate         = self::$postData->paginate($take)->toArray();
-		
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
+			// dd( $post['image'] );
 			return [
 				// Post
 				'id'         => $post['id'],
 				'title'      => html_entity_decode($post['title'], ENT_QUOTES),
+				'lead'       => html_entity_decode($post['lead'], ENT_QUOTES),
+				'slug'       => str_slug($post['slug']),
 				'url'        => implode(['https://keepo.me', @$post['user']['username'], $post['slug']], '/'),
-				'image'      => preg_replace('/https?\:/', '', @$post['image']['full_path']),
-				'channel'    => html_entity_decode(@$post['channel']['title']),
+				'image'      => array(
+								'id' 	=>  @$post['image']['id'],
+								'url' 	=>  preg_replace('/https?\:/', '', @$post['image']['full_path']),
+								'name' 	=>  @$post['image']['fill_name']
+							),
+				'channel'    => array(
+								'slug'	=> str_slug(@$post['channel']['slug']),
+								'name' 	=> html_entity_decode(@$post['channel']['title'])
+							),
 				'post_type'  => $post['post_type'],
 				'status'     => $post['status'],
 				'views'      => $post['views'],
@@ -81,7 +90,8 @@ class Post extends Model
 				'created'    => date('d M Y H:i', strtotime($post['created_on'])),
 
 				//'reason'	 => 'Asd',
-				
+				'content'   => json_encode($post['content']),
+
 				'is_sticky'  => $post['sticky'],
 				'is_premium' => $post['premium'],
 				
