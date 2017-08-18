@@ -3,7 +3,11 @@
     <header class="editor-top"><h2>Change Title</h2></header>
   	
   	<article>
-  		<textarea ng-bind-html="data.title"></textarea>
+      <div class="eb-footer-tags eb-footer-components">
+        <tags-input ng-model="tags">
+          <auto-complete source="loadTags($query)"></auto-complete>
+        </tags-input>
+      </div>
   	</article>
 
   	<footer class="editor-bottom mdl-footer">

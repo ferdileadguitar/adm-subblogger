@@ -7,21 +7,23 @@ import mdl_editor from './modules/template/mdl-editor.html';
 import article    from './modules/template/editor-article.html';
 import listicle   from './modules/template/editor-listicle.html';
 import title      from './modules/template/editor-title.html';
+import tags       from './modules/template/editor-tags.html';
 
 /*DIRECTIVE*/
-import articleDirective  from './modules/directive/article.directive.js';
-// import listicleDirective from './modules/directive/listicle.directive.js';
+import articleDirective   from './modules/directive/article.directive.js';
+import listicleDirective  from './modules/directive/listicle.directive.js';
 
 // APP
 // ------------------------------------------------------------------------
-require(['./app.js', 'joii'], function(MainApp, joii) {
+require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 	'use strict';
-
+	// console.log( angularSanitize );
 	var App = joii.Class({ extends: MainApp }, {
 		init: function() {
 			var self = this;
 
 			// Application controller
+			// this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput']);
 			// ------------------------------------------------------------------------
 			
 			this.application.controller('app-controller', ['$scope', '$attrs', 'appService', 'tabService', function($scope, $attrs, appService, tabService) {
@@ -280,12 +282,13 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 		        $templateCache.put('article.html', article);
 		        $templateCache.put('listicle.html', listicle);
 		        $templateCache.put('title.html', title);
+		        $templateCache.put('tags.html', tags);
 			});
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
 
 		directive: function() {
-			this.application.directive('feeds', ['$compile', '$rootScope', 'appService', function($compile, $rootScope, appService) {
+			this.application.directive('feeds', ['$compile', '$rootScope', '$window', 'appService', function($compile, $rootScope, $window, appService) {
 				return {
 					restrict: 'E',
 					replace: true,
@@ -334,8 +337,13 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 								type : type
 							});
 
-							$rootScope.$broadcast('mdl_data', 'test data send');
+							$rootScope.$broadcast('mdl_data', post);
 						};
+
+						$scope.parseFeedsLink = function(post) {
+							console.log(post);
+							$window.open('http://localhost:8000/' + post.user + '/' + post.slug, '_blank');
+						}
 						
                     }
 				};
@@ -391,9 +399,10 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 					replace     :  true,
 					template    : mdl_editor,
 					controller  : function($scope, $element, $rootScope) {
-					// link     : function($scope, $element, $attrs) {
-						$scope.src = {
-							layout : $scope.type + '.html'
+						
+						$scope.layout = {
+							type : $scope.type,
+							url  : $scope.type + '.html'
 						};
 
 						$scope.close = function() {
@@ -408,7 +417,8 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 				}
 			}]);
 
-			this.application.directive('editorArticle', articleDirective);
+			this.application.directive('editorArticle',  articleDirective);
+			this.application.directive('editorListicle', listicleDirective);
 		},
 
 		allController: function($scope, $attrs, appService) {

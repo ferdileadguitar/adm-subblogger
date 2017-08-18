@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const WatchLiveReloadPlugin = require('webpack-watch-livereload-plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 let ROOT_PATH = path.resolve(__dirname),
 	APP_PATH  = path.resolve(ROOT_PATH, 'public'),
@@ -13,7 +13,7 @@ module.exports = {
 	entry: {
 		login: ["./src/js/app.js", "./src/js/login.js"],
 		content: ["./src/js/app.js", "./src/js/content.js"],
-		vendor: ["underscore", "angular", "angular-sanitize", "joii"],
+		vendor: ["underscore", "angular", "angular-sanitize", "joii", "ng-tags-input"],
 	},
 	output: {
 		path    : BUILD_PATH,
@@ -91,6 +91,13 @@ module.exports = {
 		new webpack.ProvidePlugin({jQuery: "jquery",$: "jquery","window.jQuery": "jquery"}),
 		new webpack.ProvidePlugin({"_": "underscore"}),
 		new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "js/vendor.js"}),
+		new BrowserSyncPlugin({
+	      host    : 'localhost',
+	      port    : 3000,
+	      // server  : { baseDir: ['public'] },
+	      proxy   : 'http://localhost:3000',
+	      // reload  : false
+	    })
 	],
 	watch: true
 }

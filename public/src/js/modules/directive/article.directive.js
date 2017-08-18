@@ -1,15 +1,21 @@
 import helper from './../library/helper.js';
 import MediumEditor from './../../vendor/medium/medium-editor.js';
+import BluimpFileUpload from './../service/bluimp-fileupload.service.js';
 import mediumInsert from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
 
 class ArticleEditors {
 
 	constructor($timeout, $http) {
-		this.restrict = 'AE';
+		this.restrict = 'A';
+		// this.require  = '^editorListicle';
+		// this.scope    = {
+		// 	data : '@'
+		// };
 	}
 
-	controller($scope, $element, $attrs, $timeout, $rootScope) {
-		var editors = {title: void 0, lead: void 0, content: void 0};
+	controller($scope, $element, $attrs, $timeout, $rootScope, $sce) {
+		var editors = {title: void 0, lead: void 0, content: void 0},
+		    $this = $.extend({}, helper);
 			
 		$scope.tempSave  = void 0;
 		$scope.message   = void 0;
@@ -33,10 +39,11 @@ class ArticleEditors {
 			slug		: void 0
 		};
 
-		$scope.data = $scope.$parent.data ? $.extend($scope.data, $scope.$parent.data) : $scope.data;
 		$scope.tags = $scope.data.tags;
-
-		var $this = $.extend({}, helper);
+		$scope.data = $scope.$parent.data ? angular.copy($scope.$parent.data) : $scope.data;
+		$scope.data.content = ($scope.data.content).replace('~\r\n+|\r+|\n+|\t+~ixu', '', $scope.data.content);
+		$scope.data.content = ($scope.data.post_type == 'article') ? $sce.trustAsHtml($.parseJSON($scope.data.content)) : angular.fromJson(JSON.parse($scope.data.content));
+		console.log( $scope );
 		// ------------------------------------------------------------------------
 
 		// Tags Autocomplete
@@ -54,11 +61,6 @@ class ArticleEditors {
 
 		}
 
-		// ------------------------------------------------------------------------
-
-		$scope.cancelClick = function(){
-			window.history.back();
-		};
 		// ------------------------------------------------------------------------
 
 		// Save
@@ -196,9 +198,6 @@ class ArticleEditors {
 						text: 'Write your content here ------- block the text to show text tool'
 					},
 					elementsContainer : document.querySelector('.editor-body'),
-					// static : true
-					// relativeContainer: 'relative',
-
 				});
 
 				mediumInsert($);
@@ -240,11 +239,6 @@ class ArticleEditors {
 			        	},
 			        }
 			    });
-				console.log( $('#editor-content').mediumInsert() );
-			    // $('#editor-content').mediumInsert('options', {
-		     //    	elementsContainer : 'head'
-			    // });
-
 				editors.content = contentEditor;
 			}
 

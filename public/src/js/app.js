@@ -1,15 +1,10 @@
 // SCSS
 // ------------------------------------------------------------------------
 
-// import { joii } from 'joii';
-// import $ from 'jQuery';
-// import { underscore } from 'underscore';
-// import { angular } from 'angular';
-// import {angular-sanitize 
 // APP
 // ------------------------------------------------------------------------
 
-require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], function(joii) {
+require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(joii, ngTagsInput) {
 	'use strict';
 
 	var MainApp = joii.Class({
@@ -18,7 +13,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'angular-sanitize'], functio
 
 		__construct: function() {
 			this.baseURL = window.baseURL;
-			this.application = angular.module('keepoApp', ['ngSanitize'], function($interpolateProvider) {
+			this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput'], function($interpolateProvider) {
 		        $interpolateProvider.startSymbol('<@');
 		        $interpolateProvider.endSymbol('@>');
 		    });

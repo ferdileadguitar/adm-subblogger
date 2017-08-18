@@ -30,7 +30,6 @@
           <h2 id="editor-lead" class="eb-lead"><@ data.lead @></h2>
         </header>
         <!-- end of .eb-header -->
-
         <div id="editor-content" class="eb-article text" ondrop="return false;" ng-bind-html="data.content"></div>
         <!-- end of .eb-article -->
 
@@ -58,7 +57,6 @@
               <li ng-click="setChannel($event, 'inspirational-channel')">Inspirational</li>
               <li ng-click="setChannel($event, 'lifestyle-channel')">Lifestyle</li>
               <li ng-click="setChannel($event, 'fun-humor-channel')">Fun &amp; Humor</li>
-              <!-- <li ng-click="setChannel($event, 'meme-channel')">Meme</li> -->
               <li ng-click="setChannel($event, 'news-info-channel')">News &amp; Info</li>
               <li ng-click="setChannel($event, 'nsfw-channel')">NSFW</li>
               <li ng-click="setChannel($event, 'wtf-channel')">WTF!</li>
@@ -78,17 +76,18 @@
   <!-- end of .editor-wrapper -->
 
   <footer class="editor-bottom mdl-footer">
-      <div class="wrap-footer_btn">
-        <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
-        <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
-      </div>
+    <div class="wrap-footer_btn">
+      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
+      <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
+    </div>
   </footer>
   <!-- end of .editor-bottom -->
 
   <div class="editor-loading">
     <div id="loader" class="overlay-loader">
       <div class="loader-background color-flip"></div>
-      <!-- <img class="loader-icon spinning-cog" src="[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]" data-cog="cog01"> -->
     </div>
   </div>
+  <@ data.content @>
+  <script type="text/template" id="content-template"><@ data.content @></script>
 </div>

@@ -143,27 +143,27 @@
                 <div class="tbls-col-3"><a href="<@ post.user_url @>"><@ post.user @></a></div>
                 <div class="tbls-col-xl">
                     <div class="tbls-title-box">
-                        <figure class="tbls-thumbnail" ng-if="post.image"><img ng-src="<@ post.image @>"></figure>
+                        <figure class="tbls-thumbnail" ng-if="post.image.url"><img ng-src="<@ post.image.url @>"></figure>
                         <div class="tbls-title">
                             <div>
-                                <article><@ post.title @></article>
+                                <article><@ post.title @> <@ post.post_type @></article>
                                 <footer>
                                     <a ng-click="setEditor(post, 'title')">Change Title</a>
-                                    <a>View</a>
-                                    <a ng-click="setEditor(post, post.post_type)" ng-if="post.post_type == 'article' || post.post_type == 'listicle'">Edit Detail</a>
+                                    <a ng-click="parseFeedsLink(post)" ng-if="(['quickpersonality', 'quicktrivia', 'quickpolling']).includes(post.post_type)">View</a>
+                                    <a ng-click="setEditor(post, post.post_type)" ng-if="(['article', 'listicle']).includes(post.post_type)">Edit Detail</a>
                                 </footer>
                             </div>
                             <div class="tbls-tags">
                                 <article ng-bind-html="convertTags(post.tags)"></article>
                                 <footer>
-                                    <a>Edit Tags</a>
+                                    <a ng-click="setEditor(post, 'tags')">Edit Tags</a>
                                 </footer>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="tbls-col-3">
-                    <@ post.channel @>
+                    <@ post.channel.name @>
                     <div><a>Edit</a></div>
                 </div>
                 <div class="tbls-col-3"><@ post.post_type @></div>
@@ -172,7 +172,7 @@
                 <div class="tbls-col-3"><@ post.embeds || 0 @></div>
                 <div class="tbls-col-3">
                     <p><@ post.created @></p>
-                    <div><a>Edit</a></div>
+                    <div><a ng-click="setEditor(post, 'timestamps')">Edit</a></div>
                 </div>
                 <div class="tbls-col-2 tbls-btn-group">
                     <div ng-hide="post.status == 2">

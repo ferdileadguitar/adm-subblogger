@@ -1,4 +1,4 @@
-<div class="main-container" data-app="editors" ng-controller="editorController" ng-cloak>
+<div class="main-container" data-app="editors" editor-article>
   <div class="editor-wrapper">
     <header class="editor-top"><h2>Post Listicle</h2></header>
 
@@ -29,9 +29,9 @@
       </header>
       <!-- end of .editor-image -->
 
-      <div class="editor-body">
+      <div class="editor-body" editor-listicle>
         <header class="eb-header">
-          <h1 id="editor-title" class="eb-title">Listicle</h1>
+          <h1 id="editor-title" class="eb-title"><@ data.title @></h1>
           <h2 id="editor-lead" class="eb-lead"><@ data.lead @></h2>
         </header>
         <!-- end of .eb-header -->
@@ -39,7 +39,7 @@
         <div id="editor-content" class="eb-article text" ondrop="return false;" ng-bind-html="data.content"></div>
         <!-- end of .eb-article -->
 
-        <div class="eb-listicle" ng-controller="listicleController">
+        <div class="eb-listicle">
           <header class="eb-listicle-options options">
             <span class="option <@ listicleOption == 'ordinal' ? 'active' : '' @>" ng-click="setOrder($event, 'ordinal')">Ordinal (1,2,3)</span>
             <span class="option <@ listicleOption == 'reverse' ? 'active' : '' @>" ng-click="setOrder($event, 'reverse')">Reverse (3,2,1)</span>
@@ -110,7 +110,7 @@
             <input class="components" type="text" name="source" placeholder="Source http://" ng-model="data.source">
           </div>
 
-          <div class="eb-footer-category eb-footer-components">
+          <div class="eb-footer-category eb-footer-components" ng-click="openCategory($event)">
             <div class="eb-category components"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class="icon-down"></i></div>
 
             <ul class="eb-category-list">
@@ -123,7 +123,6 @@
               <li ng-click="setChannel($event, 'inspirational-channel')">Inspirational</li>
               <li ng-click="setChannel($event, 'lifestyle-channel')">Lifestyle</li>
               <li ng-click="setChannel($event, 'fun-humor-channel')">Fun &amp; Humor</li>
-              <!-- <li ng-click="setChannel($event, 'meme-channel')">Meme</li> -->
               <li ng-click="setChannel($event, 'news-info-channel')">News &amp; Info</li>
               <li ng-click="setChannel($event, 'nsfw-channel')">NSFW</li>
               <li ng-click="setChannel($event, 'wtf-channel')">WTF!</li>
@@ -147,71 +146,18 @@
   </div>
   <!-- end of .editor-wrapper -->
 
-
-  <footer class="editor-bottom">
-    <span class="helper" ng-if="saveMessage"><@ saveMessage @></span>
-    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="cancelClick()">Cancel</a>
-    @if (empty($post) || ($post->status == -1))
-    <a class="keepo-btn rounded-btn animate-btn light-btn01" ng-click="saveDraft()">Save (to Draft)</a>
-    @endif
-    <a class="keepo-btn rounded-btn animate-btn default-btn01" ng-click="saveClick()">Post</a>
+  <footer class="editor-bottom mdl-footer">
+    <div class="wrap-footer_btn">
+      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
+      <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
+    </div>
   </footer>
   <!-- end of .editor-bottom -->
 
   <div class="editor-loading">
     <div id="loader" class="overlay-loader">
       <div class="loader-background color-flip"></div>
-      <img class="loader-icon spinning-cog" src="[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]" data-cog="cog01">
+      <!-- <img class="loader-icon spinning-cog" src="[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]" data-cog="cog01"> -->
     </div>
   </div>
-  <!-- end of .editor-loading -->
-
-  <div class="editor-message-wrapper" ng-if="message">
-    <div class="editor-message">
-      <header><span><@ message.success ? 'Waiting for moderation' : 'Whoops! Something went wrong :(' @></span><a ng-if="message.error" ng-click="closeMessage($event)"><i class="keepo-icon icon-cancel"></i></a></header>
-      <div class="editor-message-container editor-message-default" ng-if="message.error">
-        <p><@ message.error @></p>
-      </div>
-
-      <div class="editor-message-container editor-message-moderation" ng-if="message.success">
-        <p>Makasih ya Dek sudah bikin konten di Keepo.</p>
-        <p>Cuma konten yang tarbaik dan menghibur yang bisa tampil di Keepo, jadi postingan adek bakalan di-review dalam waktu max 24 jam.</p>
-        <p>Silahkan cek my post dan pilih filter <strong>"unpublished"</strong> untuk melihat status postingan kamu.</p>
-
-        <p style="margin-top:30px;"><a class="keepo-btn rectangle-btn default-btn01" href="[[ url($uInfo->slug . '/my-issues') ]]">Lihat Postingan Saya</a></p>
-      </div>
-    </div>
-  </div>
-  <!-- end of .editor-message-wrapper -->
-
-  @if (@$post)
-  <script type="text/template" id="title-template">{!! html_entity_decode($post->title, ENT_QUOTES) !!}</script>
-  <script type="text/template" id="content-template">{!! json_encode(preg_replace('~\r\n+|\r+|\n+|\t+~ixu', '', $post->content)) !!}</script>
-  <script>
-  	window.editorData = {
-  		title     : document.getElementById('title-template').innerHTML,
-  		lead 		  : '[[ $post->lead ]]',
-      content   : jQuery.parseJSON(document.getElementById('content-template').innerHTML),
-  		source 		: '[[ $post->source ]]',
-  		channel 	: {slug: '[[ $post->channel["slug"] ]]', name: '[[ $post->channel["title"] ]]'},
-  		tags 		  : <?php if (! empty($post->tag)): ?>[{!! $post->tag !!}] <?php else: ?>void 0<?php endif; ?>,
-      status    : Number('[[ $post->status ]]'),
-  		slug 		  : '[[ $post->slug ]]'
-  	};
-
-    @if (@$post->objectFile->id)
-    window.editorData.image = {
-      id: [[ @$post->objectFile->id ]],
-      url: '[[ @$post->objectFile->full_path ]]',
-      name: '[[ @$post->objectFile->file_name ]]'
-    };
-    @endif
-
-    window.listicle = {
-      sort: '{!! @$post->listicle["sort"] !!}',
-      models: {!! @$post->listicle['models'] !!}
-    };
-  </script>
-  @endif
-  <script>window.user = '[[ $uInfo->slug ]]';</script>
 </div>

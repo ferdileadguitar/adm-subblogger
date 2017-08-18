@@ -1,7 +1,7 @@
 <div class="mdl mdl-popup mdl-open mdl-editor">
-    <div class="mdl-component">
+    <div class="mdl-component <@ layout.type @>">
         <article class="mdl-body">
-            <ng-include src="src.layout"></ng-include>
+            <ng-include src="layout.url"></ng-include>
         </article>
         <a class="mdl-close" ng-click="close()">&times;</a>
     </div>
