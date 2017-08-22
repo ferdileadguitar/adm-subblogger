@@ -36,6 +36,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 			// ------------------------------------------------------------------------
 			
 			this.appService();
+			this.appFactory();
 
 			// Search bar
 			if ($('.search').length) { this.evSearch(); }
@@ -68,7 +69,8 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 					cancel: cancel,
 
 					modal: modal,
-					modalEditor: modalEditor
+					modalEditor: modalEditor,
+					postFeed : postFeed
 				};
 
 				// ------------------------------------------------------------------------
@@ -157,6 +159,21 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 					return response.data;
 				};
 
+				function postFeed(data, type) {
+					var deferred = $q.defer(), request,
+						url      = window.baseURL + 'api/feeds',
+						data     = data;
+					
+					return $http({
+						method 	     : type,
+						url    		 : window.baseURL + 'api/feeds',
+						data   		 : data,
+						responseType : 'json',
+						timeout      : deferred.promise,
+						crossDomain  : true
+					}).then(function(res){ return $q.resolve(res.data) }, function(err){ return $q.reject(err) });
+				}
+
 				// ------------------------------------------------------------------------
 				
 				function modal(scope, params) {
@@ -171,6 +188,27 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 					Object.assign(scope, params);
 					
 					angular.element('body').append($compile('<modal-editor></modal-editor>')(scope));	
+				}
+			}]);
+		},
+
+		appFactory : function() {
+			this.application.factory('appFactory', ['$http', '$q', function($http, $q) {
+				return { postFeed : postFeed };
+
+				function postFeed(data, type) {
+					var deferred = $q.defer(), request,
+						url      = window.baseURL + 'api/feeds',
+						data     = data;
+					
+					return $http({
+						method 	     : type,
+						url    		 : window.baseURL + 'api/feeds',
+						data   		 : data,
+						responseType : 'json',
+						timeout      : deferred.promise,
+						crossDomain  : true
+					}).then(function(res){ return $q.resolve(res.data) }, function(err){ return $q.reject(err) });
 				}
 			}]);
 		},

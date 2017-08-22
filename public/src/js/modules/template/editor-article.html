@@ -1,5 +1,5 @@
 <div class="main-container" editor-article>
-  <div class="editor-wrapper">
+  <div class="editor-wrapper" ng-class="{ 'on-progress' : onProgress }">
     <div class="editor-container" data-editor="article">
       <header class="editor-image">
         <div class="fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>" droppable>
@@ -26,8 +26,8 @@
 
       <div class="editor-body">
         <header class="eb-header">
-          <h1 id="editor-title" class="eb-title"><@ data.title @></h1>
-          <h2 id="editor-lead" class="eb-lead"><@ data.lead @></h2>
+          <h1 id="editor-title" class="eb-title" ng-model="data.title" text-content></h1>
+          <h2 id="editor-lead" class="eb-lead" ng-model="data.lead" text-content></h2>
         </header>
         <!-- end of .eb-header -->
         <div id="editor-content" class="eb-article text" ondrop="return false;" ng-bind-html="data.content"></div>
@@ -77,8 +77,8 @@
 
   <footer class="editor-bottom mdl-footer">
     <div class="wrap-footer_btn">
-      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
-      <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
+      <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+      <a ng-if="!singleButton" class="ok" ng-click="saveClick()"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
     </div>
   </footer>
   <!-- end of .editor-bottom -->
@@ -88,6 +88,4 @@
       <div class="loader-background color-flip"></div>
     </div>
   </div>
-  <@ data.content @>
-  <script type="text/template" id="content-template"><@ data.content @></script>
 </div>

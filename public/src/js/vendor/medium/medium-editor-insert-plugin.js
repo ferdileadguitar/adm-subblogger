@@ -1847,12 +1847,6 @@ this["MediumInsert"]["Templates"]["vendor/medium/templates/images-toolbar.hbs"] 
 
         // ------------------------------------------------------------------------
 
-        var $scope = angular.element('[ng-controller=editorController]').scope();
-        $scope.uploading = true;
-        $scope.$apply();
-
-        // ------------------------------------------------------------------------
-
         if (data.autoUpload || (data.autoUpload !== false && $(e.target).fileupload('option', 'autoUpload'))) {
             data.process().done(function () {
                 // If preview is set to true, let the showImage handle the upload start
@@ -1931,12 +1925,6 @@ this["MediumInsert"]["Templates"]["vendor/medium/templates/images-toolbar.hbs"] 
      */
 
     Images.prototype.uploadDone = function (e, data) {
-
-        // ------------------------------------------------------------------------
-
-        var $scope = angular.element('[ng-controller=editorController]').scope();
-        $scope.uploading = false;
-        $scope.$apply();
 
         // ------------------------------------------------------------------------
 

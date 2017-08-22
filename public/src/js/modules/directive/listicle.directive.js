@@ -1,23 +1,27 @@
-import ArticleEditors   from './article.directive';
+import ArticleEditors from './article.directive';
 // import BluimpFileUpload from './../service/bluimp-fileupload.service.js';
 
 class ListicleEditors extends ArticleEditors {
 
-	constructor($timeout, $http) {
+	constructor($http) {
 		super();
-		this.restrict = 'A';
-		this.require  = '^modalEditor';
-		// this.bindToController = 'editorArticleCtrl';
+		this.restrict = 'A'; 
+		// this.$http    = $http;
 	}
 
-	link($scope, $element, $attrs, modalEditor) {
-		var windowListicle    = $scope.data.content || {};
-		$scope.listicleOption = windowListicle.sort || 'ordinal';
-		$scope.listicleItems  = windowListicle.models || [{"order": "1", "title": "", "image_str": "", "content": ""}];;
-		// console.log( $scope.data );
+	get $inject() {
+		return ['$http', '$rootScope'];
+	}
+	
+	controller($scope, $element, $timeout) {
+	}
 
-		// ------------------------------------------------------------------------
-		// const Editors = new ArticleEditors();
+	link($scope, $element, $attrs) {
+		var windowListicle  = $scope.data.content || {},
+			self    = this;
+
+		$scope.listicleOption = windowListicle.sort || 'ordinal';
+		$scope.listicleItems  = windowListicle.models || [{"order": "1", "title": "", "image_str": "", "content": ""}];
 
 		// Set Listicle Order
 		$scope.setOrder = function(event, order) {
@@ -47,7 +51,7 @@ class ListicleEditors extends ArticleEditors {
 			if (!$el.length) { return false; }
 
 			// ------------------------------------------------------------------------
-
+			console.log( $el );
 			// Get the order position
 			if (! $el.prev('.eb-listicle-item').length) { indexPos = 0; }
 			else { indexPos = $el.prev('.eb-listicle-item').index('.eb-listicle-item') + 1; }
@@ -109,60 +113,66 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Initial Listicle Editor
-		// $scope.initListicleEditor = function(indexPos) {
-		// 	var $el = $element.find('.eb-listicle-list .eb-listicle-item:eq(' + indexPos + ')'),
-		// 		contentEditor;
+		$scope.initListicleEditor = function(indexPos) {
+			var $el = $element.find('.eb-listicle-list .eb-listicle-item:eq(' + indexPos + ')'),
+				contentEditor;
 
-		// 	// Editor
-		// 	new self.MainEditor.titleEditorApp($el.find('.listicle-item-title'), {
-		// 		placeholder: "Title"
-		// 	});
+			// Editor
+			new self.titleEditorApp($el.find('.listicle-item-title'), {
+				placeholder: "Title"
+			});
 
-		// 	contentEditor = new MediumEditor($el.find('.listicle-item-content'), {
-		// 		toolbar: {
-		// 			buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
-		// 		},
-		// 		paste: {
-		// 			cleanPastedHTML: true,
-		// 			cleanTags: ["meta", "script", "style", "label"]
-		// 		},
-		// 		placeholder: {
-		// 			text: 'Write your content here ------- block the text to show text tool'
-		// 		}
-		// 	});
-		// 	$el.find('.listicle-item-content').data('editor', contentEditor);
+			contentEditor = new MediumEditor($el.find('.listicle-item-content'), {
+				toolbar: {
+					buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
+				},
+				paste: {
+					cleanPastedHTML: true,
+					cleanTags: ["meta", "script", "style", "label"]
+				},
+				placeholder: {
+					text: 'Write your content here ------- block the text to show text tool'
+				}
+			});
+			$el.find('.listicle-item-content').data('editor', contentEditor);
 
-		// 	$el.find('.listicle-item-content').mediumInsert({
-		//         editor: contentEditor,
-		//         addons: {
-		//         	images: {
-		//         		deleteScript: null,
-		//         		autoGrid: 0,
-		//         		fileUploadOptions: {
-		//         			url: self.MainEditor.uploadCoverUrl+"?type=body"
-		//         		},
-		//         		styles: {
-		//         		    wide: { label: '<span class="icon-align-justify"></span>' },
-		//         		    left: null,//{ label: '<span class="icon-align-left"></span>' },
-		//         		    right: { label: '<span class="icon-align-right"></span>' },
-		//         		    grid: null
-		//         		}
-		//         	},
-		//         	embeds: {
-		//         		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
-  //   					oembedProxy: '',
-		//         		styles: {
-		//         			wide: null,
-		//         			left: null,
-		//         			right: null
-		//         		}
-		//         	}
-		//         }
-		//     });
+			$el.find('.listicle-item-content').mediumInsert({
+		        editor: contentEditor,
+		        addons: {
+		        	images: {
+		        		deleteScript: null,
+		        		autoGrid: 0,
+		        		fileUploadOptions: {
+		        			url: self.thisFileUpload().uploadCoverUrl+"?type=body"
+		        		},
+		        		styles: {
+		        		    wide: { label: '<span class="icon-align-justify"></span>' },
+		        		    left: null,//{ label: '<span class="icon-align-left"></span>' },
+		        		    right: { label: '<span class="icon-align-right"></span>' },
+		        		    grid: null
+		        		}
+		        	},
+		        	embeds: {
+		        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
+    					oembedProxy: '',
+		        		styles: {
+		        			wide: null,
+		        			left: null,
+		        			right: null
+		        		}
+		        	}
+		        }
+		    });
 
-		//     // FileUpload
-		//     self.MainEditor._initFileUpload($el.find('.fileupload-pool input[type=file]'), {dropZone: $el.find('.fileupload-pool'), uploadURL: self.MainEditor.uploadCoverUrl+"?type=body"});
-		// };
+		    // FileUpload
+		    self.thisFileUpload()._initFileUpload(
+    			$el.find('.fileupload-pool input[type=file]'), 
+    				{
+    					dropZone: $el.find('.fileupload-pool'), 
+    					uploadURL: self.thisFileUpload().uploadCoverUrl+"?type=body"
+    				},
+    				$scope);
+		};
 
 		// ------------------------------------------------------------------------
 
@@ -182,67 +192,78 @@ class ListicleEditors extends ArticleEditors {
 			}
 		};
 
+		// $scope.save = prepSave;
 
-		/*=================================================
-					SEPERATE FUNCTION
-		===================================================*/
-		// setTimeout(function() {
-		// 	$.each($('.eb-listicle-list .eb-listicle-item'), function() {
-		// 		var $self = $(this),
-		// 			contentEditor;
+		// /*=================================================
+		// 			SEPERATE FUNCTION
+		// ===================================================*/
+		setTimeout(function() {
+			$.each($('.eb-listicle-list .eb-listicle-item'), function() {
+				var $self = $(this),
+					contentEditor;
 
-		// 		// Editor
-		// 		new self.MainEditor.titleEditorApp($self.find('.listicle-item-title'), {
-		// 			placeholder: "Title"
-		// 		});
+				// Editor
+				new self.titleEditorApp($self.find('.listicle-item-title'), {
+					placeholder: "Title"
+				});
 
-		// 		contentEditor = new MediumEditor($self.find('.listicle-item-content'), {
-		// 			toolbar: {
-		// 				buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
-		// 			},
-		// 			paste: {
-		// 				cleanPastedHTML: true,
-		// 				cleanTags: ["meta", "script", "style", "label"]
-		// 			},
-		// 			placeholder: {
-		// 				text: 'Write your content here ------- block the text to show text tool'
-		// 			}
-		// 		});
-		// 		$self.find('.listicle-item-content').data('editor', contentEditor);
+				contentEditor = new MediumEditor($self.find('.listicle-item-content'), {
+					toolbar: {
+						buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
+					},
+					paste: {
+						cleanPastedHTML: true,
+						cleanTags: ["meta", "script", "style", "label"]
+					},
+					placeholder: {
+						text: 'Write your content here ------- block the text to show text tool'
+					}
+				});
+				$self.find('.listicle-item-content').data('editor', contentEditor);
 
-		// 		$self.find('.listicle-item-content').mediumInsert({
-		// 	        editor: contentEditor,
-		// 	        addons: {
-		// 	        	images: {
-		// 	        		deleteScript: null,
-		// 	        		autoGrid: 0,
-		// 	        		fileUploadOptions: {
-		// 	        			url: self.MainEditor.uploadCoverUrl+"?type=body"
-		// 	        		},
-		// 	        		styles: {
-		// 	        		    wide: { label: '<span class="icon-align-justify"></span>' },
-		// 	        		    left: null,//{ label: '<span class="icon-align-left"></span>' },
-		// 	        		    right: { label: '<span class="icon-align-right"></span>' },
-		// 	        		    grid: null
-		// 	        		}
-		// 	        	},
-		// 	        	embeds: {
-		// 	        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
-  //       					oembedProxy: '',
-		// 	        		styles: {
-		// 	        			wide: null,
-		// 	        			left: null,
-		// 	        			right: null
-		// 	        		}
-		// 	        	}
-		// 	        }
-		// 	    });
+				$self.find('.listicle-item-content').mediumInsert({
+			        editor: contentEditor,
+			        addons: {
+			        	images: {
+			        		deleteScript: null,
+			        		autoGrid: 0,
+			        		fileUploadOptions: {
+			        			url: self.thisFileUpload().uploadCoverUrl+"?type=body"
+			        		},
+			        		styles: {
+			        		    wide: { label: '<span class="icon-align-justify"></span>' },
+			        		    left: null,//{ label: '<span class="icon-align-left"></span>' },
+			        		    right: { label: '<span class="icon-align-right"></span>' },
+			        		    grid: null
+			        		}
+			        	},
+			        	embeds: {
+			        		placeholder: 'Paste a YouTube, Facebook, Twitter, Instagram link/video and press Enter',
+        					oembedProxy: '',
+			        		styles: {
+			        			wide: null,
+			        			left: null,
+			        			right: null
+			        		}
+			        	}
+			        }
+			    });
+				// FileUpload
+			    self.thisFileUpload()._initFileUpload(
+			    	$self.find('.fileupload-pool input[type=file]'), 
+			    	{
+			    		dropZone: $self.find('.fileupload-pool'), 
+			    		uploadURL: self.thisFileUpload().uploadCoverUrl+"?type=body"
+			    	},
+			    	$scope);
+			});
+		}, 50);
+	}
 
-		// 		// FileUpload
-		// 	    self.MainEditor._initFileUpload($self.find('.fileupload-pool input[type=file]'), {dropZone: $self.find('.fileupload-pool'), uploadURL: self.MainEditor.uploadCoverUrl+"?type=body"});
-		// 	});
-		// }, 50);
+	static prepSave(data) {
+		return 'listicleItems';
 	}
 }
-
+ListicleEditors.$inject = ['$http'];
+// ListicleEditors.prepSave();
 export default ListicleEditors;

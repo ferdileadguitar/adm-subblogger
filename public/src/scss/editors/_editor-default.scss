@@ -16,6 +16,20 @@ $defaultColor: #c2c1c6;
 // Default
 // ==========================================================================
 
+
+/*CUSTOM MIXIN*/
+@mixin mdl_header {
+	header {
+		text-align: left;
+		border-bottom: 1px solid $black-10;
+
+		h2 {
+			padding-bottom: 10px;
+			color: $black-80;
+		}
+	}
+}
+
 .mdl {
 
 	&.mdl-editor {
@@ -24,6 +38,7 @@ $defaultColor: #c2c1c6;
 			overflow: hidden;
 			max-width: 100%!important;
 			
+
 			&.article,
 			&.listicle {
 				width: 80%;
@@ -54,104 +69,23 @@ $defaultColor: #c2c1c6;
 
 			&.title {
 				width: 50%;
-				height: 40%;
+				height: 45%;
 
 				.mdl-body {
 
 					.main-container {
 
 						.editor-wrapper {
+							width: 100%;
 							display: block!important;
+							margin: 0 auto!important;
 
-							header {
-								text-align: left;
-								border-bottom: 1px solid $black-10;
-
-								h2 {
-									padding-bottom: 10px;
-									color: $black-80;
-								}
-							}
+							@include mdl_header;
 
 							article {
 
 								textarea {
 									height: 140px;
-									width: 100%;
-									resize: none;
-									font-size: 16px;
-									border: 1px solid $black-05;
-									padding: 5px;
-									/*overflow: hidden;*/
-								}
-
-								.eb-footer-tags,
-								.eb-footer-source {
-
-									input[type=text] {
-										background: $black-02;
-										width: 100%;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				.mdl-footer {
-					/*position: relative;*/
-
-					&.editor-bottom {
-						padding: 15px;
-						@include box-shadow(none);
-
-						.wrap-footer_btn {
-							width: 40%;
-							height: 50px;
-							@include display-flex;
-							margin: 0 0 0 auto;
-
-							a {
-								width: 150px;
-								height: 50px;
-								min-width: auto!important;
-								margin-right: 10px;
-								line-height: 50px;
-
-								&:nth-child(0) {
-									/*margin-right: 0!important;*/
-								}
-							}
-						}
-					}		
-				}
-			}
-
-			&.tags {
-				width: 50%;
-				height: auto;
-
-				.mdl-body {
-
-					.main-container {
-
-						.editor-wrapper {
-							display: block!important;
-
-							header {
-								text-align: left;
-								border-bottom: 1px solid $black-10;
-
-								h2 {
-									padding-bottom: 10px;
-									color: $black-80;
-								}
-							}
-
-							article {
-
-								textarea {
-									height: auto;
 									width: 100%;
 									resize: none;
 									font-size: 16px;
@@ -193,13 +127,270 @@ $defaultColor: #c2c1c6;
 								margin-right: 10px;
 								line-height: 50px;
 
-								&:nth-child(1) {
-									margin-right: 0;
+								&:nth-child(2) {
+									margin-right: 0!important;
 								}
 							}
 						}
 					}		
 				}
+			}
+
+			&.tags {
+				width: 50%;
+				height: auto;
+
+				.mdl-body {
+
+					.main-container {
+
+						.editor-wrapper {
+							width: 100%;
+							display: block!important;
+							margin: 0 auto!important;
+
+							@include mdl_header;
+
+							article {
+
+								textarea {
+									height: auto;
+									width: 100%;
+									resize: none;
+									font-size: 16px;
+									border: 1px solid $black-05;
+									padding: 5px;
+									/*overflow: hidden;*/
+								}
+
+								.eb-footer-tags,
+								.eb-footer-source {
+
+									input[type=text] {
+										background: $black-02;
+										width: 100%;
+									}
+								}
+							}
+
+							.mdl-footer {
+								position: relative;
+
+								&.editor-bottom {
+									padding: 15px 0;
+									@include box-shadow(none);
+
+									.wrap-footer_btn {
+										width: 40%;
+										height: 50px;
+										@include display-flex;
+										margin: 0 0 0 auto;
+
+										a {
+											width: 150px;
+											height: 50px;
+											min-width: auto!important;
+											margin-right: 10px;
+											line-height: 50px;
+
+											&:nth-child(2) {
+												margin-right: 0!important;
+											}
+										}
+									}
+								}		
+							}
+						}
+					}
+				}
+			}
+
+			&.channel {
+				width: 50%;
+				height: auto;
+				overflow: inherit!important;
+
+				.mdl-body {
+
+					.main-container {
+
+						.editor-wrapper {
+							width: 100%;
+							display: block!important;
+							margin: 0 auto!important;
+
+							@include mdl_header;
+
+							article {
+
+								.eb-footer-category {
+									position: relative;
+									height: 40px;
+								}
+
+								.eb-category {
+									cursor: pointer;
+									padding-right: 40px;
+									position: relative;
+									text-align: left;
+									height: 100%;
+									border: 1px solid $black-10;
+
+									span { line-height: 3;padding-left: 15px; }
+
+									i {
+										position: absolute;
+										top: 50%;
+										right: 10px;
+										font-size: 16px;
+										@include translateY(-50%);
+									}
+
+									& + .eb-category-list {
+										background-color: $white;
+										@include box-sizing(border-box);
+										display: none;
+										position: absolute;
+										border: 1px solid $black-10;
+										border-top: none;
+										top: 100%;
+										width: 100%;
+										z-index: 100;
+										text-align: left;
+										padding: 0;
+
+										&.open {
+											display: block;
+										}	
+
+										.rows-group {
+											@include display-flex;
+										}
+
+										li {
+											cursor: pointer;
+											padding: 10px 18px;
+											@include transition(all .15s ease-out);
+											list-style: none;
+
+											&:hover {
+												background-color: $tosca;
+												color: $white;
+											}
+										}
+									}
+								}
+							}
+
+							.mdl-footer {
+								position: relative;
+
+								&.editor-bottom {
+									padding: 15px 0;
+									@include box-shadow(none);
+
+									.wrap-footer_btn {
+										width: 40%;
+										height: 50px;
+										@include display-flex;
+										margin: 0 0 0 auto;
+
+										a {
+											width: 150px;
+											height: 50px;
+											min-width: auto!important;
+											margin-right: 10px;
+											line-height: 50px;
+
+											&:nth-child(2) {
+												margin-right: 0!important;
+											}
+										}
+									}
+								}
+							}		
+						}
+					}
+				}
+			}
+
+			&.created {
+				width: 30%;
+				height: auto;
+
+				.mdl-body {
+
+					.main-container {
+
+						.editor-wrapper {
+							width: 100%;
+							display: block!important;
+							margin: 0 auto!important;
+
+							@include mdl_header;
+
+							article {
+								text-align: center;
+							}
+
+							.mdl-footer {
+								position: relative;
+
+								&.editor-bottom {
+									padding: 15px 0;
+									@include box-shadow(none);
+
+									.wrap-footer_btn {
+										width: 100%;
+										height: 50px;
+										@include display-flex;
+										margin: 0 auto;
+
+										a {
+											width: 150px;
+											height: 50px;
+											min-width: auto!important;
+											margin-right: 10px;
+											line-height: 50px;
+
+											&:nth-child(2) {
+												margin-right: 0!important;
+											}
+										}
+									}
+								}
+							}	
+						}
+					}
+				}
+			}
+
+			.mdl-footer {
+				position: fixed;
+
+				&.editor-bottom {
+					padding: 15px;
+					@include box-shadow(none);
+
+					.wrap-footer_btn {
+						width: 40%;
+						height: 50px;
+						@include display-flex;
+						margin: 0 0 0 auto;
+
+						a {
+							width: 150px;
+							height: 50px;
+							min-width: auto!important;
+							margin-right: 10px;
+							line-height: 50px;
+
+							&:nth-child(2) {
+								margin-right: 0;
+							}
+						}
+					}
+				}		
 			}
 		}
 	}
@@ -484,6 +675,8 @@ $defaultColor: #c2c1c6;
 		top: 100%;
 		width: 100%;
 		z-index: 100;
+		list-style: none;
+		padding: 0;
 
 		&.open {
 			display: block;
@@ -491,7 +684,7 @@ $defaultColor: #c2c1c6;
 
 		li {
 			cursor: pointer;
-			padding: 10px 18px;
+			padding: 10px 18px 10px 0;
 			@include transition(all .15s ease-out);
 
 			&:hover {

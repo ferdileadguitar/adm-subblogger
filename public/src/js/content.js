@@ -8,10 +8,13 @@ import article    from './modules/template/editor-article.html';
 import listicle   from './modules/template/editor-listicle.html';
 import title      from './modules/template/editor-title.html';
 import tags       from './modules/template/editor-tags.html';
+import channel    from './modules/template/editor-channel.html';
+import created    from './modules/template/mdl-editor-created.html';
 
 /*DIRECTIVE*/
 import articleDirective   from './modules/directive/article.directive.js';
 import listicleDirective  from './modules/directive/listicle.directive.js';
+import createdDirective   from './modules/directive/created.directive.js';
 
 // APP
 // ------------------------------------------------------------------------
@@ -283,6 +286,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 		        $templateCache.put('listicle.html', listicle);
 		        $templateCache.put('title.html', title);
 		        $templateCache.put('tags.html', tags);
+		        $templateCache.put('channel.html', channel);
+		        $templateCache.put('created.html', created);
 			});
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
@@ -298,6 +303,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
                     link: function($scope, $elements, $attrs) {
                     	$scope.post = {};
 
+                    	// $scope.$watch()
                     	$scope.convertTags = function(tags) {
                     		return (tags && tags.length) ? _.map(tags, function(tag) { return tag.title; }).join(', ') : '<em>No tag available</em>';
                     	};
@@ -331,20 +337,18 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							appService.appContext.setPremium(post, (!post.is_premium ? 1 : 0), $scope);
 						};
 
-						$scope.setEditor = function(post, type) {
+						$scope.setEditor = function(post, type, index) {
 							appService.modalEditor($scope, {
+								ids  : index,
 								data : post,
 								type : type
 							});
-
-							$rootScope.$broadcast('mdl_data', post);
+							$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
 						};
 
 						$scope.parseFeedsLink = function(post) {
-							console.log(post);
 							$window.open('http://localhost:8000/' + post.user + '/' + post.slug, '_blank');
 						}
-						
                     }
 				};
 			}]);
@@ -399,11 +403,18 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					replace     :  true,
 					template    : mdl_editor,
 					controller  : function($scope, $element, $rootScope) {
+						var datas = {};
+
+						$scope.$on('mdl_data', function(item, args){ 
+							$scope.allPost = args.allPosts; 
+							$scope.data    = args.posts; 
+							$scope.layout  = {
+								type : args.type,
+								url  : args.type + '.html'
+							};
+						});
 						
-						$scope.layout = {
-							type : $scope.type,
-							url  : $scope.type + '.html'
-						};
+						$scope.$broadcast('data_context', 'send fronm editors');
 
 						$scope.close = function() {
 							$scope.$destroy();
@@ -417,8 +428,89 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				}
 			}]);
 
+			this.application.directive('textContent', ['$sce', function($sce) {
+			    return {
+				    restrict: 'AC', // only activate on element attribute
+				    require: '?ngModel', // get a hold of NgModelController
+				    link: function(scope, element, attrs, ngModel) {
+				      	if (!ngModel) return; // do nothing if no ng-model
+
+				      	// Specify how UI should be updated
+				      	ngModel.$render = function() {
+				        	element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+					      	read(); // initialize
+				      	};
+
+				      	// Listen for change events to enable binding
+				      	element.on('keyup change', function() {
+				        	scope.$evalAsync(read);
+				      	});
+
+				      	// element.on('click', function() {
+				      	// 	var $focus = $(this).parents('.eb-quiz-list').find('[data-content="editable-text"]');
+
+				      	// 	// clear hasClass focus
+				      	// 	__clearOnFocus($focus);
+
+				      	// 	// addClass focus to existance element
+				      	// 	$(this).parent().toggleClass('focus');
+				      	// }).on('blur', function() {
+				      	// 	var $focus = $(this).parents('.eb-quiz-list').find('[data-content="editable-text"]');
+
+				      	// 	// clear hasClass focus
+				      	// 	__clearOnFocus($focus);
+				      	// }).on('focusin', function(){
+				      	// 	$(this).parents('.content-header, .content-desc, .qs-content').toggleClass('focus');
+				      	// }).on('paste', function(e){
+				      	// 	e.preventDefault();
+
+					      //   var text;
+					      //   var clp = (e.originalEvent || e).clipboardData;
+					      //   if (clp === undefined || clp === null) {
+					      //       text = window.clipboardData.getData("text") || "";
+					      //       if (text !== "") {
+					      //           if (window.getSelection) {
+					      //               var newNode = document.createElement("span");
+					      //               newNode.innerHTML = text;
+					      //               window.getSelection().getRangeAt(0).insertNode(newNode);
+					      //           } else {
+					      //               document.selection.createRange().pasteHTML(text);
+					      //           }
+					      //       }
+					      //   } else {
+					      //       text = clp.getData('text/plain') || "";
+					      //       if (text !== "") {
+					      //           document.execCommand('insertText', false, text);
+					      //       }
+					      //   }
+				      	// });
+
+				      	function __clearOnFocus(element) {
+				      		angular.forEach(element, function(value, key) {
+				      			var $el = angular.element(value);
+
+				      			if( $el.hasClass('focus') ) { $el.removeClass('focus') }
+				      		});
+
+				      		// // set active layout
+				      	}
+				      	// Write data to the model
+				      	function read() {
+				        	var html = element.html();
+				        	// When we clear the content editable the browser leaves a <br> behind
+				        	// If strip-br attribute is provided then we strip this out
+				        	if (attrs.stripBr && html === '<br>' && html === '<div>') {
+				          		html = '';
+				        	}
+				        	ngModel.$setViewValue(html);
+				      	}
+				    }
+				};
+			}]);
+
 			this.application.directive('editorArticle',  articleDirective);
 			this.application.directive('editorListicle', listicleDirective);
+			this.application.directive('editorCreated', createdDirective);
 		},
 
 		allController: function($scope, $attrs, appService) {

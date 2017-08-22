@@ -1,4 +1,4 @@
-<div class="main-container" data-app="editors" editor-article>
+<div class="main-container" feeds="allPost" content="data" editor-article>
   <div class="editor-wrapper">
     <header class="editor-top"><h2>Post Listicle</h2></header>
 
@@ -31,8 +31,8 @@
 
       <div class="editor-body" editor-listicle>
         <header class="eb-header">
-          <h1 id="editor-title" class="eb-title"><@ data.title @></h1>
-          <h2 id="editor-lead" class="eb-lead"><@ data.lead @></h2>
+          <h1 id="editor-title" class="eb-title" ng-model="data.title" text-content></h1>
+          <h2 id="editor-lead" class="eb-lead" ng-model="data.lead" text-content></h2>
         </header>
         <!-- end of .eb-header -->
 
@@ -148,8 +148,8 @@
 
   <footer class="editor-bottom mdl-footer">
     <div class="wrap-footer_btn">
-      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
-      <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
+      <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+      <a ng-if="!singleButton" class="ok" ng-click="saveClick()"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
     </div>
   </footer>
   <!-- end of .editor-bottom -->

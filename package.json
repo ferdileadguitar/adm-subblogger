@@ -24,6 +24,7 @@
     "imports-loader": "^0.7.1",
     "joii": "^4.1.1",
     "jquery": "^3.1.1",
+    "jquery-datetimepicker": "^2.5.4",
     "jquery-sortable": "^0.9.13",
     "jquery-ui": "^1.12.1",
     "laravel-mix": "0.*",

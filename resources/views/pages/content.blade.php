@@ -136,27 +136,27 @@
 
 <!-- Feeds -->
 <script id="feedListTemplate" type="text/ng-template">
-    <div ng-if="! _.isEmpty(data)" ng-repeat="post in data">
+    <div ng-if="! _.isEmpty(data)" ng-repeat="post in data track by $index">
         <div class="box" ng-class="{'bg-warning': (post.status == -2), 'bg-danger': (post.status == 0), 'bg-success': (post.status == 1), 'with-footer': (! post.status && post.reason), 'tbls-loading': post.loading }">
             <div class="tbls-row">
                 <div class="tbls-col-1"><input type="checkbox" ng-click="onCheck(post)" ng-checked="post.checked"></div>
-                <div class="tbls-col-3"><a href="<@ post.user_url @>"><@ post.user @></a></div>
+                <div class="tbls-col-3"><a href="<@ post.user.url @>"><@ post.user.display_name @></a></div>
                 <div class="tbls-col-xl">
                     <div class="tbls-title-box">
                         <figure class="tbls-thumbnail" ng-if="post.image.url"><img ng-src="<@ post.image.url @>"></figure>
                         <div class="tbls-title">
                             <div>
-                                <article><@ post.title @> <@ post.post_type @></article>
+                                <article ng-bind-html="post.title"></article>
                                 <footer>
-                                    <a ng-click="setEditor(post, 'title')">Change Title</a>
+                                    <a ng-click="setEditor(post, 'title', $index)">Change Title</a>
                                     <a ng-click="parseFeedsLink(post)" ng-if="(['quickpersonality', 'quicktrivia', 'quickpolling']).includes(post.post_type)">View</a>
-                                    <a ng-click="setEditor(post, post.post_type)" ng-if="(['article', 'listicle']).includes(post.post_type)">Edit Detail</a>
+                                    <a ng-click="setEditor(post, post.post_type, $index)" ng-if="(['article', 'listicle']).includes(post.post_type)">Edit Detail</a>
                                 </footer>
                             </div>
                             <div class="tbls-tags">
                                 <article ng-bind-html="convertTags(post.tags)"></article>
                                 <footer>
-                                    <a ng-click="setEditor(post, 'tags')">Edit Tags</a>
+                                    <a ng-click="setEditor(post, 'tags', $index)">Edit Tags</a>
                                 </footer>
                             </div>
                         </div>
@@ -164,7 +164,7 @@
                 </div>
                 <div class="tbls-col-3">
                     <@ post.channel.name @>
-                    <div><a>Edit</a></div>
+                    <div><a ng-click="setEditor(post, 'channel', $index)">Edit</a></div>
                 </div>
                 <div class="tbls-col-3"><@ post.post_type @></div>
                 <div class="tbls-col-3"><@ post.views @></div>
@@ -172,7 +172,7 @@
                 <div class="tbls-col-3"><@ post.embeds || 0 @></div>
                 <div class="tbls-col-3">
                     <p><@ post.created @></p>
-                    <div><a ng-click="setEditor(post, 'timestamps')">Edit</a></div>
+                    <div><a ng-click="setEditor(post, 'created', $index)">Edit</a></div>
                 </div>
                 <div class="tbls-col-2 tbls-btn-group">
                     <div ng-hide="post.status == 2">

@@ -1,4 +1,8 @@
-function _initFileUpload($element, options) {
+const uploadCoverUrl = 'api/asset/cover-img';
+const uploadUrl      = 'api/asset/img';
+const baseURL   	 = window.baseURL;
+
+function _initFileUpload($element, options, $scope) {
 		var self 	= this,
 			fileUploadOptions;
 
@@ -7,8 +11,9 @@ function _initFileUpload($element, options) {
 		// ------------------------------------------------------------------------
 
 		fileUploadOptions = {
-			url: options.uploadURL ? options.uploadURL : self.uploadURL,
-			dropZone: void 0,
+			url       : options.uploadURL ? options.uploadURL : this.uploadURL,
+			dropZone  : void 0,
+			// $scope    : scope,
 			/*beforeSend: function(xhr, data) {
 		        var file = data.files[0],
 		        	temp = JSON.parse(window.localStorage.token);
@@ -23,7 +28,8 @@ function _initFileUpload($element, options) {
 
 	            // Validation
 	            // ------------------------------------------------------------------------
-
+	            // console.log( $scope, options, self, this );
+	            // return false;
 	            that._adjustMaxNumberOfFiles(-files.length);
 	            data.isAdjusted = true;
 	            data.files.valid = data.isValidated = that._validate(files);
@@ -36,14 +42,12 @@ function _initFileUpload($element, options) {
 	            // DOM manipulation
 	            // ------------------------------------------------------------------------
 
-	            that.options.dropZone.find('.option-url').hide();
+	            that.options.dropZone.find('.option-url').hide();	
 	            that.options.dropZone.siblings('.remove').hide();
 
 	            data.context = that._renderTemplate(data.files).data('data', data);
 
 		        // ------------------------------------------------------------------------
-
-		        var $scope = angular.element('[ng-controller=editorController]').scope();
 		        $scope.uploading = true;
 		        $scope.$apply();
 
@@ -67,21 +71,22 @@ function _initFileUpload($element, options) {
 	                fid, fn, $input;
 
 		        // ------------------------------------------------------------------------
+	        	console.log( $scope );
+				if($(this).closest('.eb-listicle')[0]){
+				// 	// var $scope = angular.element('[ng-controller=listicleController]').scope();
+					var indexPos = $(this).closest('.eb-listicle-item').index('.eb-listicle-item');
+					$scope.listicleItems[indexPos].image_str = data.result.url;
+					$scope.listicleItems[indexPos].image_id = data.result.id;
+					$scope.$apply();
+				}
 
-						if($(this).closest('.eb-listicle')[0]){
-							var $scope = angular.element('[ng-controller=listicleController]').scope();
-							var indexPos = $(this).closest('.eb-listicle-item').index('.eb-listicle-item');
-							$scope.listicleItems[indexPos].image_str = data.result.url;
-							$scope.listicleItems[indexPos].image_id = data.result.id;
-							$scope.$apply();
-						}
-
-	        	var $scope = angular.element('[ng-controller=editorController]').scope();
-						if(!$(this).closest('.eb-listicle')[0]){
-							$scope.data.image = {id: data.result.id, url: data.result.url, name: data.result.name};
-						}
+	   //      	// var $scope = angular.element($element).scope();
+				if(!$(this).closest('.eb-listicle')[0]){
+					$scope.data.image = {id: data.result.id, url: data.result.url, name: data.result.name};
+				}
 		        $scope.uploading = false;
 		        $scope.$apply();
+	        	console.log( $scope );
 
 		        // ------------------------------------------------------------------------
 
@@ -107,7 +112,7 @@ function _initFileUpload($element, options) {
 	            }
 			},
 
-			fail: function(e, data) {
+			fail: function(e, data, $scope) {
 				var that 		= $(this).data('blueimpUIFileupload'),
 					$progress 	= data.context.find('.progressbar'),
 					$parent 	= data.context,
@@ -116,7 +121,6 @@ function _initFileUpload($element, options) {
 
 		        // ------------------------------------------------------------------------
 
-		        var $scope = angular.element('[ng-controller=editorController]').scope();
 		        $scope.uploading = false;
 		        $scope.$apply();
 
@@ -152,6 +156,6 @@ function _initFileUpload($element, options) {
 
 		fileUploadOptions = $.extend(fileUploadOptions, options);
 		$element.fileupload(fileUploadOptions);
-	}
+}
 
-module.exports = _initFileUpload;
+module.exports = {_initFileUpload, uploadCoverUrl, uploadUrl, baseURL};

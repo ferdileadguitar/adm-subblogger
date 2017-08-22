@@ -96,9 +96,12 @@ class Post extends Model
 				'is_premium' => $post['premium'],
 				
 				// User
-				'user'       => @$post['user']['display_name'],
-				'user_url'   => $post['user'] ? url(implode(['users', $post['user']['username']], '/')) : null,
-				
+				'user'       => array(
+					'id'			=> $post['user']['id'],
+					'display_name' 	=> @$post['user']['display_name'],
+					'url'   		=> $post['user'] ? url(implode(['users', $post['user']['username']], '/')) : null,
+				),	
+				'source' 	=> $post['source'],
 				// Tags
 				'tags'       => collect(@$post['tag'])->map(function($tag) {
 					return [
@@ -283,6 +286,19 @@ class Post extends Model
 			$query->whereRaw('MATCH(posts.title) AGAINST ("' . $search . '")');
 		});
 	}
+
+	public function getTagsByPost($post_id){
+      	$post = $this->where('id','=',$post_id);
+      	$tags = [];
+      	if($post->get()[0]){
+        	$post_tags = $post->get()[0]->postTags();
+        	foreach ($post_tags->get() as $key => $post_tag) {
+          		$tag = $post_tag->tag()->first();
+          		$tags[] = (new FeedDataHandler)->array_to_object(['id'=> $tag->id, 'slug'=> $tag->slug, 'title'=> $tag->title]);
+        	}
+      	}
+      	return $tags;
+    }
 
 	// ------------------------------------------------------------------------
 	// Relations

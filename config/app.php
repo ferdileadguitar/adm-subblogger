@@ -79,6 +79,27 @@ return [
 
     'locale' => 'en',
 
+    'imgurl' => env('IMG_URL', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Image Storage FTP
+    |--------------------------------------------------------------------------
+    |
+    | Image Storage FTP will determine which will you put image file at
+    | make sure the directory is 777
+    | and exists
+    |
+    */
+    'imgftp' => array(
+        'host'     => env('IMG_FTP_HOST', ''),
+        'username' => env('IMG_FTP_USERNAME', 'username'),
+        'password' => env('IMG_FTP_PASSWORD', 'password'),
+        'port'     => env('IMG_FTP_PORT', '21'),
+        'dir'      => env('IMG_FTP_DIR', 'media'),
+        'passive'  => env('IMG_FTP_PASSIVE', true)
+    ),
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
@@ -177,6 +198,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        Intervention\Image\ImageServiceProvider::class,
+
     ],
 
     /*
@@ -226,6 +249,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        'Image' => Intervention\Image\Facades\Image::class,
     ],
 
 ];

@@ -1,26 +1,115 @@
-import helper from './../library/helper.js';
-import MediumEditor from './../../vendor/medium/medium-editor.js';
-import BluimpFileUpload from './../service/bluimp-fileupload.service.js';
-import mediumInsert from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
+import helper          from './../library/helper.js';
+import MediumEditor    from './../../vendor/medium/medium-editor.js';
+import thisFileUpload  from './../service/bluimp-fileupload.service.js';
+import mediumInsert    from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
+
+const editors        = { title: void 0, lead: void 0, content: void 0 };
+const titleEditorApp = helper.titleEditorApp;
 
 class ArticleEditors {
+	
+	constructor($http, $rootScope) {
+		'ngInject';
 
-	constructor($timeout, $http) {
-		this.restrict = 'A';
-		// this.require  = '^editorListicle';
-		// this.scope    = {
-		// 	data : '@'
-		// };
+		this.restrict       = 'A';
+		this.editors        = editors;
+		this.titleEditorApp = titleEditorApp;
+		
+		// let _$http  = $http;
+		this.$http   = $http;
+		// this.appFactory     = appFactory;
+		// this.$q 			= $q;
 	}
 
-	controller($scope, $element, $attrs, $timeout, $rootScope, $sce) {
-		var editors = {title: void 0, lead: void 0, content: void 0},
-		    $this = $.extend({}, helper);
-			
+	get $inject() {
+		return ['$http', '$rootScope'];
+	}
+ 
+	// $http($http) {
+	// 	return $http;
+	// }
+
+	_post(data) {
+		console.log( this._$http, this.http );
+		// return this.$http();
+		// return ArticleEditors.prototype.constructor;
+		// $http({
+		// 	method       : params.type,
+		// 	url        	 : window.baseURL + 'api/feeds',
+		// 	data         : data,
+		// 	responseType : 'json',
+		// }).then(
+		// 	function(res) {
+		// 		$q.resolve(res.data);
+		// 	},
+		// 	function(err) {
+		// 		$q.reject(err);
+		// 	}
+		// );
+	}
+
+	static _listicleFormat(element, data) {
+		var listicleItems = [], contentStringify;
+		$.each(data.content.models, function(index, value) {
+			var $element 		= $(element).find('.eb-listicle-list'),
+				$listicleEl 	= $element.find('.eb-listicle-item:eq(' + index + ')'),
+				contentEditor 	= $listicleEl.find('.listicle-item-content').data('editor');
+
+			// console.log( contentEditor.serialize() )
+			listicleItems.push({
+				order 		: value.order,
+				title 		: $listicleEl.find('.listicle-item-title').text(),
+				image_str 	: $listicleEl.find('.listicle-item-image input[name=fn]').val() || '',
+				content 	: contentEditor.serialize()['element-0'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, '') //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
+			});
+		});
+		data.content = JSON.stringify({ content : data.content.content, sort : data.content.sort, models : listicleItems });
+		
+		return data;
+	}
+
+	static _articleFormat($element, data, options) {
+		var $fid = $($element).find('.fileupload-pool.cover-picture input[type=hidden][name=fid]');
+			if ($fid.length) {
+				data.image = $.extend(data.image, { id : $fid.val() });
+			} else {
+				data.image = $.extend(data.image, { id : void 0 });
+			}
+
+			// Tags
+			var tags = [];
+			$.each(data.tags, function() {
+				tags.push(this.text);
+			});
+			data.tags    = tags;
+			data.content = options.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
+
+			return data;
+	}
+
+	static _prepSave($element, data, options) {
+		switch(data.post_type) {
+			case 'article':
+				return this._articleFormat($element, data, options);
+				break;
+			case 'listicle':
+				return this._listicleFormat($element, data, options);
+				break;
+			default:
+				throw new Error('Sorry we can\'t process your request');
+				break;
+		}
+	}
+
+	controller($scope, $element, $attrs, $timeout, $rootScope, $http, $sce, appFactory) {
+		var $this     = $.extend({}, helper),
+		    thisClass = ArticleEditors;
+
 		$scope.tempSave  = void 0;
 		$scope.message   = void 0;
 		$scope.tags      = [];
 		$scope.uploading = false;
+		$scope.onProgress= false;
 
 		$scope.data = {
 			title 		: void 0,
@@ -39,19 +128,19 @@ class ArticleEditors {
 			slug		: void 0
 		};
 
-		$scope.tags = $scope.data.tags;
-		$scope.data = $scope.$parent.data ? angular.copy($scope.$parent.data) : $scope.data;
-		$scope.data.content = ($scope.data.content).replace('~\r\n+|\r+|\n+|\t+~ixu', '', $scope.data.content);
+		$scope.data = angular.copy($scope.$parent.data);
 		$scope.data.content = ($scope.data.post_type == 'article') ? $sce.trustAsHtml($.parseJSON($scope.data.content)) : angular.fromJson(JSON.parse($scope.data.content));
-		console.log( $scope );
-		// ------------------------------------------------------------------------
-
+		
 		// Tags Autocomplete
+		$.map( ($scope.data.tags) , function(items, index) {
+			$scope.tags.push({text : items.title });
+			
+		});
+
 		$scope.loadTags = function(query) {
 			var config, temp;
 
-			temp = JSON.parse(window.localStorage.token);
-			return $http.get(self.MainApp.baseURL + 'api/v1/tags?q=' + query);
+			return $http.get(window.baseURL + 'api/tags?q=' + query);
 		};
 
 		// ------------------------------------------------------------------------
@@ -65,41 +154,33 @@ class ArticleEditors {
 
 		// Save
 		$scope.saveClick = function() {
-			var data = $scope._save(angular.copy($scope.data));
+			if( $scope.onProgress ) { return false }
+		
+			const options = { editors : editors };
+			let data      = {};
+			
+			try{
+				$scope.onProgress = true;
+				data = thisClass._prepSave($element, angular.copy($scope.data), options);
+			} catch(err) {
+				console.error( err );
+			} finally {
+				console.log( data );
+				appFactory.postFeed( data, 'PUT' ).then(
+					function(res) {
+						$scope.onProgress = false;
+					
+						$timeout(function() { $scope.feedsAssignObject(res); },10);
+					},
+					function(err) {
+						$scope.onProgress = false;
+						return err;
+					}
+				);
 
-			self.prepSave(data);
-		};
-
-		// ------------------------------------------------------------------------
-
-		$scope._save = function (data) {
-			// Cover Image
-			var $fid = $($element).find('.fileupload-pool.cover-picture input[type=hidden][name=fid]');
-			if ($fid.length) {
-				data.image = $.extend(data.image, { id : $fid.val() });
-			} else {
-				data.image = $.extend(data.image, { id : void 0 });
+				console.log( $scope )
 			}
-
-			// Title and Lead (fuck! I don't know why but contentedit directive sometimes makes noises Ã Â² _Ã Â² )
-			if ($($element).find('.eb-title').length) {
-				data.title = $($element).find('.eb-title').text();
-			}
-			if ($($element).find('.eb-lead').length) {
-				data.lead = $($element).find('.eb-lead').text();
-			}
-
-			// Tags
-			var tags = [];
-			$.each($scope.tags, function() {
-				tags.push(this.text);
-			});
-			data.tags    = tags;
-
-			// Content
-			data.content = self.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
-
-			return data;
+			
 		};
 
 		// ------------------------------------------------------------------------
@@ -164,7 +245,6 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 		$timeout(function() {
 			// Title
-
 			if ($element.find('.eb-title').length) {
 				var titleEditor = new $this.titleEditorApp($element.find('.eb-title'), {
 					placeholder: 'Title'
@@ -197,7 +277,7 @@ class ArticleEditors {
 					placeholder: {
 						text: 'Write your content here ------- block the text to show text tool'
 					},
-					elementsContainer : document.querySelector('.editor-body'),
+					// elementsContainer : document.querySelector('.editor-body'),
 				});
 
 				mediumInsert($);
@@ -209,7 +289,7 @@ class ArticleEditors {
 			        		deleteScript: null,
 			        		autoGrid: 0,
 			        		fileUploadOptions: {
-			        			url: self.uploadCoverUrl+"?type=body",
+			        			url: thisFileUpload.uploadCoverUrl+"?type=body",
 			        		},
 			        		styles: {
 			        		    wide: { label: '<span class="icon-align-justify"></span>' },
@@ -217,6 +297,12 @@ class ArticleEditors {
 			        		    right: { label: '<span class="icon-align-right"></span>' },
 			        		    grid: null
 			        		},
+			        		uploadCompleted : function($el, data) {
+
+			        		},
+			        		uploadFailed : function(uploadErrors, data) {
+			        			console.error( uploadErrors );
+			        		}
 
 			        	},
 			        	embeds: {
@@ -240,8 +326,16 @@ class ArticleEditors {
 			        }
 			    });
 				editors.content = contentEditor;
+				if ($element.find('.fileupload-pool.cover-picture').length) {
+					thisFileUpload._initFileUpload(
+							$element.find('.fileupload-pool.cover-picture input[type=file]'), 
+							{
+								dropZone: $element.find('.fileupload-pool.cover-picture'), 
+								uploadURL: thisFileUpload.uploadCoverUrl
+							},
+							$scope);
+				}
 			}
-
 			// ------------------------------------------------------------------------
 
 			// Set window.onbeforeunload (Simple, too lazy to check whether the content has been changed :P)
@@ -249,6 +343,35 @@ class ArticleEditors {
 				return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
 			};
 		}, 50);
+
+		$scope.feedsAssignObject = function(newData) {
+			var _data = [],
+				ids   = $scope.$parent.ids;
+
+				$scope.$apply(function() {
+					newData.content = JSON.stringify(newData.content);
+					_.extend($scope.$parent.allPost[ids], newData)
+				});
+				
+				$('body').find('.mdl.mdl-editor').remove();
+
+				$scope.$on('mdl_data', function(event, args) {
+					console.log( args );
+				});
+		}
+	}
+
+	thisFileUpload() {
+		return thisFileUpload;
+	}
+
+	helper() {
+		return helper;
+	}
+
+	feedsAssignObject(newData) {
+		return newData;
 	}
 }
+// ArticleEditors.$inject = ['$http'];
 export default ArticleEditors;
