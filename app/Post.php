@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Channel;
+use Carbon;
 
 class Post extends Model
 {
@@ -65,7 +67,6 @@ class Post extends Model
 	{
 		$paginate         = self::$postData->paginate($take)->toArray();
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
-			// dd( $post['image'] );
 			return [
 				// Post
 				'id'         => $post['id'],
@@ -150,6 +151,99 @@ class Post extends Model
 		else { $post = self::where('id', $postID); }
 
 		$post->update([$stickyOrPremium => $set]);
+	}
+
+	public static function updatePostTitle($postID = FALSE, $postTitle = FALSE) {
+		if( empty($postTitle) ) { return ['error' => 'Post not found']; }
+
+		$post = self::where(['id' => $postID]);
+		$post = $post->update(['title' => $postTitle]);
+		return ['title' => $postTitle];
+	} 
+
+	public static function updatePostChannel($postID = false, $postChannel = FALSE) {
+		if ( empty($postID) ) { return ['error' => 'Post not found']; }
+
+		$post = self::where(function($query) use ($postChannel, $postID) {
+			$channelID = Channel::where([ 'slug' => $postChannel ]);
+
+			$query->where(['id' => $postID]);
+			$query->update([ 'channel_id' => $channelID->first()->id ]);
+
+			return $query;
+		})->with('channel')->first();	
+
+		return ['channel' => array( 'name' => html_entity_decode($post['channel']['title']), 'slug' => $post['channel']['title'] ) ];
+	}
+
+	public static function updatePostCreated($postID = FALSE, $postCreated = FALSE) {
+		if ( empty($postID) ) { return ['error' => 'Post not found']; }
+		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');
+
+		$post     = self::where(function($query) use ($postID, $postCreated, $convDate) {
+			$query->where(['id' => $postID])->update(['created_on' => $convDate]);
+			return $query;
+		})->first();
+		$post = date('d M Y H:i', strtotime($post->created_on));
+		return ['created' => $post];
+	}
+
+	public static function updatePostFeeds($post = array(), $postID = FALSE, $response = array()) {
+		if ( empty($postID) ) { return ['error' => 'Post no found']; }
+
+		$post = self::where(function($query) use ($post, $postID) {
+			$query->where(['id' => $postID->id])->update($post);
+			return $query;
+		})->with('user', 'image', 'channel', 'tag', 'share', 'embed')->first()->toArray();
+
+		$response = collect($response)->push($post)->map(function($items) {
+			return [
+				'id'         => $items['id'],
+				'title'      => html_entity_decode($items['title'], ENT_QUOTES),
+				'lead'       => html_entity_decode($items['lead'], ENT_QUOTES),
+				'slug'       => str_slug($items['slug']),
+				'url'        => implode(['https://keepo.me', @$items['user']['username'], $items['slug']], '/'),
+				'image'      => array(
+								'id' 	=>  @$items['image']['id'],
+								'url' 	=>  preg_replace('/https?\:/', '', @$items['image']['full_path']),
+								'name' 	=>  @$items['image']['fill_name']
+							),
+				'channel'    => array(
+								'slug'	=> str_slug(@$items['channel']['slug']),
+								'name' 	=> html_entity_decode(@$items['channel']['title'])
+							),
+				'post_type'  => $items['post_type'],
+				'status'     => $items['status'],
+				'views'      => $items['views'],
+				'shares'     => @$items['share']['shares'],
+				'embeds'     => count(@$items['embed']),
+				'created'    => date('d M Y H:i', strtotime($items['created_on'])),
+
+				//'reason'	 => 'Asd',
+				'content'    => $items['content'],
+
+				'is_sticky'  => $items['sticky'],
+				'is_premium' => $items['premium'],
+				
+				// User
+				'user'       => array(
+					'id'			=> $items['user']['id'],
+					'display_name' 	=> @$items['user']['display_name'],
+					'url'   		=> $items['user'] ? url(implode(['users', $items['user']['username']], '/')) : null,
+				),	
+				'source' 	=> $items['source'],
+				
+				// Tags
+				'tags'       => collect(@$items['tag'])->map(function($tag) {
+					return [
+						'id'    => $tag['id'],
+						'title' => $tag['title']
+					];
+				})
+			];
+		});
+
+		return $response[0];
 	}
 
 	// ------------------------------------------------------------------------
@@ -294,7 +388,7 @@ class Post extends Model
         	$post_tags = $post->get()[0]->postTags();
         	foreach ($post_tags->get() as $key => $post_tag) {
           		$tag = $post_tag->tag()->first();
-          		$tags[] = (new FeedDataHandler)->array_to_object(['id'=> $tag->id, 'slug'=> $tag->slug, 'title'=> $tag->title]);
+          		$tags[] = array(['id'=> $tag->id, 'slug'=> $tag->slug, 'title'=> $tag->title]);
         	}
       	}
       	return $tags;
@@ -315,7 +409,7 @@ class Post extends Model
 	// ------------------------------------------------------------------------
 	
 	public function channel()
-	{ return $this->belongsTo('App\Channel'); }
+	{ return $this->belongsTo('App\Channel', 'channel_id'); }
 
 	// ------------------------------------------------------------------------
 	

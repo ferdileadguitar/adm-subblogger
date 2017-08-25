@@ -29,7 +29,7 @@ Route::group(array('prefix' => 'api'), function() {
 	Route::delete('contents', 'Api\ContentController@deleteContent');
 
 	// Post or put feeds data from editor
-	Route::match(['put', 'get', 'post'], 'feeds', 'Api\ContentController@putFeed');
+	Route::match(['put', 'get'], 'feeds/{type?}', 'Api\ContentController@putFeed');
 
 	// Image asset 
 	Route::post('asset/cover-img', 'Api\AssetController@postImageCover');

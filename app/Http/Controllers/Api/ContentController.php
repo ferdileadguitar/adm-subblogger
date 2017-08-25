@@ -83,7 +83,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 		return $this->response('ok');
 	}
 
-	 /**
+     /**
      * Get Tags
      * @return object
      */
@@ -94,24 +94,94 @@ class ContentController extends \App\Http\Controllers\ApiController
         return $this->giveJson($tags->pluck('slug')->toArray());
     }
 
-    public function putFeed() {
-    	$this->processFeed('edit');
+    public function setPostTags($tags = array(), $post_id, $response = false) {
+        // Createad array after implode
+        $tags   = explode(config('feeds.tag_separator'), $this->request->input('tags'));
+
+        $result = (new PostTag)->addPostTags($tags, $post_id);
+
+        if( empty($result) )
+        { return $this->abortRequest(400, 'bad_request', 'We\'ve failed to store your tags :()'); }
+
+        // Sorry, it's look not advanced
+        $result = (!$response) ? $result : array('tags' => $result);
+
+        // Hmm um hahh hufffttttt,  No way ... :(
+        return $result;
     }
 
-    public function processFeed($reqType) {
-    	if(empty($this->request->input('title')))
-            return $this->abortRequest(404, 'not_found', 'You must at least fill Title and Category');
+    public function setPostTitle() {
+        $result = Post::updatePostTitle( $this->request['id'], $this->request['title'] );
+
+        if ( isset($result['error']))
+        { return $this->response($result['error'], 404); }
+
+        return response()->json($result)->send();
+    }
+
+    public function setPostChannel() {
+        $result = Post::updatePostChannel( $this->request['id'], $this->request['channel.slug'] );
+
+        if ( isset($result['error']))
+        { return $this->response($result['error'], 404); }
+
+        return response()->json($result)->send();
+    }
+
+    public function setPostCreated() {
+        $result = Post::updatePostCreated( $this->request['id'], $this->request['created'] );
+
+        if ( isset($result['error']) )
+        { return $this->response($result['error'], 404); }
+
+        return response()->json($result)->send();
+    }
+
+    public function putFeed($type = null) {
+        switch ($type) {
+            case 'set-title':
+                $this->setPostTitle();
+                break;
+            case 'set-tags':
+                $tags   = $this->request->input('tags');
+
+                $result = $this->setPostTags($tags, $this->request->input('id'), TRUE);
+
+                return response()->json($result);
+                break;
+            case 'set-channel':
+                $this->setPostChannel();
+                break;
+            case 'set-date':
+                $this->setPostDate();
+                break;
+            case 'set-created':
+                $this->setPostCreated();
+                break;
+            default:
+                $this->setPostFeeds();
+                break;
+        }
+    }
+
+    public function setPostFeeds() {
+        if(empty($this->request->input('title')))
+            return $this->abortRequest(404, 'not_found', 'You must at least fill Title and Category')->send();
 
         // Get Post ID
         $postID = @Post::where('slug', '=', $this->request->input('slug'))->first();
 
+        $tags = explode(config('feeds.tag_separator'), $this->request->input('tags'));
+
+        // Lets search which is exists or not and also append
+
         // Is this feed exists?
         if($postID == null)
-            return $this->abortRequest(400, 'bad_request', 'Issue is not exists');
+            return $this->abortRequest(400, 'bad_request', 'Issue is not exists')->send();
 
         $data = array(
             'object_file_id' => @ObjectFile::find($this->request->input('image.id'))->id, // Is Image/Object ID exists?
-            'slug'           => str_slug($this->request->input('title'), '-'),
+            // 'slug'           => str_slug($this->request->input('title'), '-'),
             'title'          => $this->request->input('title'),
             'lead'           => $this->request->input('lead'),
             'excerpt'        => strip_tags($this->request->input('lead')),
@@ -130,15 +200,15 @@ class ContentController extends \App\Http\Controllers\ApiController
         $data['title'] = htmlentities($data['title'], ENT_QUOTES, 'UTF-8');
 
         // ------------------------------------------------------------------------
-
         // If object file id is empty, lets use default from config
         if($data['object_file_id'] == null)
             $data['object_file_id'] = config('feeds.default_object_file_id');
 
         // First, lets check content's JSON
         $JSONContent = ($data['post_type'] != 'article') ? json_decode($this->request->input('content'), true) : $this->request->input('content');
+        
         if(empty($JSONContent)) // WHether its empty if JSON
-            return $this->abortRequest(400, 'bad_request', 'Wrong content format (1)');
+            return $this->abortRequest(400, 'bad_request', 'Wrong content format (1)')->send();
 
         switch ($data['post_type']) {
         	case 'article':
@@ -151,22 +221,25 @@ class ContentController extends \App\Http\Controllers\ApiController
                         foreach ($JSONContent['models'] as $key => $row)
                         {
                             if(!array_keys_exists(array('order', 'title', 'image_str', 'content'), $row))
-                                return $this->abortRequest(400, 'bad_request', 'Wrong content format (2)');
+                                return $this->abortRequest(400, 'bad_request', 'Wrong content format (1)')->send();
                         }
                     }
                     else
-                        return $this->abortRequest(400, 'bad_request', 'Wrong content format (2)');
+                        return $this->abortRequest(400, 'bad_request', 'Wrong content format (2)')->send();
+                break;
         	default:
-        		$this->abortRequest(404, 'bad_request', 'Sorry your content type is not allowed in here :(');
+        		return $this->abortRequest(404, 'bad_request', 'Sorry your content type is not allowed in here :(')->send();
         		break;
         }
 
         if( in_array($data['post_type'], ['listicle']) )
             $data['content']   = json_encode($JSONContent);
+    
 
         // Validation some options
         if( is_null($data['channel_id']) )
-        	$this->abortRequest(404, 'bad_request', 'Please choose the category');
+        	$this->abortRequest(404, 'bad_request', 'Please choose the category')->send();
+
         else {
         	if( $postID->title != $data['title'] )
         		$this->slugExistsCheck($data['slug']);
@@ -177,46 +250,19 @@ class ContentController extends \App\Http\Controllers\ApiController
         	}
         	$tmpSlug = $postID->slug;
         	$data = array_merge(['updated_on' => date('Y-m-d H:i:s')], $data);
+            
+            // Update Tags
+            $tags = $this->setPostTags($tags, $postID->id);
 
-        	// Now update the feeds
-        	$post = Post::where([ 'id' => $postID->id ])->update($data);
+            // Now update the feeds
+            $post = (new Post)->updatePostFeeds($data, $postID);
 
-            // if( !$post ) {
-                unset($data['channel_id']);
-            	$data = array_merge(
-                        [
-                            'id'      => $this->request->input('id'),
-                            'channel' => array( 
-                                        'slug'  => str_slug($this->request->input('channel.slug')), 
-                                        'name'  => html_entity_decode($this->request->input('channel.name'))
-                                    )
-                        ], $data);
+            // if( !empty($post) ) {
+                // $post = $post;
             // }
-        	// 	$tags = $this->request->input('tags');
 
-         //    	// dd($postID);
-        	// 	if(! empty($tags))
-         //        {
-         //            // Lets search which is exists or not
-         //            foreach ($tags as $row)
-         //            {
-         //                if (empty($row)) { continue; }
-
-         //                // Is slug's database record exists? If no lets create
-         //                $tagID = Tag::where('slug', '=', $row); // Holder
-         //                if($tagID->count() == 0)
-         //                    $tagID = Tag::create(['created_on'=> date('Y-m-d H:i:s'), 'updated_on'=> date('Y-m-d H:i:s'),'title' => $row, 'slug' => str_slug($row)])->id;
-         //                else
-         //                    $tagID = $tagID->first()->id;
-
-         //                // Is tag_id - post_id already exists on server? Anticipating edit
-         //                if(PostTag::where('tag_id', '=', $tagID)->where('post_id', '=', $postID)->count() == 0)
-         //                    PostTag::insert(['tag_id' => $tagID, 'post_id' => $postID->id]);
-         //            }
-         //            // $check_removing_tags = (new PostTag)->destroyTagByPost($postID,$tags); // removing tags event
-                    // }
         	// Let's give the response
-        	return response()->json($data)->send(); 
+        	return response()->json($post)->send(); 
         }
     }
 

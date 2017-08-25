@@ -1,16 +1,16 @@
-<div class="main-container" data-app="editors">
-  <div class="editor-wrapper">
+<div class="main-container" editor-article>
+  <div class="editor-wrapper" editor-title>
     <header class="editor-top"><h2>Change Title</h2></header>
   	
   	<article>
-  		<textarea ng-bind-html="data.title"></textarea>
+  		<textarea ng-bind-html="data.title" ng-model="data.title" text-content></textarea>
   	</article>
 
   	<footer class="editor-bottom mdl-footer">
 	    <div class="wrap-footer_btn">
-	      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
-	      <a ng-if="!singleButton" ng-class="{'remove': (type == 'delete'), 'ok': (type != 'delete')}" ng-click="okCallback ? callback(okCallback) : close()">Save</a>
+	      <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+	      <a ng-if="!singleButton" class="ok" ng-click="saveClick('set-title')"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
 	    </div>
-  </footer>
+    </footer>
   </div>
 </div>

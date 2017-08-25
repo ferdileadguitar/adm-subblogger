@@ -1,4 +1,4 @@
-<div class="main-container" data-app="editors" editor-article>
+<div class="main-container" editor-article>
   <div class="editor-wrapper" editor-created>
     <header class="editor-top"><h2>Change Created</h2></header>
   	
@@ -7,10 +7,10 @@
   	</article>
 
   	<footer class="editor-bottom mdl-footer">
-	    <div class="wrap-footer_btn">
-	      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
-	      <a ng-if="!singleButton" class="ok" ng-click="saveClick()">Save</a>
-	    </div>
-  </footer>
+      <div class="wrap-footer_btn">
+        <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+        <a ng-if="!singleButton" class="ok" ng-click="saveClick('set-created')"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
+      </div>
+    </footer>
   </div>
 </div>

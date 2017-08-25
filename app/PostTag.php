@@ -4,9 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+// Model 
+use App\Tag;
+
 class PostTag extends Model
 {
-	public $table       = 'posts_tags';
+	  public $table       = 'posts_tags';
     public $timestamps  = false;
     public $fillable    = ['tag_id','post_id'];
 
@@ -43,6 +46,39 @@ class PostTag extends Model
                       ->get();
         return $posts;
       });
+
+      return $data;
+    }
+
+    public function addPostTags($tags = array(), $postID) {
+      $data = array();
+      foreach ($tags as $row)
+      {
+          if (empty($row)) { continue; }
+
+          // Is slug's database record exists? If no lets create
+          $tagID = Tag::where('slug', '=', $row); // Holder
+          if($tagID->count() == 0) 
+              $tagID = Tag::create([
+                              'title'      => $row, 
+                              'slug'       => str_slug($row)
+                            ])->toArray();
+          else 
+              $tagID = $tagID->select('id', 'title')->first()->toArray();
+
+          // Mapping
+          $data = collect($data)->push($tagID)->map(function($item){
+            $give['id']    = $item['id'];
+            $give['title'] = $item['title'];
+            return $give;
+          })->all();
+
+          // Is tag_id - post_id already exists on server? Anticipating edit, 
+          if(PostTag::where('tag_id', '=', $tagID['id'])->where('post_id', '=', $postID)->count() == 0)
+              PostTag::insert(['tag_id' => $tagID['id'], 'post_id' => $postID]);
+
+          // $this->destroyTagByPost($post->id, $tags); // removing tags event
+      }
 
       return $data;
     }

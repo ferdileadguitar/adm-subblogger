@@ -116,11 +116,14 @@
 			top: 50%;
 			left: 50%;
 			@include translate(-50%, -50%);
+
+			.status { color: $black-90; }
 		}
 
 		.error-close {
 			font-size: 16px;
 			cursor: pointer;
+			color: $black-90;
 		}
 	}
 

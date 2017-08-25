@@ -41,17 +41,17 @@
 
         <div class="eb-listicle">
           <header class="eb-listicle-options options">
-            <span class="option <@ listicleOption == 'ordinal' ? 'active' : '' @>" ng-click="setOrder($event, 'ordinal')">Ordinal (1,2,3)</span>
-            <span class="option <@ listicleOption == 'reverse' ? 'active' : '' @>" ng-click="setOrder($event, 'reverse')">Reverse (3,2,1)</span>
-            <span class="option <@ listicleOption == 'points' ? 'active' : '' @>" ng-click="setOrder($event, 'points')">Point</span>
+            <span class="option" ng-class="{'active' : (data.content.sort == 'ordinal')}" ng-click="setOrder($event, 'ordinal')">Ordinal (1,2,3)</span>
+            <span class="option" ng-class="{'active' : (data.content.sort == 'reverse')}" ng-click="setOrder($event, 'reverse')">Reverse (3,2,1)</span>
+            <span class="option" ng-class="{'active' : (data.content.sort == 'points')}" ng-click="setOrder($event, 'points')">Point</span>
           </header>
 
           <div class="eb-listicle-list">
             <div class="eb-listicle-separator"><div></div><span class="eb-listicle-separator-trigger" ng-click="addItem($event)"><i class="icon-cancel"></i></span></div>
             <!-- end of .eb-listicle-separator -->
 
-            <div class="eb-listicle-item <@ item.class @>" ng-repeat-start="item in listicleItems">
-              <span class="listicle-item-numbers lin-<@ listicleOption @>"><@ item.order @>.</span>
+            <div class="eb-listicle-item <@ item.class @>" ng-repeat-start="item in data.content.models" ng-init="sortType = (data.content.sort)">
+              <span class="listicle-item-numbers lin-<@ sortType @>"><@ item.order @>.</span>
 
               <header class="listicle-item-header">
                 <header class="listicle-item-title-holder">
@@ -132,11 +132,6 @@
               <li ng-click="setChannel($event, 'unique-weird-channel')">Unique &amp; Weird</li>
             </ul>
           </div>
-
-
-          <footer class="eb-footer-notice">
-            <p>Untuk menjaga kualitas konten di Keepo per Maret 2016 setiap postingan akan melewati proses moderasi. Hanya issue terbaik yang menghibur dan antiboring yang bisa masuk di feeds Keepo. Sekalipun tidak lolos proses moderasi kamu tetap bisa melihat postingan kamu di menu "<a href="[[ url($uInfo->slug . '/my-issues') ]]">My Post</a>".</p>
-          </footer>
         </footer>
         <!-- end of .eb-footer -->
       </div>

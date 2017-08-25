@@ -8,27 +8,27 @@
 
           <ul class="eb-category-list">
             <div class="rows-group">
-              <div class="col-1">
-                <li ng-click="setChannel($event, 'hobbies-channel')">Art &amp; Design</li>
-                <li ng-click="setChannel($event, 'animals-channel')">Cute</li>
-                <li ng-click="setChannel($event, 'creepy-channel')">Creepy</li>
-                <li ng-click="setChannel($event, 'entertainments-channel')">Entertainments</li>
-                <li ng-click="setChannel($event, 'facts-channel')">Facts &amp; History</li>
-                <li ng-click="setChannel($event, 'anime-comic-channel')">Games, Comic &amp; Anime</li>
-                <li ng-click="setChannel($event, 'inspirational-channel')">Inspirational</li>
+              <div class="col-1" ng-init="channel = data.channel">
+                <li ng-click="setChannel($event, 'hobbies-channel')" ng-class="{'active' : (channel.slug == 'hobbies-channel')}">Art &amp; Design</li>
+                <li ng-click="setChannel($event, 'animals-channel')" ng-class="{'active' : (channel.slug == 'animals-channel')}">Cute</li>
+                <li ng-click="setChannel($event, 'creepy-channel')" ng-class="{'active' : (channel.slug == 'creepy-channel')}">Creepy</li>
+                <li ng-click="setChannel($event, 'entertainments-channel')" ng-class="{'active' : (channel.slug == 'entertainments-channel')}">Entertainments</li>
+                <li ng-click="setChannel($event, 'facts-channel')" ng-class="{'active' : (channel.slug == 'facts-channel')}">Facts &amp; History</li>
+                <li ng-click="setChannel($event, 'anime-comic-channel')" ng-class="{'active' : (channel.slug == 'anime-comic-channel')}">Games, Comic &amp; Anime</li>
+                <li ng-click="setChannel($event, 'inspirational-channel')" ng-class="{'active' : (channel.slug == 'inspirational-channel')}">Inspirational</li>
               </div>
               <div class="col-1">
-                <li ng-click="setChannel($event, 'lifestyle-channel')">Lifestyle</li>
-                <li ng-click="setChannel($event, 'fun-humor-channel')">Fun &amp; Humor</li>
-                <li ng-click="setChannel($event, 'news-info-channel')">News &amp; Info</li>
-                <li ng-click="setChannel($event, 'nsfw-channel')">NSFW</li>
-                <li ng-click="setChannel($event, 'wtf-channel')">WTF!</li>
-                <li ng-click="setChannel($event, 'sports-channel')">Sports</li>
-                <li ng-click="setChannel($event, 'tech-channel')">Tech</li>
+                <li ng-click="setChannel($event, 'lifestyle-channel')" ng-class="{'active' : (channel.slug == 'lifestyle-channel')}">Lifestyle</li>
+                <li ng-click="setChannel($event, 'fun-humor-channel')" ng-class="{'active' : (channel.slug == 'fun-humor-channel')}">Fun &amp; Humor</li>
+                <li ng-click="setChannel($event, 'news-info-channel')" ng-class="{'active' : (channel.slug == 'news-info-channel')}">News &amp; Info</li>
+                <li ng-click="setChannel($event, 'nsfw-channel')" ng-class="{'active' : (channel.slug == 'nsfw-channel')}">NSFW</li>
+                <li ng-click="setChannel($event, 'wtf-channel')" ng-class="{'active' : (channel.slug == 'wtf-channel')}">WTF!</li>
+                <li ng-click="setChannel($event, 'sports-channel')" ng-class="{'active' : (channel.slug == 'sports-channel')}">Sports</li>
+                <li ng-click="setChannel($event, 'tech-channel')" ng-class="{'active' : (channel.slug == 'tech-channel')}">Tech</li>
               </div>
               <div class="col-1">
-                <li ng-click="setChannel($event, 'travelling-channel')">Travelling</li>
-                <li ng-click="setChannel($event, 'unique-weird-channel')">Unique &amp; Weird</li>
+                <li ng-click="setChannel($event, 'travelling-channel')" ng-class="{'active' : (channel.slug == 'travelling-channel')}">Travelling</li>
+                <li ng-click="setChannel($event, 'unique-weird-channel')" ng-class="{'active' : (channel.slug == 'unique-weird-channel')}">Unique &amp; Weird</li>
               </div>
             </div>
           </ul>
@@ -36,10 +36,10 @@
   	</article>
 
   	<footer class="editor-bottom mdl-footer">
-	    <div class="wrap-footer_btn">
-	      <a ng-click="closeCallback ? callback(closeCallback) : close()">Cancel</a>
-	      <a ng-if="!singleButton" class="ok" ng-click="saveClick()">Save</a>
-	    </div>
-  </footer>
+      <div class="wrap-footer_btn">
+        <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+        <a ng-if="!singleButton" class="ok" ng-click="saveClick('set-channel')"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
+      </div>
+    </footer>
   </div>
 </div>

@@ -15,6 +15,7 @@ import created    from './modules/template/mdl-editor-created.html';
 import articleDirective   from './modules/directive/article.directive.js';
 import listicleDirective  from './modules/directive/listicle.directive.js';
 import createdDirective   from './modules/directive/created.directive.js';
+import titleDirective     from './modules/directive/title.directive.js';
 
 // APP
 // ------------------------------------------------------------------------
@@ -344,6 +345,9 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 								type : type
 							});
 							$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
+							
+							// This use for all directives
+							$rootScope.allPosts = Object.assign($scope, { post : post });
 						};
 
 						$scope.parseFeedsLink = function(post) {
@@ -407,22 +411,23 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 						$scope.$on('mdl_data', function(item, args){ 
 							$scope.allPost = args.allPosts; 
-							$scope.data    = args.posts; 
+							// $scope.data    = args.posts; 
 							$scope.layout  = {
 								type : args.type,
 								url  : args.type + '.html'
 							};
+							
+							// $scope.$broadcast('data_context', 'send fronm editors');
+							$scope.close = function() {
+								if( $rootScope.onProgress ) { confirm('Are you sure to cancel !!!') }
+								$scope.$destroy();
+							};
+
+							$scope.$on('$destroy', function() {  
+								$element.remove();
+							});
 						});
 						
-						$scope.$broadcast('data_context', 'send fronm editors');
-
-						$scope.close = function() {
-							$scope.$destroy();
-						};
-
-						$scope.$on('$destroy', function() {  
-							$element.remove();
-						});
 					}	
 
 				}
@@ -511,6 +516,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			this.application.directive('editorArticle',  articleDirective);
 			this.application.directive('editorListicle', listicleDirective);
 			this.application.directive('editorCreated', createdDirective);
+			this.application.directive('editorTitle', titleDirective);
 		},
 
 		allController: function($scope, $attrs, appService) {

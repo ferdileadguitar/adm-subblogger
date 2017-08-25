@@ -13,13 +13,6 @@ function _initFileUpload($element, options, $scope) {
 		fileUploadOptions = {
 			url       : options.uploadURL ? options.uploadURL : this.uploadURL,
 			dropZone  : void 0,
-			// $scope    : scope,
-			/*beforeSend: function(xhr, data) {
-		        var file = data.files[0],
-		        	temp = JSON.parse(window.localStorage.token);
-
-		        xhr.setRequestHeader('Authorization', temp.token_type + ' ' + temp.access_token);
-		    },*/
 
 			add: function(e, data) {
 				var that 	= $(this).data('blueimpUIFileupload'),
@@ -28,8 +21,6 @@ function _initFileUpload($element, options, $scope) {
 
 	            // Validation
 	            // ------------------------------------------------------------------------
-	            // console.log( $scope, options, self, this );
-	            // return false;
 	            that._adjustMaxNumberOfFiles(-files.length);
 	            data.isAdjusted = true;
 	            data.files.valid = data.isValidated = that._validate(files);
@@ -76,7 +67,7 @@ function _initFileUpload($element, options, $scope) {
 				// 	// var $scope = angular.element('[ng-controller=listicleController]').scope();
 					var indexPos = $(this).closest('.eb-listicle-item').index('.eb-listicle-item');
 					$scope.listicleItems[indexPos].image_str = data.result.url;
-					$scope.listicleItems[indexPos].image_id = data.result.id;
+					$scope.listicleItems[indexPos].image_id  = data.result.id;
 					$scope.$apply();
 				}
 
@@ -86,8 +77,6 @@ function _initFileUpload($element, options, $scope) {
 				}
 		        $scope.uploading = false;
 		        $scope.$apply();
-	        	console.log( $scope );
-
 		        // ------------------------------------------------------------------------
 
 	            // DOM manipulation
@@ -112,7 +101,7 @@ function _initFileUpload($element, options, $scope) {
 	            }
 			},
 
-			fail: function(e, data, $scope) {
+			fail: function(e, data) {
 				var that 		= $(this).data('blueimpUIFileupload'),
 					$progress 	= data.context.find('.progressbar'),
 					$parent 	= data.context,
@@ -120,9 +109,9 @@ function _initFileUpload($element, options, $scope) {
 					fid;
 
 		        // ------------------------------------------------------------------------
-
+		        console.log( $scope )
 		        $scope.uploading = false;
-		        $scope.$apply();
+		        // $scope.$apply();
 
 		        // ------------------------------------------------------------------------
 

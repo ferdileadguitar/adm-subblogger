@@ -4,24 +4,34 @@ import ArticleEditors from './article.directive';
 
 class Created extends ArticleEditors{
 
-	constructor() {
-		super();
+	constructor($http, $rootScope, $timeout, $sce, $q, appFactory, appService) {
+		super($http, $rootScope, $timeout, $sce, $q, appFactory, appService);
 		this.restrict = 'A';
 	}
 
-	controller($scope, $element, $timeout) {
+	link(scope, element, attrs) {
+
 		$.datetimepicker.setLocale('en');
-		var data = $scope.data;
-		console.log( data );
-		$element.find('[datetime-picker]').datetimepicker({
-			// format:'d.m.Y H:i',
+		
+		let _base     = this._$scope.allPosts,
+		    _content  = _base.post,
+			data      = _content;
+		
+		scope.created = data.created;
+
+		element.find('[datetime-picker]').datetimepicker({
+			format        : 'Y-m-d H:i:s',
 			timepicker    : false,
-			inline 		  :true,
-			startDate     :data.created,//or 1986/12/08
+			inline 		  : true,
+			startDate     : data.created,//or 1986/12/08
 			formatDate    : 'd M y',
 			onChangeDateTime : function(current_time, $input) {
-				var $Date = new Date;
-				console.log( current_time, $Date.getTime() );
+				// We handle at PHP sorry, .. about this
+				scope.created = current_time.toLocaleDateString();
+
+			},
+			onClose : function(current_time, $input) {
+				console.log( current_time );
 			}
 		});
 	}

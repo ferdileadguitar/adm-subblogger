@@ -1,0 +1,25 @@
+/*CUSTOM MIXIN*/
+@mixin mdl_header {
+	header {
+		text-align: left;
+		border-bottom: 1px solid $black-10;
+
+		h2 {
+			padding-bottom: 10px;
+			color: $black-80;
+		}
+	}
+}
+
+@mixin contenteditable_placeholder($font_weight: 400, $font_color: $black-10) {
+	&[contenteditable=true]:empty:before {
+		content : attr(data-placeholder);
+		display : block;
+		font-weight: $font-weight;
+		color: $font-color;
+	}
+
+	&[contenteditable=true]:empty:focus:before {
+		content : '';
+	}
+}

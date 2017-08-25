@@ -159,11 +159,11 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 					return response.data;
 				};
 
-				function postFeed(data, type) {
+				function postFeed(data, type, params) {
 					var deferred = $q.defer(), request,
-						url      = window.baseURL + 'api/feeds',
+						url      = window.baseURL + 'api/feeds' + (params.length) ? '?=' + params : '',
 						data     = data;
-					
+					console.log( url );
 					return $http({
 						method 	     : type,
 						url    		 : window.baseURL + 'api/feeds',
@@ -196,15 +196,16 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 			this.application.factory('appFactory', ['$http', '$q', function($http, $q) {
 				return { postFeed : postFeed };
 
-				function postFeed(data, type) {
+				function postFeed(data) {
 					var deferred = $q.defer(), request,
-						url      = window.baseURL + 'api/feeds',
-						data     = data;
-					
+						params   = (!_.isUndefined(data.params)) ? data.params : '',
+						url      = window.baseURL + 'api/feeds' + params,
+						datas    = data.obj;
+					console.log( url );
 					return $http({
-						method 	     : type,
-						url    		 : window.baseURL + 'api/feeds',
-						data   		 : data,
+						method 	     : data.method,
+						url    		 : url,
+						data   		 : datas,
 						responseType : 'json',
 						timeout      : deferred.promise,
 						crossDomain  : true

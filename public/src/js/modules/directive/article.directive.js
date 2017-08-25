@@ -1,61 +1,48 @@
-import helper          from './../library/helper.js';
-import MediumEditor    from './../../vendor/medium/medium-editor.js';
-import thisFileUpload  from './../service/bluimp-fileupload.service.js';
-import mediumInsert    from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
+import app_helper     from './../helper/common.js';
+import MediumEditor   from './../../vendor/medium/medium-editor.js';
+import thisFileUpload from './../service/bluimp-fileupload.service.js';
+import mediumInsert   from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
 
 const editors        = { title: void 0, lead: void 0, content: void 0 };
-const titleEditorApp = helper.titleEditorApp;
+const titleEditorApp = app_helper.titleEditorApp;
+const allData        = {};
 
 class ArticleEditors {
 	
-	constructor($http, $rootScope) {
+	constructor($http, $rootScope, $timeout, $sce, $q, appFactory, appService) {
 		'ngInject';
 
 		this.restrict       = 'A';
 		this.editors        = editors;
 		this.titleEditorApp = titleEditorApp;
+		this.MediumEditor   = MediumEditor;
+		this.mediumInsert   = mediumInsert;
 		
-		// let _$http  = $http;
-		this.$http   = $http;
-		// this.appFactory     = appFactory;
-		// this.$q 			= $q;
+		this._$http         = $http;
+		this._$sce          = $sce;
+		this._$q            = $q;
+		this._$timeout      = $timeout;
+		this._appFactory    = appFactory;
+		this._appService    = appService;
+		this._$scope        = $rootScope;
 	}
 
 	get $inject() {
-		return ['$http', '$rootScope'];
+		return ['$http', '$rootScope', '$timeout', '$sce', '$q', 'appFactory', 'appService'];
 	}
  
-	// $http($http) {
-	// 	return $http;
-	// }
-
 	_post(data) {
-		console.log( this._$http, this.http );
-		// return this.$http();
-		// return ArticleEditors.prototype.constructor;
-		// $http({
-		// 	method       : params.type,
-		// 	url        	 : window.baseURL + 'api/feeds',
-		// 	data         : data,
-		// 	responseType : 'json',
-		// }).then(
-		// 	function(res) {
-		// 		$q.resolve(res.data);
-		// 	},
-		// 	function(err) {
-		// 		$q.reject(err);
-		// 	}
-		// );
 	}
 
-	static _listicleFormat(element, data) {
-		var listicleItems = [], contentStringify;
-		$.each(data.content.models, function(index, value) {
+	static _listicleFormat(element, obj) {
+		console.log( obj );
+		let data = obj.data, listicleItems = [], contentStringify;
+		
+		$.each(data.content.models, (index, value) => {
 			var $element 		= $(element).find('.eb-listicle-list'),
 				$listicleEl 	= $element.find('.eb-listicle-item:eq(' + index + ')'),
 				contentEditor 	= $listicleEl.find('.listicle-item-content').data('editor');
 
-			// console.log( contentEditor.serialize() )
 			listicleItems.push({
 				order 		: value.order,
 				title 		: $listicleEl.find('.listicle-item-title').text(),
@@ -63,37 +50,112 @@ class ArticleEditors {
 				content 	: contentEditor.serialize()['element-0'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, '') //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
 			});
 		});
-		data.content = JSON.stringify({ content : data.content.content, sort : data.content.sort, models : listicleItems });
-		
-		return data;
+
+		// Tags
+		let tags = [];
+		_.each(obj.tags, (items, key) => {
+			tags.push(items.text);
+		});
+		data.tags    = tags.join(';');
+		data.content = JSON.stringify({ content : (data.content.content), sort : (data.content.sort), models : (listicleItems) });
+
+		return {
+			obj    : data,
+			method : 'PUT' 
+		};
 	}
 
-	static _articleFormat($element, data, options) {
-		var $fid = $($element).find('.fileupload-pool.cover-picture input[type=hidden][name=fid]');
+	static _articleFormat(element, obj, options) {
+		let data = obj.data, content = {};
+		let $fid = $(element).find('.fileupload-pool.cover-picture input[type=hidden][name=fid]');
 			if ($fid.length) {
-				data.image = $.extend(data.image, { id : $fid.val() });
+				obj.data.image = _.extend(data.image, { id : $fid.val() });
 			} else {
-				data.image = $.extend(data.image, { id : void 0 });
+				obj.data.image = _.extend(data.image, { id : void 0 });
 			}
-
 			// Tags
-			var tags = [];
-			$.each(data.tags, function() {
-				tags.push(this.text);
+			let tags = [];
+			_.each(obj.tags, (items, key) => {
+				tags.push(items.text);
 			});
-			data.tags    = tags;
-			data.content = options.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
+			content = obj.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
+			
+			data.content = content;
+			data.tags    = tags.join(';');
 
-			return data;
+			return {
+				obj    : data,
+				method : 'PUT'
+			};
 	}
 
-	static _prepSave($element, data, options) {
-		switch(data.post_type) {
+	static _titleFormat(element, obj, options) {
+
+		return {
+			obj    : obj.data,
+			method : 'PUT',
+			params : '/set-title'
+		};
+	}
+
+	static _tagsFormat(element, obj, option) {
+		let tags = [], data = obj.data;
+
+		_.each(obj.tags, (items, key) => {
+			tags.push(items.text);
+		});
+
+		data.tags = tags.join(';');
+
+		return {
+			obj    : data,
+			method : 'PUT',
+			params : '/set-tags' 
+		}
+	}
+
+	static _channelFormat(element, obj, option) {
+		let data = obj.data;
+		console.log( data );
+		return {
+			obj     : data,
+			method  : 'PUT',
+			params  : '/set-channel' 
+		}
+	}
+
+	static _createdFormat(element, obj, option) {
+		let data = obj = _.extend(obj.data, {created : obj.created});
+
+		return {
+			obj 	: data,
+			method  : 'PUT',
+			params  : '/set-created'
+		}
+	} 
+
+	static _prepSave(element, obj, options) {
+		// Firts of all , let's define what is in obj data post_type, so i mean is in list below
+		let type = (_.isUndefined(obj.type)) ? obj.data.post_type : obj.type;
+
+		switch(type) {
 			case 'article':
-				return this._articleFormat($element, data, options);
+				return this._articleFormat(element, obj, options);
 				break;
 			case 'listicle':
-				return this._listicleFormat($element, data, options);
+				return this._listicleFormat(element, obj, options);
+				break;
+			case 'set-title':
+				return this._titleFormat(element, obj);
+				break;
+			case 'set-tags':
+				return this._tagsFormat(element, obj);
+				break;
+			case 'set-channel':
+				return this._channelFormat(element, obj);
+				break;
+			case 'set-created':
+				return this._createdFormat(element, obj);
 				break;
 			default:
 				throw new Error('Sorry we can\'t process your request');
@@ -101,84 +163,83 @@ class ArticleEditors {
 		}
 	}
 
-	controller($scope, $element, $attrs, $timeout, $rootScope, $http, $sce, appFactory) {
-		var $this     = $.extend({}, helper),
-		    thisClass = ArticleEditors;
+	static _tags(obj) {
+		var data = [];
+		_.map( obj ,(items, index) => 
+			data.push({text : items.title })
+		);
+		return data;
+	}
 
-		$scope.tempSave  = void 0;
-		$scope.message   = void 0;
-		$scope.tags      = [];
-		$scope.uploading = false;
-		$scope.onProgress= false;
+	link(scope, element, attrs) {
+		var mainClass  = ArticleEditors,
+			_base      = this._$scope,
+			_content   = _base.allPosts.post,
+			self       = this;
 
-		$scope.data = {
-			title 		: void 0,
-			lead 		: void 0,
-			content 	: void 0,
-			image 		: {
-				id 	: void 0,
-				url : void 0
-			},
-			tags 		: [],
-			source 		: void 0,
-			channel 	: {
-				slug : void 0,
-				name : void 0
-			},
-			slug		: void 0
-		};
+		scope.tempSave  = void 0;
+		scope.message   = void 0;
+		scope.tags      = [];
+		scope.uploading = false;
+		scope.onProgress= false;
+		scope.data      = angular.copy(_base.allPosts.post);
 
-		$scope.data = angular.copy($scope.$parent.data);
-		$scope.data.content = ($scope.data.post_type == 'article') ? $sce.trustAsHtml($.parseJSON($scope.data.content)) : angular.fromJson(JSON.parse($scope.data.content));
-		
+		// really stuck for this one
+		if( scope.data.post_type == 'article' ) {
+			scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
+		}
 		// Tags Autocomplete
-		$.map( ($scope.data.tags) , function(items, index) {
-			$scope.tags.push({text : items.title });
-			
-		});
+		scope.tags     = mainClass._tags(_content.tags);
 
-		$scope.loadTags = function(query) {
+		scope.loadTags = function(query) {
 			var config, temp;
-
-			return $http.get(window.baseURL + 'api/tags?q=' + query);
+			return self._$http.get(window.baseURL + 'api/tags?q=' + query);
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Temporary Save
-		$scope.saveTemp = function() {
+		scope.saveTemp = function() {
 
 		}
 
 		// ------------------------------------------------------------------------
 
 		// Save
-		$scope.saveClick = function() {
-			if( $scope.onProgress ) { return false }
-		
-			const options = { editors : editors };
-			let data      = {};
+		scope.saveClick = function(type) {
+			if( scope.onProgress ) { return false }
+
+			let options = { editors : editors, type : type };
+			let data    = {};
 			
 			try{
-				$scope.onProgress = true;
-				data = thisClass._prepSave($element, angular.copy($scope.data), options);
-			} catch(err) {
-				console.error( err );
-			} finally {
-				console.log( data );
-				appFactory.postFeed( data, 'PUT' ).then(
-					function(res) {
-						$scope.onProgress = false;
+				data = mainClass._prepSave(element, _.extend(scope, options));
+			    scope.onProgress = true;
+				
+				self._appFactory.postFeed( data ).then(
+					(res) => {
+						scope.onProgress = false;
 					
-						$timeout(function() { $scope.feedsAssignObject(res); },10);
+						self._$timeout(() => scope.feedsAssignObject(res) ,10);
 					},
-					function(err) {
-						$scope.onProgress = false;
+					(err) => {
+						scope.onProgress = false;
+						if( err.data.error == 'bad_request' || _.contains([400, 404, 500, 502], err.status) ) {
+							self._$q.reject(data);
+
+							self._appService.modal(scope, {
+								type         : 'text',
+								text         : '<h3>Whoops... something went wrong !</h3><h5>' + err.data.error_description + '</h5>',
+								cancelText   : 'Ok',
+								singleButton : true
+							});
+						}
 						return err;
 					}
 				);
-
-				console.log( $scope )
+			} catch(err) {
+				console.error( err );
+			} finally {
 			}
 			
 		};
@@ -186,7 +247,7 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Browse Cover Picture File
-		$scope.browseFile = function (event) {
+		scope.browseFile = function (event) {
 			var $el = $(event.currentTarget || event.srcElement);
 
 			$el.parent('.fileupload-pool').find('.file-upload').trigger('click');
@@ -195,35 +256,38 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Remove Preview
-		$scope.removePreview = function(event) {
+		scope.removePreview = function(event) {
 			var $el = $(event.currentTarget || event.srcElement);
 			var id = $($el).closest('.on-preview').find("input[name='fid']").val();
 			if(!$($el).closest('.eb-listicle-item')[0]){
-				$scope.data.image.id = void 0;
+				scope.data.image.id = void 0;
 			}
-			if(!$scope.data.images){
-				$scope.data.images = [];
+			if(!scope.data.images){
+				scope.data.images = [];
 			}
-			$scope.data.images.push({id: id, destroy: true});
+			scope.data.images.push({id: id, destroy: true});
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Get Image from URL
-		$scope.getImage = function(event) {
+		scope.getImage = function(event) {
 			var $el = $(event.currentTarget || event.srcElement);
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Set Channel
-		$scope.setChannel = function($event, slug) {
+		scope.setChannel = function($event, slug) {
 			var $el = $($event.currentTarget || $event.srcElement);
 
-			$scope.data.channel = {
+			scope.data.channel = {
 				slug : slug,
 				name : $el.text()
 			}
+
+			scope.channel = scope.data.channel;
+
 			if(typeof toggleSelectCategory == 'function'){
 				toggleSelectCategory();
 			}
@@ -231,22 +295,38 @@ class ArticleEditors {
 
 		// ------------------------------------------------------------------------
 
-		// Close Message popup
-		$scope.closeMessage = function($event) {
-			$scope.message = void 0;
-		};
-
-		$scope.openCategory = function($event) {
+		scope.openCategory = function($event) {
 			var $el = $($event.currentTarget || $event.srcElement);
 
 			$el.find('.eb-category-list').toggleClass('open');
 		}
 
+		scope.feedsAssignObject = function(newData) {
+			var _data = [],
+				ids   = scope.$parent.ids;
+
+				scope.$apply(() => {
+
+					if( _.has(newData, 'content') ) {
+						newData.content = JSON.stringify(newData.content);
+					}
+						
+					_.extend(_base.allPosts.data[ids], newData);
+					console.log( _base.allPosts.data[ids] )
+				});
+				
+				$('body').find('.mdl.mdl-editor').remove();
+
+				scope.$on('mdl_data', (event, args) => {
+					console.log( args );
+				});
+		}
+
 		// ------------------------------------------------------------------------
-		$timeout(function() {
+		this._$timeout(function() {
 			// Title
-			if ($element.find('.eb-title').length) {
-				var titleEditor = new $this.titleEditorApp($element.find('.eb-title'), {
+			if (element.find('.eb-title').length) {
+				var titleEditor = new app_helper.titleEditorApp(element.find('.eb-title'), {
 					placeholder: 'Title'
 				});
 
@@ -254,8 +334,8 @@ class ArticleEditors {
 			}
 
 			// Lead
-			if ($element.find('.eb-lead').length) {
-				var titleEditor = new $this.titleEditorApp($element.find('.eb-lead'), {
+			if (element.find('.eb-lead').length) {
+				var titleEditor = new app_helper.titleEditorApp(element.find('.eb-lead'), {
 					placeholder: 'Subtitle: it will be shown in feed'
 				});
 
@@ -263,12 +343,10 @@ class ArticleEditors {
 			}
 
 			// Content
-			if ($element.find('.eb-article').length) {
+			if (element.find('.eb-article').length) {
 				var contentEditor = new MediumEditor('#editor-content', {
 					toolbar: {
 						buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
-						// static : true,
-						// sticky : false
 					},
 					paste: {
 						cleanPastedHTML: true,
@@ -326,14 +404,14 @@ class ArticleEditors {
 			        }
 			    });
 				editors.content = contentEditor;
-				if ($element.find('.fileupload-pool.cover-picture').length) {
+				if (element.find('.fileupload-pool.cover-picture').length) {
 					thisFileUpload._initFileUpload(
-							$element.find('.fileupload-pool.cover-picture input[type=file]'), 
+							element.find('.fileupload-pool.cover-picture input[type=file]'), 
 							{
-								dropZone: $element.find('.fileupload-pool.cover-picture'), 
+								dropZone: element.find('.fileupload-pool.cover-picture'), 
 								uploadURL: thisFileUpload.uploadCoverUrl
 							},
-							$scope);
+							scope);
 				}
 			}
 			// ------------------------------------------------------------------------
@@ -343,22 +421,6 @@ class ArticleEditors {
 				return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
 			};
 		}, 50);
-
-		$scope.feedsAssignObject = function(newData) {
-			var _data = [],
-				ids   = $scope.$parent.ids;
-
-				$scope.$apply(function() {
-					newData.content = JSON.stringify(newData.content);
-					_.extend($scope.$parent.allPost[ids], newData)
-				});
-				
-				$('body').find('.mdl.mdl-editor').remove();
-
-				$scope.$on('mdl_data', function(event, args) {
-					console.log( args );
-				});
-		}
 	}
 
 	thisFileUpload() {
@@ -373,5 +435,4 @@ class ArticleEditors {
 		return newData;
 	}
 }
-// ArticleEditors.$inject = ['$http'];
 export default ArticleEditors;

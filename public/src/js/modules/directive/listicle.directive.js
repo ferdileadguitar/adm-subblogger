@@ -1,37 +1,35 @@
 import ArticleEditors from './article.directive';
-// import BluimpFileUpload from './../service/bluimp-fileupload.service.js';
 
 class ListicleEditors extends ArticleEditors {
 
-	constructor($http) {
-		super();
-		this.restrict = 'A'; 
-		// this.$http    = $http;
-	}
+	constructor($http, $rootScope, $timeout, $sce, $q, appFactory) {
+		// 'ngInject';
+		super($http, $rootScope, $timeout, $sce, $q, appFactory);
 
-	get $inject() {
-		return ['$http', '$rootScope'];
+		this.restrict   = 'A'; 
 	}
 	
 	controller($scope, $element, $timeout) {
 	}
 
-	link($scope, $element, $attrs) {
-		var windowListicle  = $scope.data.content || {},
-			self    = this;
+	link(scope, $element, $attrs) {
+		var	self    = this,
+		    dataListicle  = scope.data.content = angular.fromJson(JSON.parse(scope.data.content)) || {};
 
-		$scope.listicleOption = windowListicle.sort || 'ordinal';
-		$scope.listicleItems  = windowListicle.models || [{"order": "1", "title": "", "image_str": "", "content": ""}];
+		$.map(dataListicle.models, (item, key) => {
+			dataListicle.models[key].content = self._$sce.trustAsHtml(item.content);
+		});
 
 		// Set Listicle Order
-		$scope.setOrder = function(event, order) {
+		scope.setOrder = function(event, order) {
 			var $el = $(event.currentTarget || event.srcElement)
 
 			if (!$el.length) { return false; }
-			if ($scope.listicleOption == order) { return false; }
+			if (scope.listicleOption == order) { return false; }
 
-			$scope.listicleOption = order;
-
+			// scope.listicleOption    = order;
+			scope.data.content.sort = order;
+			console.log( scope );
 			// Rewrite numbering
 			if (order != 'points')
 			{ this.rewriteNumber(-1); }
@@ -44,19 +42,20 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Add Listicle Item
-		$scope.addItem = function(event) {
+		scope.addItem = function(event) {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-separator'),
 				indexPos 	= 0;
 
 			if (!$el.length) { return false; }
 
 			// ------------------------------------------------------------------------
-			console.log( $el );
+
 			// Get the order position
 			if (! $el.prev('.eb-listicle-item').length) { indexPos = 0; }
 			else { indexPos = $el.prev('.eb-listicle-item').index('.eb-listicle-item') + 1; }
 
-			$scope.listicleItems.splice(indexPos, 0, {"order": (indexPos + 1), "title": "", "image_str": "", "content": ""});
+			scope.listicleItems.splice(indexPos, 0, {"order": (indexPos + 1), "title": "", "image_str": "", "content": ""});
+			scope.data.content.models.splice(indexPos, 0, {"order": (indexPos + 1), "title": "", "image_str": "", "content": ""});
 
 			// ------------------------------------------------------------------------
 
@@ -64,13 +63,15 @@ class ListicleEditors extends ArticleEditors {
 			this.rewriteNumber(indexPos);
 
 			// Init Listicle Editor
-			setTimeout(function() { $scope.initListicleEditor(indexPos); }, 50);
+			setTimeout(function() { scope.initListicleEditor(indexPos); }, 50);
+			console.log( scope );
+
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Remove Listicle Item
-		$scope.removeItem = function(event) {
+		scope.removeItem = function(event) {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-item'),
 				indexPos 	= $el.index('.eb-listicle-item');
 
@@ -78,14 +79,15 @@ class ListicleEditors extends ArticleEditors {
 
 			// ------------------------------------------------------------------------
 
-			$scope.listicleItems.splice(indexPos, 1);
+			scope.listicleItems.splice(indexPos, 1);
 
 			// empty? create new
-			if (! $scope.listicleItems.length) {
-				$scope.listicleItems.splice(0, 0, {"order": 1, "title": "", "image_str": "", "content": ""});
+			if (! scope.listicleItems.length) {
+				scope.listicleItems.splice(0, 0, {"order": 1, "title": "", "image_str": "", "content": ""});
+				scope.data.content.models.splice(indexPos, 0, {"order": (indexPos + 1), "title": "", "image_str": "", "content": ""});
 
 				// Init Listicle Editor
-				setTimeout(function() { $scope.initListicleEditor(0); }, 50);
+				setTimeout(function() { scope.initListicleEditor(0); }, 50);
 			}
 
 			// ------------------------------------------------------------------------
@@ -97,7 +99,7 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Remove Listicle Item Image Preview
-		$scope.removeItemPreview = function(event) {
+		scope.removeItemPreview = function(event) {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-item'),
 				indexPos 	= $el.index('.eb-listicle-item');
 
@@ -106,14 +108,14 @@ class ListicleEditors extends ArticleEditors {
 			// ------------------------------------------------------------------------
 			this.removePreview(event);
 
-			$scope.listicleItems[indexPos].image_str = void 0;
-			$scope.listicleItems[indexPos].image_id = void 0;
+			scope.listicleItems[indexPos].image_str = void 0;
+			scope.listicleItems[indexPos].image_id = void 0;
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Initial Listicle Editor
-		$scope.initListicleEditor = function(indexPos) {
+		scope.initListicleEditor = function(indexPos) {
 			var $el = $element.find('.eb-listicle-list .eb-listicle-item:eq(' + indexPos + ')'),
 				contentEditor;
 
@@ -122,7 +124,7 @@ class ListicleEditors extends ArticleEditors {
 				placeholder: "Title"
 			});
 
-			contentEditor = new MediumEditor($el.find('.listicle-item-content'), {
+			contentEditor = new self.MediumEditor($el.find('.listicle-item-content'), {
 				toolbar: {
 					buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
 				},
@@ -171,28 +173,28 @@ class ListicleEditors extends ArticleEditors {
     					dropZone: $el.find('.fileupload-pool'), 
     					uploadURL: self.thisFileUpload().uploadCoverUrl+"?type=body"
     				},
-    				$scope);
+    				scope);
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Rewrite numbering
-		$scope.rewriteNumber = function(indexPos) {
-			switch ($scope.listicleOption) {
+		scope.rewriteNumber = function(indexPos) {
+			switch (scope.data.content.sort) {
 				case 'reverse':
-					for (var i = ($scope.listicleItems.length - 1), j = 0; i >= 0; i--, j++) {
-						$scope.listicleItems[j].order = i + 1;
+					for (var i = (scope.data.content.models.length - 1), j = 0; i >= 0; i--, j++) {
+						scope.data.content.models[j].order = i + 1;
 					}
 					break;
 				default:
-					for (var i = 0; i < $scope.listicleItems.length; i++) {
-						$scope.listicleItems[i].order = i + 1;
+					for (var i = 0; i < scope.data.content.models.length; i++) {
+						scope.data.content.models[i].order = i + 1;
 					}
 					break;
 			}
 		};
 
-		// $scope.save = prepSave;
+		// scope.save = prepSave;
 
 		// /*=================================================
 		// 			SEPERATE FUNCTION
@@ -207,7 +209,7 @@ class ListicleEditors extends ArticleEditors {
 					placeholder: "Title"
 				});
 
-				contentEditor = new MediumEditor($self.find('.listicle-item-content'), {
+				contentEditor = new self.MediumEditor($self.find('.listicle-item-content'), {
 					toolbar: {
 						buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
 					},
@@ -221,6 +223,7 @@ class ListicleEditors extends ArticleEditors {
 				});
 				$self.find('.listicle-item-content').data('editor', contentEditor);
 
+				self.mediumInsert($);
 				$self.find('.listicle-item-content').mediumInsert({
 			        editor: contentEditor,
 			        addons: {
@@ -255,15 +258,9 @@ class ListicleEditors extends ArticleEditors {
 			    		dropZone: $self.find('.fileupload-pool'), 
 			    		uploadURL: self.thisFileUpload().uploadCoverUrl+"?type=body"
 			    	},
-			    	$scope);
+			    	scope);
 			});
 		}, 50);
 	}
-
-	static prepSave(data) {
-		return 'listicleItems';
-	}
 }
-ListicleEditors.$inject = ['$http'];
-// ListicleEditors.prepSave();
 export default ListicleEditors;

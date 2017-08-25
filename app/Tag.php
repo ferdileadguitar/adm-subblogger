@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tag extends Model
 {
+	const CREATED_AT   = 'created_on';
+	const UPDATED_AT   = 'updated_on';
 	protected $guarded = [];
-	public $table = 'tags';
-    public $fillable = ['tag_id', 'post_id', 'title', 'slug', 'created_on', 'updated_on'];
-	public $timestamps = false;
+	public $table      = 'tags';
+    public $fillable   = ['title', 'slug'];
+	// public $timestamps = false;
 	// ------------------------------------------------------------------------
 	// Relations
 	// ------------------------------------------------------------------------
