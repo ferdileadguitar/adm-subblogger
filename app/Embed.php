@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Embed extends Model
 {
-	protected $table = 'post_embed';
+	protected $table   = 'post_embed';
 	protected $guarded = [];
 
 	// ------------------------------------------------------------------------

@@ -52,7 +52,6 @@ class User extends Authenticatable
         { return FALSE; }
 
         // ------------------------------------------------------------------------
-        
         $list = json_decode(\Storage::get('lists.adm'));
         if (! $list)
         { return FALSE; }

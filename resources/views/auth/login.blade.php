@@ -16,9 +16,9 @@
     <div class="main-body">
         <!-- Modal -->
         <div class="mdl mdl-popup mdl-open">
-            <div class="mdl-component <% processing ? 'processing' : '' %>" ng-controller="login-controller">
+            <div class="mdl-component <@ processing ? 'processing' : '' @>" ng-controller="login-controller">
                 <div class="mdl-body">
-                    <div class="error bg-danger" ng-show="error"><% error %></div>
+                    <div class="error bg-danger" ng-show="error"><@ error @></div>
 
                     <form  method="POST" action="{{ route('login') }}">
                         <div class="hidden">
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Scripts -->
-    <script>var baseURL = 'http://new-admin.keepo.pyo/';</script>
+    <script>var baseURL = "{{ config('app.url') }}";</script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
     <script src="{{ asset('dist/js/vendor.js') }}"></script>

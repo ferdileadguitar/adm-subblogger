@@ -33,10 +33,12 @@ require(['./app.js', 'joii'], function(MainApp, joii) {
 				// Try login
 				$scope.tryLogin = function() {
 					$http.post(self.baseURL + 'login', {'username': $scope.username, 'password': $scope.password})
-						 .then(function(response) {
-						 	var redirect = response.data.url || self.baseURL;
+						 .then(function(res) {
+						 	
+							// console.log( res );
+						 	var redirect = res.data.url || self.baseURL;
 						 	window.location = redirect;
-						 }, function() {
+						 }, function(err) {
 							$scope.error      = 'Invalid Username or Password';
 							$scope.processing = false;
 						 });

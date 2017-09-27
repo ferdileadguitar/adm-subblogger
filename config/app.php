@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -200,6 +200,12 @@ return [
 
         Intervention\Image\ImageServiceProvider::class,
 
+        /**
+          * JWT Token
+          * Securely trnsmitter information
+        **/
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class
+
     ],
 
     /*
@@ -250,6 +256,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Image' => Intervention\Image\Facades\Image::class,
+
+        'JWTAuth'    => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class
     ],
 
 ];
