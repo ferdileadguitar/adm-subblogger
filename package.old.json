@@ -1,18 +1,13 @@
 {
-  "name": "keepo-administrator",
   "private": true,
-  "author": "Ferdi Ardiansa",
-  "email": "ferdiardiansa@rocketmail.com",
-  "repository": {
-    "type": "git",
-    "url": "git clone git@bitbucket.org:pyoko/keepo-new-admin.git"
-  },
   "scripts": {
-    "test"   : "karma start --config karma.config.js",
-    "dev"    : "npm run start",
-    "watch"  : "npm run start --watch",
-    "start"  : "webpack-dev-server --open --config webpack.dev.config.js",
-    "build"  : "webpack --progress --hide-modules --config webpack.prod.config.js"
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js",
+    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=webpack.config.js",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "devDependencies": {
     "angular": "^1.6.5",
@@ -50,7 +45,6 @@
     "webpack-watch-livereload-plugin": "0.0.1"
   },
   "dependencies": {
-    "http-proxy-middleware": "^0.17.4",
     "medium-editor-insert-plugin": "^2.4.1",
     "webpack-merge": "^4.1.0"
   }
