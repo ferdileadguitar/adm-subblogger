@@ -12,7 +12,7 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env' => env('APP_ENV', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,6 +52,19 @@ return [
     */
 
     'url' => env('APP_URL', ''),
+
+     /*
+    |--------------------------------------------------------------------------
+    | Main SIte URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by the console to properly generate URLs when using
+    | the Artisan command line tool. You should set this to the root of
+    | your application so that it is used when running Artisan tasks.
+    |
+    */
+
+    'keepo_url' => env('KEEPO_URL', ''),
 
     /*
     |--------------------------------------------------------------------------

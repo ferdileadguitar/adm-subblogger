@@ -143,14 +143,14 @@
                 <div class="tbls-col-3"><a href="<@ post.user.url @>"><@ post.user.display_name @></a></div>
                 <div class="tbls-col-xl">
                     <div class="tbls-title-box">
-                        <figure class="tbls-thumbnail" ng-if="post.image.url"><img ng-src="<@ post.image.url @>"></figure>
+                        <figure class="tbls-thumbnail" ng-click="setEditor(post, 'image', $index)" ng-class="{ 'can-change' : showFeature.imgCover(post) }" ng-attr-title="<@ showFeature.title(post) @>"><img ng-src="<@ (post.image.url) ? post.image.url : '' @>"></figure>
                         <div class="tbls-title">
                             <div>
                                 <article ng-bind-html="post.title"></article>
                                 <footer>
-                                    <a ng-click="setEditor(post, 'title', $index)">Change Title</a>
-                                    <a ng-click="parseFeedsLink(post)" ng-if="(['quickpersonality', 'quicktrivia', 'quickpolling']).includes(post.post_type)">View</a>
-                                    <a ng-click="setEditor(post, post.post_type, $index)" ng-if="(['article', 'listicle']).includes(post.post_type)">Edit Detail</a>
+                                    <a ng-click="setEditor(post, 'title', $index)"><@ 'Change Title' @></a>
+                                    <a ng-click="parseFeedsLink(post)" ng-if="showFeature.viewLink(post)">View</a>
+                                    <a ng-click="setEditor(post, post.post_type, $index)" ng-if="showFeature.editorLink(post)">Edit Detail</a>
                                 </footer>
                             </div>
                             <div class="tbls-tags">
@@ -164,7 +164,7 @@
                 </div>
                 <div class="tbls-col-3">
                     <@ post.channel.name @>
-                    <div><a ng-click="setEditor(post, 'channel', $index)">Edit</a></div>
+                    <div><a ng-click="setEditor(post, 'channel', $index)" ng-if="showFeature.editorChannel(post)">Edit</a></div>
                 </div>
                 <div class="tbls-col-3"><@ post.post_type @></div>
                 <div class="tbls-col-3"><@ post.views @></div>

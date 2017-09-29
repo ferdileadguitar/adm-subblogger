@@ -76,7 +76,7 @@
   <!-- end of .editor-wrapper -->
 
   <footer class="editor-bottom mdl-footer">
-    <div class="wrap-footer_btn">
+    <div class="wrap-footer_btn" ng-hide="uploading">
       <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
       <a ng-if="!singleButton" class="ok" ng-click="saveClick()"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
     </div>

@@ -3,19 +3,21 @@ import MainApp  from './app';
 import joii     from 'joii';
 
 /*TEMPLATES*/
-import mdl_editor from './modules/template/mdl-editor.html';
-import article    from './modules/template/editor-article.html';
-import listicle   from './modules/template/editor-listicle.html';
-import title      from './modules/template/editor-title.html';
-import tags       from './modules/template/editor-tags.html';
-import channel    from './modules/template/editor-channel.html';
-import created    from './modules/template/mdl-editor-created.html';
+import article    from './content/template/editor-article.html';
+import listicle   from './content/template/editor-listicle.html';
+import title      from './content/template/editor-title.html';
+import tags       from './content/template/editor-tags.html';
+import channel    from './content/template/editor-channel.html';
+import image      from './content/template/editor-img-cover.html'; // Image cover
+import mdl_editor from './content/template/mdl-editor.html';
+import created    from './content/template/mdl-editor-created.html';
 
 /*DIRECTIVE*/
-import articleDirective   from './modules/directive/article.directive.js';
-import listicleDirective  from './modules/directive/listicle.directive.js';
-import createdDirective   from './modules/directive/created.directive.js';
-import titleDirective     from './modules/directive/title.directive.js';
+import articleDirective   from './content/directive/article.directive.js';
+import listicleDirective  from './content/directive/listicle.directive.js';
+import createdDirective   from './content/directive/created.directive.js';
+import titleDirective     from './content/directive/title.directive.js';
+import imgCoverDirective  from './content/directive/img-cover.directive.js';
 
 // APP
 // ------------------------------------------------------------------------
@@ -30,9 +32,10 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			// this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput']);
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('app-controller', ['$scope', '$attrs', 'appService', 'tabService', function($scope, $attrs, appService, tabService) {
+			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', 'appService', 'tabService', function($scope, $attrs, $filter, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
+				// console.log( $filter('appFilter') );
 
 				$scope.mainApp         = self;
 				$scope.moderationCount = 0;
@@ -283,23 +286,72 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				// Implement underscore to rootScope
 		        $rootScope._ = _;
 
+		        // Caching all templete -> Ferdi Ardiansa
 		        $templateCache.put('article.html', article);
 		        $templateCache.put('listicle.html', listicle);
 		        $templateCache.put('title.html', title);
 		        $templateCache.put('tags.html', tags);
 		        $templateCache.put('channel.html', channel);
 		        $templateCache.put('created.html', created);
+		        $templateCache.put('image.html', image);
 			});
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
 
 		directive: function() {
-			this.application.directive('feeds', ['$compile', '$rootScope', '$window', 'appService', function($compile, $rootScope, $window, appService) {
+			this.application.directive('feeds', ['$compile', '$rootScope', '$window', '$filter', 'appService', function($compile, $rootScope, $window, $filter, appService) {
 				return {
 					restrict: 'E',
 					replace: true,
                     templateUrl: 'feedListTemplate',
                     controller: function ($scope, appService) {
+                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo'];
+                    	
+                    	$scope.changeCover = function(post, index, type = 'img-cover') {
+
+							// This is only listicle and article type
+							if (_.contains(postList, post.post_type)) {
+								appService.modalEditor($scope, {});
+
+								$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
+								
+								// This use for all directives
+								$rootScope.allPosts = _.extend($scope, { post : post });
+							}
+						}; 
+
+						$scope.showFeature = {
+
+							// Who's could change the image cover
+							imgCover : function(post) {
+								if(_.contains(postList, post.post_type)) 
+								{ return true }
+							},
+
+							// Mouseover on image cover
+							title  : function(post) {
+								if(_.contains(postList, post.post_type)) 
+								{ return 'Change Cover' }	
+							},
+
+							// Who's couldn't get link view
+							viewLink : function(post) {
+								if(!_.contains(['quickpersonality', 'quicktrivia', 'quickpolling'], post.post_type))
+								{ return true }
+							},
+ 							
+ 							// Who's could edit this. like keepo editor (show modal)
+							editorLink : function(post) {
+								if(_.contains(['article', 'listicle'], post.post_type))
+								{ return true }
+							},
+
+							// Hide link if post type like on list
+							editorChannel : function(post) {
+								if(!_.contains(['meme', 'funquiz'], post.post_type))
+								{ return true }	
+							}
+						}
                     },
                     link: function($scope, $elements, $attrs) {
                     	$scope.post = {};
@@ -338,7 +390,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							appService.appContext.setPremium(post, (!post.is_premium ? 1 : 0), $scope);
 						};
 
-						$scope.setEditor = function(post, type, index) {
+						$scope.setEditor   = function(post, type, index) {
 							appService.modalEditor($scope, {
 								ids  : index,
 								data : post,
@@ -347,11 +399,11 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
 							
 							// This use for all directives
-							$rootScope.allPosts = Object.assign($scope, { post : post });
+							$rootScope.allPosts = _.extend($scope, { post : post });
 						};
 
 						$scope.parseFeedsLink = function(post) {
-							$window.open('http://localhost:8000/' + post.user + '/' + post.slug, '_blank');
+							$window.open(post.url, '_blank');
 						}
                     }
 				};
@@ -410,8 +462,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						var datas = {};
 
 						$scope.$on('mdl_data', function(item, args){ 
+
 							$scope.allPost = args.allPosts; 
-							// $scope.data    = args.posts; 
 							$scope.layout  = {
 								type : args.type,
 								url  : args.type + '.html'
@@ -517,6 +569,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			this.application.directive('editorListicle', listicleDirective);
 			this.application.directive('editorCreated', createdDirective);
 			this.application.directive('editorTitle', titleDirective);
+			this.application.directive('editorImgCover', imgCoverDirective);
 		},
 
 		allController: function($scope, $attrs, appService) {

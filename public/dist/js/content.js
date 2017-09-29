@@ -7,13 +7,12 @@ webpackJsonp([0],[
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($, _) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helper_common_js__ = __webpack_require__(35);
+/* WEBPACK VAR INJECTION */(function($, _) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helper_common_js__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helper_common_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__helper_common_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_medium_medium_editor_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_medium_medium_editor_js__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vendor_medium_medium_editor_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__vendor_medium_medium_editor_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js__);
 
 
@@ -52,7 +51,6 @@ class ArticleEditors {
 	}
 
 	static _listicleFormat(element, obj) {
-		console.log( obj );
 		let data = obj.data, listicleItems = [], contentStringify;
 		
 		$.each(data.content.models, (index, value) => {
@@ -73,6 +71,7 @@ class ArticleEditors {
 		_.each(obj.tags, (items, key) => {
 			tags.push(items.text);
 		});
+		
 		data.tags    = tags.join(';');
 		data.content = JSON.stringify({ content : (data.content.content), sort : (data.content.sort), models : (listicleItems) });
 
@@ -95,6 +94,9 @@ class ArticleEditors {
 			_.each(obj.tags, (items, key) => {
 				tags.push(items.text);
 			});
+
+			console.log( obj );
+
 			content = obj.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
 			
 			data.content = content;
@@ -205,10 +207,11 @@ class ArticleEditors {
 		if( scope.data.post_type == 'article' ) {
 			scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
 		}
+		
 		// Tags Autocomplete
 		scope.tags     = mainClass._tags(_content.tags);
 
-		scope.loadTags = function(query) {
+		scope.loadTags = (query) => {
 			var config, temp;
 			return self._$http.get(window.baseURL + 'api/tags?q=' + query);
 		};
@@ -216,14 +219,14 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Temporary Save
-		scope.saveTemp = function() {
+		scope.saveTemp = () => {
 
 		}
 
 		// ------------------------------------------------------------------------
 
 		// Save
-		scope.saveClick = function(type) {
+		scope.saveClick = (type) => {
 			if( scope.onProgress ) { return false }
 
 			let options = { editors : editors, type : type };
@@ -264,7 +267,7 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Browse Cover Picture File
-		scope.browseFile = function (event) {
+		scope.browseFile =  (event) => {
 			var $el = $(event.currentTarget || event.srcElement);
 
 			$el.parent('.fileupload-pool').find('.file-upload').trigger('click');
@@ -273,7 +276,7 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Remove Preview
-		scope.removePreview = function(event) {
+		scope.removePreview = (event) => {
 			var $el = $(event.currentTarget || event.srcElement);
 			var id = $($el).closest('.on-preview').find("input[name='fid']").val();
 			if(!$($el).closest('.eb-listicle-item')[0]){
@@ -288,14 +291,14 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Get Image from URL
-		scope.getImage = function(event) {
+		scope.getImage = (event) => {
 			var $el = $(event.currentTarget || event.srcElement);
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Set Channel
-		scope.setChannel = function($event, slug) {
+		scope.setChannel = ($event, slug) => {
 			var $el = $($event.currentTarget || $event.srcElement);
 
 			scope.data.channel = {
@@ -305,20 +308,20 @@ class ArticleEditors {
 
 			scope.channel = scope.data.channel;
 
-			if(typeof toggleSelectCategory == 'function'){
+			if(typeof toggleSelectCategory == ''){
 				toggleSelectCategory();
 			}
 		};
 
 		// ------------------------------------------------------------------------
 
-		scope.openCategory = function($event) {
+		scope.openCategory = ($event) => {
 			var $el = $($event.currentTarget || $event.srcElement);
 
 			$el.find('.eb-category-list').toggleClass('open');
 		}
 
-		scope.feedsAssignObject = function(newData) {
+		scope.feedsAssignObject = (newData) => {
 			var _data = [],
 				ids   = scope.$parent.ids;
 
@@ -329,18 +332,17 @@ class ArticleEditors {
 					}
 						
 					_.extend(_base.allPosts.data[ids], newData);
-					console.log( _base.allPosts.data[ids] )
 				});
 				
 				$('body').find('.mdl.mdl-editor').remove();
 
 				scope.$on('mdl_data', (event, args) => {
-					console.log( args );
+					console.info( args );
 				});
 		}
 
 		// ------------------------------------------------------------------------
-		this._$timeout(function() {
+		this._$timeout(() => {
 			// Title
 			if (element.find('.eb-title').length) {
 				var titleEditor = new __WEBPACK_IMPORTED_MODULE_0__helper_common_js___default.a.titleEditorApp(element.find('.eb-title'), {
@@ -384,7 +386,7 @@ class ArticleEditors {
 			        		deleteScript: null,
 			        		autoGrid: 0,
 			        		fileUploadOptions: {
-			        			url: __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js___default.a.uploadCoverUrl+"?type=body",
+			        			url: __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__["a" /* default */].uploadCoverUrl+"?type=body",
 			        		},
 			        		styles: {
 			        		    wide: { label: '<span class="icon-align-justify"></span>' },
@@ -392,10 +394,10 @@ class ArticleEditors {
 			        		    right: { label: '<span class="icon-align-right"></span>' },
 			        		    grid: null
 			        		},
-			        		uploadCompleted : function($el, data) {
+			        		uploadCompleted : ($el, data) => {
 
 			        		},
-			        		uploadFailed : function(uploadErrors, data) {
+			        		uploadFailed : (uploadErrors, data) => {
 			        			console.error( uploadErrors );
 			        		}
 
@@ -420,13 +422,14 @@ class ArticleEditors {
 			        	},
 			        }
 			    });
+
 				editors.content = contentEditor;
 				if (element.find('.fileupload-pool.cover-picture').length) {
-					__WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js___default.a._initFileUpload(
+					__WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__["a" /* default */]._initFileUpload(
 							element.find('.fileupload-pool.cover-picture input[type=file]'), 
 							{
 								dropZone: element.find('.fileupload-pool.cover-picture'), 
-								uploadURL: __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js___default.a.uploadCoverUrl
+								uploadURL: __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__["a" /* default */].uploadCoverUrl
 							},
 							scope);
 				}
@@ -434,14 +437,14 @@ class ArticleEditors {
 			// ------------------------------------------------------------------------
 
 			// Set window.onbeforeunload (Simple, too lazy to check whether the content has been changed :P)
-			window.onbeforeunload = function() {
+			window.onbeforeunload = () => {
 				return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
 			};
 		}, 50);
 	}
 
 	thisFileUpload() {
-		return __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js___default.a;
+		return __WEBPACK_IMPORTED_MODULE_2__service_bluimp_fileupload_service_js__["a" /* default */];
 	}
 
 	helper() {
@@ -460,6 +463,2546 @@ class ArticleEditors {
 /* 6 */,
 /* 7 */,
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(jQuery, __webpack_provided_window_dot_jQuery) {/*** IMPORTS FROM imports-loader ***/
+var $ = __webpack_require__(0);
+var define = false;
+(function() {
+
+/*!
+ * medium-editor-insert-plugin v2.3.3 - jQuery insert plugin for MediumEditor
+ *
+ * http://linkesch.com/medium-editor-insert-plugin
+ *
+ * Copyright (c) 2014 Pavel Linkesch (http://linkesch.com)
+ * Released under the MIT license
+ */
+
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['jquery', 'handlebar', 'mediumEditor', 'blueimpUpload', 'jquerySortable'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = function (jQuery) {
+            if (typeof window === 'undefined') {
+                throw new Error("medium-editor-insert-plugin runs only in a browser.")
+            }
+
+            if (jQuery === undefined) {
+                jQuery = __webpack_require__(0);
+            }
+            __webpack_provided_window_dot_jQuery = jQuery;
+
+            Handlebars = __webpack_require__(42);
+            MediumEditor = __webpack_require__(11);
+            __webpack_require__(43);
+            __webpack_require__(39);
+
+            factory(jQuery, Handlebars, MediumEditor);
+            return jQuery;
+        };
+    } else {
+        factory(jQuery, Handlebars, MediumEditor);
+    }
+}(function ($, Handlebars, MediumEditor) {
+
+this["MediumInsert"] = this["MediumInsert"] || {};
+this["MediumInsert"]["Templates"] = this["MediumInsert"]["Templates"] || {};
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/core-buttons.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
+
+  return "            <li><button data-addon=\""
+    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\" data-action=\"add\" class=\"medium-insert-action\">"
+    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</button></li>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "<div class=\"medium-insert-buttons\" contenteditable=\"false\" style=\"display: none\">\n    <button class=\"medium-insert-buttons-show\"><span>+</span></button>\n    <ul class=\"medium-insert-buttons-addons\" style=\"display: none\">\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.addons : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "    </ul>\n</div>\n";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/core-caption.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "<figcaption contenteditable=\"true\" class=\"medium-insert-caption-placeholder\" data-placeholder=\""
+    + container.escapeExpression(((helper = (helper = helpers.placeholder || (depth0 != null ? depth0.placeholder : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"placeholder","hash":{},"data":data}) : helper)))
+    + "\"></figcaption>";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/core-empty-line.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<p><br></p>\n";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/embeds-toolbar.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "    <div class=\"medium-insert-embeds-toolbar medium-editor-toolbar medium-toolbar-arrow-under medium-editor-toolbar-active\">\n        <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.styles : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "        </ul>\n    </div>\n";
+},"2":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.label : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"3":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
+
+  return "                    <li>\n                        <button class=\"medium-editor-action\" data-action=\""
+    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\">"
+    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</button>\n                    </li>\n";
+},"5":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "    <div class=\"medium-insert-embeds-toolbar2 medium-editor-toolbar medium-editor-toolbar-active\">\n        <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.actions : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "        </ul>\n    </div>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=depth0 != null ? depth0 : {};
+
+  return ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.styles : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.actions : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/embeds-wrapper.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, helper;
+
+  return "<div class=\"medium-insert-embeds\" contenteditable=\"false\">\n  <figure>\n      <div class=\"medium-insert-embed\">\n           "
+    + ((stack1 = ((helper = (helper = helpers.html || (depth0 != null ? depth0.html : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"html","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "\n       </div>\n    </figure>\n <div class=\"medium-insert-embeds-overlay\"></div>\n</div>";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/images-fileupload.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<input type=\"file\" name=\"file\">";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/images-image.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
+    return "        <div class=\"medium-insert-images-progress\"></div>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {};
+
+  return "<figure contenteditable=\"false\">\n    <img src=\""
+    + container.escapeExpression(((helper = (helper = helpers.img || (depth0 != null ? depth0.img : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"img","hash":{},"data":data}) : helper)))
+    + "\" alt=\"\" />\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.progress : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "</figure>\n";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/images-progressbar.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<progress min=\"0\" max=\"100\" value=\"0\">0</progress>";
+},"useData":true});
+
+this["MediumInsert"]["Templates"]["vendor/medium/templates/images-toolbar.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.label : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"2":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
+
+  return "                <li>\n                    <button class=\"medium-editor-action\" data-action=\""
+    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\">"
+    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</button>\n                </li>\n";
+},"4":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "  <div class=\"medium-insert-images-toolbar2 medium-editor-toolbar medium-editor-toolbar-active\">\n      <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.actions : depth0),{"name":"each","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "     </ul>\n    </div>\n";
+},"5":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.label : depth0),{"name":"if","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"6":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
+
+  return "                  <li>\n                      <button class=\"medium-editor-action\" data-action=\""
+    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
+    + "\">"
+    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</button>\n                  </li>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=depth0 != null ? depth0 : {};
+
+  return "<div class=\"medium-insert-images-toolbar medium-editor-toolbar medium-toolbar-arrow-under medium-editor-toolbar-active\">\n    <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.styles : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "    </ul>\n</div>\n\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.actions : depth0),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"useData":true});
+;(function ($, window, document, undefined) {
+
+    'use strict';
+
+    /** Default values */
+    var pluginName = 'mediumInsert',
+        defaults = {
+            editor: null,
+            enabled: true,
+            addons: {
+                images: true, // boolean or object containing configuration
+                embeds: true
+            }
+        };
+
+    /**
+     * Capitalize first character
+     *
+     * @param {string} str
+     * @return {string}
+     */
+
+    function ucfirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    /**
+     * Core plugin's object
+     *
+     * Sets options, variables and calls init() function
+     *
+     * @constructor
+     * @param {DOM} el - DOM element to init the plugin on
+     * @param {object} options - Options to override defaults
+     * @return {void}
+     */
+
+    function Core(el, options) {
+        var editor;
+
+        this.el = el;
+        this.$el = $(el);
+        this.templates = window.MediumInsert.Templates;
+
+        if (options) {
+            // Fix #142
+            // Avoid deep copying editor object, because since v2.3.0 it contains circular references which causes jQuery.extend to break
+            // Instead copy editor object to this.options manually
+            editor = options.editor;
+            options.editor = null;
+        }
+        this.options = $.extend(true, {}, defaults, options);
+        this.options.editor = editor;
+
+        this._defaults = defaults;
+        this._name = pluginName;
+
+        // Extend editor's functions
+        if (this.options && this.options.editor) {
+            if (this.options.editor._serialize === undefined) {
+                this.options.editor._serialize = this.options.editor.serialize;
+            }
+            if (this.options.editor._destroy === undefined) {
+                this.options.editor._destroy = this.options.editor.destroy;
+            }
+            if (this.options.editor._setup === undefined) {
+                this.options.editor._setup = this.options.editor.setup;
+            }
+            this.options.editor._hideInsertButtons = this.hideButtons;
+
+            this.options.editor.serialize = this.editorSerialize;
+            this.options.editor.destroy = this.editorDestroy;
+            this.options.editor.setup = this.editorSetup;
+
+            if (this.options.editor.getExtensionByName('placeholder') !== undefined) {
+                this.options.editor.getExtensionByName('placeholder').updatePlaceholder = this.editorUpdatePlaceholder;
+            }
+        }
+    }
+
+    /**
+     * Initialization
+     *
+     * @return {void}
+     */
+
+    Core.prototype.init = function () {
+        this.$el.addClass('medium-editor-insert-plugin');
+
+        if (typeof this.options.addons !== 'object' || Object.keys(this.options.addons).length === 0) {
+            this.disable();
+        }
+
+        this.initAddons();
+        this.clean();
+        this.events();
+    };
+
+    /**
+     * Event listeners
+     *
+     * @return {void}
+     */
+
+    Core.prototype.events = function () {
+        var that = this;
+
+        this.$el
+            .on('dragover drop', function (e) {
+                e.preventDefault();
+            })
+            .on('keyup click', $.proxy(this, 'toggleButtons'))
+            .on('selectstart mousedown', '.medium-insert, .medium-insert-buttons', $.proxy(this, 'disableSelection'))
+            .on('click', '.medium-insert-buttons-show', $.proxy(this, 'toggleAddons'))
+            .on('click', '.medium-insert-action', $.proxy(this, 'addonAction'))
+            .on('paste', '.medium-insert-caption-placeholder', function (e) {
+                $.proxy(that, 'removeCaptionPlaceholder')($(e.target));
+            });
+
+        $(window).on('resize', $.proxy(this, 'positionButtons', null));
+    };
+
+    /**
+     * Return editor instance
+     *
+     * @return {object} MediumEditor
+     */
+
+    Core.prototype.getEditor = function () {
+        return this.options.editor;
+    };
+
+    /**
+     * Extend editor's serialize function
+     *
+     * @return {object} Serialized data
+     */
+
+    Core.prototype.editorSerialize = function () {
+        var data = this._serialize();
+
+        $.each(data, function (key) {
+            var $data = $('<div />').html(data[key].value);
+
+            $data.find('.medium-insert-buttons').remove();
+
+            // Restore original embed code from embed wrapper attribute value.
+            $data.find('[data-embed-code]').each(function () {
+                var $this = $(this);
+                $this.html($this.attr('data-embed-code'));
+            });
+
+            data[key].value = $data.html();
+        });
+
+        return data;
+    };
+
+    /**
+     * Extend editor's destroy function to deactivate this plugin too
+     *
+     * @return {void}
+     */
+
+    Core.prototype.editorDestroy = function () {
+        $.each(this.elements, function (key, el) {
+            if ($(el).data('plugin_' + pluginName) instanceof Core) {
+                $(el).data('plugin_' + pluginName).disable();
+            }
+        });
+
+        this._destroy();
+    };
+
+    /**
+     * Extend editor's setup function to activate this plugin too
+     *
+     * @return {void}
+     */
+
+    Core.prototype.editorSetup = function () {
+        this._setup();
+
+        $.each(this.elements, function (key, el) {
+            if ($(el).data('plugin_' + pluginName) instanceof Core) {
+                $(el).data('plugin_' + pluginName).enable();
+            }
+        });
+    };
+
+    /**
+     * Extend editor's placeholder.updatePlaceholder function to show placeholder dispite of the plugin buttons
+     *
+     * @return {void}
+     */
+
+    Core.prototype.editorUpdatePlaceholder = function (el, dontShow) {
+        var contents = $(el).children()
+            .not('.medium-insert-buttons').contents();
+
+        if (!dontShow && contents.length === 1 && contents[0].nodeName.toLowerCase() === 'br') {
+            this.showPlaceholder(el);
+            this.base._hideInsertButtons($(el));
+        } else {
+            this.hidePlaceholder(el);
+        }
+    };
+
+    /**
+     * Trigger editableInput on editor
+     *
+     * @return {void}
+     */
+
+    Core.prototype.triggerInput = function () {
+        if (this.getEditor()) {
+            this.getEditor().trigger('editableInput', null, this.el);
+        }
+    };
+
+    /**
+     * Deselects selected text
+     *
+     * @return {void}
+     */
+
+    Core.prototype.deselect = function () {
+        document.getSelection().removeAllRanges();
+    };
+
+    /**
+     * Disables the plugin
+     *
+     * @return {void}
+     */
+
+    Core.prototype.disable = function () {
+        this.options.enabled = false;
+
+        this.$el.find('.medium-insert-buttons').addClass('hide');
+    };
+
+    /**
+     * Enables the plugin
+     *
+     * @return {void}
+     */
+
+    Core.prototype.enable = function () {
+        this.options.enabled = true;
+
+        this.$el.find('.medium-insert-buttons').removeClass('hide');
+    };
+
+    /**
+     * Disables selectstart mousedown events on plugin elements except images
+     *
+     * @return {void}
+     */
+
+    Core.prototype.disableSelection = function (e) {
+        var $el = $(e.target);
+
+        if ($el.is('img') === false || $el.hasClass('medium-insert-buttons-show')) {
+            e.preventDefault();
+        }
+    };
+
+    /**
+     * Initialize addons
+     *
+     * @return {void}
+     */
+
+    Core.prototype.initAddons = function () {
+        var that = this;
+
+        if (!this.options.addons || this.options.addons.length === 0) {
+            return;
+        }
+
+        $.each(this.options.addons, function (addon, options) {
+            var addonName = pluginName + ucfirst(addon);
+
+            if (options === false) {
+                delete that.options.addons[addon];
+                return;
+            }
+
+            that.$el[addonName](options);
+            that.options.addons[addon] = that.$el.data('plugin_' + addonName).options;
+        });
+    };
+
+    /**
+     * Cleans a content of the editor
+     *
+     * @return {void}
+     */
+
+    Core.prototype.clean = function () {
+        var that = this,
+            $buttons, $lastEl, $text;
+
+        if (this.options.enabled === false) {
+            return;
+        }
+
+        if (this.$el.children().length === 0) {
+            this.$el.html(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
+        }
+
+        // Fix #29
+        // Wrap content text in <p></p> to avoid Firefox problems
+        $text = this.$el
+            .contents()
+            .filter(function () {
+                return (this.nodeName === '#text' && $.trim($(this).text()) !== '') || this.nodeName.toLowerCase() === 'br';
+            });
+
+        $text.each(function () {
+            $(this).wrap('<p />');
+
+            // Fix #145
+            // Move caret at the end of the element that's being wrapped
+            that.moveCaret($(this).parent(), $(this).text().length);
+        });
+
+        this.addButtons();
+
+        $buttons = this.$el.find('.medium-insert-buttons');
+        $lastEl = $buttons.prev();
+        if ($lastEl.attr('class') && $lastEl.attr('class').match(/medium\-insert(?!\-active)/)) {
+            $buttons.before(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
+        }
+    };
+
+    /**
+     * Returns HTML template of buttons
+     *
+     * @return {string} HTML template of buttons
+     */
+
+    Core.prototype.getButtons = function () {
+        if (this.options.enabled === false) {
+            return;
+        }
+
+        return this.templates['vendor/medium/templates/core-buttons.hbs']({
+            addons: this.options.addons
+        }).trim();
+    };
+
+    /**
+     * Appends buttons at the end of the $el
+     *
+     * @return {void}
+     */
+
+    Core.prototype.addButtons = function () {
+        if (this.$el.find('.medium-insert-buttons').length === 0) {
+            this.$el.append(this.getButtons());
+        }
+    };
+
+    /**
+     * Move buttons to current active, empty paragraph and show them
+     *
+     * @return {void}
+     */
+
+    Core.prototype.toggleButtons = function (e) {
+        var $el = $(e.target),
+            selection = window.getSelection(),
+            that = this,
+            range, $current, $p, activeAddon;
+
+        if (this.options.enabled === false) {
+            return;
+        }
+
+        if (!selection || selection.rangeCount === 0) {
+            $current = $el;
+        } else {
+            range = selection.getRangeAt(0);
+            $current = $(range.commonAncestorContainer);
+        }
+
+        // When user clicks on  editor's placeholder in FF, $current el is editor itself, not the first paragraph as it should
+        if ($current.hasClass('medium-editor-insert-plugin')) {
+            $current = $current.find('p:first');
+        }
+
+        $p = $current.is('p') ? $current : $current.closest('p');
+
+        this.clean();
+
+        if ($el.hasClass('medium-editor-placeholder') === false && $el.closest('.medium-insert-buttons').length === 0 && $current.closest('.medium-insert-buttons').length === 0) {
+
+            this.$el.find('.medium-insert-active').removeClass('medium-insert-active');
+
+            $.each(this.options.addons, function (addon) {
+                if ($el.closest('.medium-insert-' + addon).length) {
+                    $current = $el;
+                }
+
+                if ($current.closest('.medium-insert-' + addon).length) {
+                    $p = $current.closest('.medium-insert-' + addon);
+                    activeAddon = addon;
+                    return;
+                }
+            });
+
+            if ($p.length && (($p.text().trim() === '' && !activeAddon) || activeAddon === 'images')) {
+                $p.addClass('medium-insert-active');
+
+                if (activeAddon === 'images') {
+                    this.$el.find('.medium-insert-buttons').attr('data-active-addon', activeAddon);
+                } else {
+                    this.$el.find('.medium-insert-buttons').removeAttr('data-active-addon');
+                }
+
+                // If buttons are displayed on addon paragraph, wait 100ms for possible captions to display
+                setTimeout(function () {
+                    that.positionButtons(activeAddon);
+                    that.showButtons(activeAddon);
+                }, activeAddon ? 100 : 0);
+            } else {
+                this.hideButtons();
+            }
+        }
+    };
+
+    /**
+     * Show buttons
+     *
+     * @param {string} activeAddon - Name of active addon
+     * @returns {void}
+     */
+
+    Core.prototype.showButtons = function (activeAddon) {
+        var $buttons = this.$el.find('.medium-insert-buttons');
+
+        $buttons.show();
+        $buttons.find('li').show();
+
+        if (activeAddon) {
+            $buttons.find('li').hide();
+            $buttons.find('button[data-addon="' + activeAddon + '"]').parent().show();
+        }
+    };
+
+    /**
+     * Hides buttons
+     *
+     * @param {jQuery} $el - Editor element
+     * @returns {void}
+     */
+
+    Core.prototype.hideButtons = function ($el) {
+        $el = $el || this.$el;
+
+        $el.find('.medium-insert-buttons').hide();
+        $el.find('.medium-insert-buttons-addons').hide();
+        $el.find('.medium-insert-buttons-show').removeClass('medium-insert-buttons-rotate');
+    };
+
+    /**
+     * Position buttons
+     *
+     * @param {string} activeAddon - Name of active addon
+     * @return {void}
+     */
+
+    Core.prototype.positionButtons = function (activeAddon) {
+        var $buttons = this.$el.find('.medium-insert-buttons'),
+            $p = this.$el.find('.medium-insert-active'),
+            $lastCaption = $p.hasClass('medium-insert-images-grid') ? [] : $p.find('figure:last figcaption'),
+            elementsContainer = this.getEditor() ? this.getEditor().options.elementsContainer : $('body').get(0),
+            elementsContainerAbsolute = ['absolute', 'fixed'].indexOf(window.getComputedStyle(elementsContainer).getPropertyValue('position')) > -1,
+            position = {};
+
+        if ($p.length) {
+            position.left = $p.position().left;
+            position.top = $p.position().top;
+
+            if (activeAddon) {
+                position.left += $p.width() - $buttons.find('.medium-insert-buttons-show').width() - 10;
+                position.top += $p.height() - 20 + ($lastCaption.length ? -$lastCaption.height() - parseInt($lastCaption.css('margin-top'), 10) : 10);
+            } else {
+                position.left += -parseInt($buttons.find('.medium-insert-buttons-addons').css('left'), 10) - parseInt($buttons.find('.medium-insert-buttons-addons button:first').css('margin-left'), 10);
+                position.top += parseInt($p.css('margin-top'), 10);
+            }
+
+            if (elementsContainerAbsolute) {
+                position.top += elementsContainer.scrollTop;
+            }
+
+            if (this.$el.hasClass('medium-editor-placeholder') === false && position.left < 0) {
+                position.left = $p.position().left;
+            }
+
+            $buttons.css(position);
+        }
+    };
+
+    /**
+     * Toggles addons buttons
+     *
+     * @return {void}
+     */
+
+    Core.prototype.toggleAddons = function () {
+        if (this.$el.find('.medium-insert-buttons').attr('data-active-addon') === 'images') {
+            this.$el.find('.medium-insert-buttons').find('button[data-addon="images"]').click();
+            return;
+        }
+
+        this.$el.find('.medium-insert-buttons-addons').fadeToggle();
+        this.$el.find('.medium-insert-buttons-show').toggleClass('medium-insert-buttons-rotate');
+    };
+
+    /**
+     * Hide addons buttons
+     *
+     * @return {void}
+     */
+
+    Core.prototype.hideAddons = function () {
+        this.$el.find('.medium-insert-buttons-addons').hide();
+        this.$el.find('.medium-insert-buttons-show').removeClass('medium-insert-buttons-rotate');
+    };
+
+    /**
+     * Call addon's action
+     *
+     * @param {Event} e
+     * @return {void}
+     */
+
+    Core.prototype.addonAction = function (e) {
+        var $a = $(e.currentTarget),
+            addon = $a.data('addon'),
+            action = $a.data('action');
+
+        this.$el.data('plugin_' + pluginName + ucfirst(addon))[action]();
+    };
+
+    /**
+     * Move caret at the beginning of the empty paragraph
+     *
+     * @param {jQuery} $el Element where to place the caret
+     * @param {integer} position Position where to move caret. Default: 0
+     *
+     * @return {void}
+     */
+
+    Core.prototype.moveCaret = function ($el, position) {
+        var range, sel, el, textEl;
+
+        position = position || 0;
+        range = document.createRange();
+        sel = window.getSelection();
+        el = $el.get(0);
+
+        if (!el.childNodes.length) {
+            textEl = document.createTextNode(' ');
+            el.appendChild(textEl);
+        }
+
+        range.setStart(el.childNodes[0], position);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    };
+
+    /**
+     * Add caption
+     *
+     * @param {jQuery Element} $el
+     * @param {string} placeholder
+     * @return {void}
+     */
+
+    Core.prototype.addCaption = function ($el, placeholder) {
+        var $caption = $el.find('figcaption');
+
+        if ($caption.length === 0) {
+            $el.append(this.templates['vendor/medium/templates/core-caption.hbs']({
+                placeholder: placeholder
+            }));
+        }
+    };
+
+    /**
+     * Remove captions
+     *
+     * @param {jQuery Element} $ignore
+     * @return {void}
+     */
+
+    Core.prototype.removeCaptions = function ($ignore) {
+        var $captions = this.$el.find('figcaption');
+
+        if ($ignore) {
+            $captions = $captions.not($ignore);
+        }
+
+        $captions.each(function () {
+            if ($(this).hasClass('medium-insert-caption-placeholder') || $(this).text().trim() === '') {
+                $(this).remove();
+            }
+        });
+    };
+
+    /**
+     * Remove caption placeholder
+     *
+     * @param {jQuery Element} $el
+     * @return {void}
+     */
+
+    Core.prototype.removeCaptionPlaceholder = function ($el) {
+        var $caption = $el.is('figcaption') ? $el : $el.find('figcaption');
+
+        if ($caption.length) {
+            $caption
+                .removeClass('medium-insert-caption-placeholder')
+                .removeAttr('data-placeholder');
+        }
+    };
+
+    /** Plugin initialization */
+
+    $.fn[pluginName] = function (options) {
+        return this.each(function () {
+            var that = this,
+                textareaId;
+
+            if ($(that).is('textarea')) {
+                textareaId = $(that).attr('medium-editor-textarea-id');
+                that = $(that).siblings('[medium-editor-textarea-id="' + textareaId + '"]').get(0);
+            }
+
+            if (!$.data(that, 'plugin_' + pluginName)) {
+                // Plugin initialization
+                $.data(that, 'plugin_' + pluginName, new Core(that, options));
+                $.data(that, 'plugin_' + pluginName).init();
+            } else if (typeof options === 'string' && $.data(that, 'plugin_' + pluginName)[options]) {
+                // Method call
+                $.data(that, 'plugin_' + pluginName)[options]();
+            }
+        });
+    };
+
+})(jQuery, window, document);
+
+; (function ($, window, document, undefined) {
+
+    'use strict';
+
+    /** Default values */
+    var pluginName = 'mediumInsert',
+        addonName = 'Embeds', // first char is uppercase
+        defaults = {
+            label: '<span class="icon-youtube-play"></span>',
+            placeholder: 'Paste a YouTube, Vimeo, Facebook, Twitter or Instagram link and press Enter',
+            oembedProxy: 'http://medium.iframe.ly/api/oembed?iframe=1',
+            captions: true,
+            captionPlaceholder: 'Type caption (optional)',
+            styles: {
+                wide: {
+                    label: '<span class="icon-align-justify"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                },
+                left: {
+                    label: '<span class="icon-align-left"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                },
+                right: {
+                    label: '<span class="icon-align-right"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                }
+            },
+            actions: {
+                remove: {
+                    label: '<span class="icon-cancel"></span>',
+                    clicked: function () {
+                        var $event = $.Event('keydown');
+
+                        $event.which = 8;
+                        $(document).trigger($event);
+                    }
+                }
+            },
+            parseOnPaste: false
+        };
+
+    /**
+     * Embeds object
+     *
+     * Sets options, variables and calls init() function
+     *
+     * @constructor
+     * @param {DOM} el - DOM element to init the plugin on
+     * @param {object} options - Options to override defaults
+     * @return {void}
+     */
+
+    function Embeds(el, options) {
+        this.el = el;
+        this.$el = $(el);
+        this.templates = window.MediumInsert.Templates;
+        this.core = this.$el.data('plugin_' + pluginName);
+
+        this.options = $.extend(true, {}, defaults, options);
+
+        this._defaults = defaults;
+        this._name = pluginName;
+
+        // Extend editor's functions
+        if (this.core.getEditor()) {
+            this.core.getEditor()._serializePreEmbeds = this.core.getEditor().serialize;
+            this.core.getEditor().serialize = this.editorSerialize;
+        }
+
+        this.init();
+    }
+
+    /**
+     * Initialization
+     *
+     * @return {void}
+     */
+
+    Embeds.prototype.init = function () {
+        var $embeds = this.$el.find('.medium-insert-embeds');
+
+        $embeds.attr('contenteditable', false);
+        $embeds.each(function () {
+            if ($(this).find('.medium-insert-embeds-overlay').length === 0) {
+                $(this).append($('<div />').addClass('medium-insert-embeds-overlay'));
+            }
+        });
+
+        this.events();
+        this.backwardsCompatibility();
+    };
+
+    /**
+     * Event listeners
+     *
+     * @return {void}
+     */
+
+    Embeds.prototype.events = function () {
+        $(document)
+            .on('click', $.proxy(this, 'unselectEmbed'))
+            .on('keydown', $.proxy(this, 'removeEmbed'))
+            .on('click', '.medium-insert-embeds-toolbar .medium-editor-action', $.proxy(this, 'toolbarAction'))
+            .on('click', '.medium-insert-embeds-toolbar2 .medium-editor-action', $.proxy(this, 'toolbar2Action'));
+
+        this.$el
+            .on('keyup click paste', $.proxy(this, 'togglePlaceholder'))
+            .on('keydown', $.proxy(this, 'processLink'))
+            .on('click', '.medium-insert-embeds-overlay', $.proxy(this, 'selectEmbed'))
+            .on('contextmenu', '.medium-insert-embeds-placeholder', $.proxy(this, 'fixRightClickOnPlaceholder'));
+
+        if (this.options.parseOnPaste) {
+            this.$el
+                .on('paste', $.proxy(this, 'processPasted'));
+        }
+
+        $(window)
+            .on('resize', $.proxy(this, 'autoRepositionToolbars'));
+    };
+
+    /**
+     * Replace v0.* class names with new ones, wrap embedded content to new structure
+     *
+     * @return {void}
+     */
+
+    Embeds.prototype.backwardsCompatibility = function () {
+        var that = this;
+
+        this.$el.find('.mediumInsert-embeds')
+            .removeClass('mediumInsert-embeds')
+            .addClass('medium-insert-embeds');
+
+        this.$el.find('.medium-insert-embeds').each(function () {
+            if ($(this).find('.medium-insert-embed').length === 0) {
+                $(this).after(that.templates['vendor/medium/templates/embeds-wrapper.hbs']({
+                    html: $(this).html()
+                }));
+                $(this).remove();
+            }
+        });
+    };
+
+    /**
+     * Extend editor's serialize function
+     *
+     * @return {object} Serialized data
+     */
+
+    Embeds.prototype.editorSerialize = function () {
+        var data = this._serializePreEmbeds();
+
+        $.each(data, function (key) {
+            var $data = $('<div />').html(data[key].value);
+
+            $data.find('.medium-insert-embeds').removeAttr('contenteditable');
+            $data.find('.medium-insert-embeds-overlay').remove();
+
+            data[key].value = $data.html();
+        });
+
+        return data;
+    };
+
+    /**
+     * Add embedded element
+     *
+     * @return {void}
+     */
+
+    Embeds.prototype.add = function () {
+        var $place = this.$el.find('.medium-insert-active');
+
+        // Fix #132
+        // Make sure that the content of the paragraph is empty and <br> is wrapped in <p></p> to avoid Firefox problems
+        $place.html(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
+
+        // Replace paragraph with div to prevent #124 issue with pasting in Chrome,
+        // because medium editor wraps inserted content into paragraph and paragraphs can't be nested
+        if ($place.is('p')) {
+            $place.replaceWith('<div class="medium-insert-active">' + $place.html() + '</div>');
+            $place = this.$el.find('.medium-insert-active');
+            this.core.moveCaret($place);
+        }
+
+        $place.addClass('medium-insert-embeds medium-insert-embeds-input medium-insert-embeds-active');
+
+        this.togglePlaceholder({ target: $place.get(0) });
+
+        $place.click();
+        this.core.hideButtons();
+    };
+
+    /**
+     * Toggles placeholder
+     *
+     * @param {Event} e
+     * @return {void}
+     */
+
+    Embeds.prototype.togglePlaceholder = function (e) {
+        var $place = $(e.target),
+            selection = window.getSelection(),
+            range, $current, text;
+
+        if (!selection || selection.rangeCount === 0) {
+            return;
+        }
+
+        range = selection.getRangeAt(0);
+        $current = $(range.commonAncestorContainer);
+
+        if ($current.hasClass('medium-insert-embeds-active')) {
+            $place = $current;
+        } else if ($current.closest('.medium-insert-embeds-active').length) {
+            $place = $current.closest('.medium-insert-embeds-active');
+        }
+
+        if ($place.hasClass('medium-insert-embeds-active')) {
+
+            text = $place.text().trim();
+
+            if (text === '' && $place.hasClass('medium-insert-embeds-placeholder') === false) {
+                $place
+                    .addClass('medium-insert-embeds-placeholder')
+                    .attr('data-placeholder', this.options.placeholder);
+            } else if (text !== '' && $place.hasClass('medium-insert-embeds-placeholder')) {
+                $place
+                    .removeClass('medium-insert-embeds-placeholder')
+                    .removeAttr('data-placeholder');
+            }
+
+        } else {
+            this.$el.find('.medium-insert-embeds-active').remove();
+        }
+    };
+
+    /**
+     * Right click on placeholder in Chrome selects whole line. Fix this by placing caret at the end of line
+     *
+     * @param {Event} e
+     * @return {void}
+     */
+
+    Embeds.prototype.fixRightClickOnPlaceholder = function (e) {
+        this.core.moveCaret($(e.target));
+    };
+
+    /**
+     * Process link
+     *
+     * @param {Event} e
+     * @return {void}
+     */
+
+    Embeds.prototype.processLink = function (e) {
+        var $place = this.$el.find('.medium-insert-embeds-active'),
+            url;
+
+        if (!$place.length) {
+            return;
+        }
+
+        url = $place.text().trim();
+
+        // Return empty placeholder on backspace, delete or enter
+        if (url === '' && [8, 46, 13].indexOf(e.which) !== -1) {
+            $place.remove();
+            return;
+        }
+
+        if (e.which === 13) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (this.options.oembedProxy) {
+                this.oembed(url);
+            } else {
+                this.parseUrl(url);
+            }
+        }
+    };
+
+    /**
+     * Process Pasted
+     *
+     * @param {Event} e
+     * @return {void}
+     */
+
+    Embeds.prototype.processPasted = function (e) {
+        var pastedUrl, linkRegEx;
+        if ($(".medium-insert-embeds-active").length) {
+            return;
+        }
+
+        pastedUrl = e.originalEvent.clipboardData.getData('text');
+        linkRegEx = new RegExp('^(http(s?):)?\/\/','i');
+        if (linkRegEx.test(pastedUrl)) {
+            if (this.options.oembedProxy) {
+                this.oembed(pastedUrl, true);
+            } else {
+                this.parseUrl(pastedUrl, true);
+            }
+        }
+    };
+
+    /**
+     * Get HTML via oEmbed proxy
+     *
+     * @param {string} url
+     * @return {void}
+     */
+
+    Embeds.prototype.oembed = function (url, pasted) {
+        var that = this;
+
+        $.support.cors = true;
+
+        $.ajax({
+            crossDomain: true,
+            cache: false,
+            url: this.options.oembedProxy,
+            dataType: 'json',
+            data: {
+                url: url
+            },
+            success: function (data) {
+                var html = data && data.html;
+
+                if (data && !html && data.type === 'photo' && data.url) {
+                    html = '<img src="' + data.url + '" alt="">';
+                }
+
+                if (!html) {
+                    // Prevent render empty embed.
+                    $.proxy(that, 'convertBadEmbed', url)();
+                    return;
+                }
+
+                if (pasted) {
+                    $.proxy(that, 'embed', html, url)();
+                } else {
+                    $.proxy(that, 'embed', html)();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                var responseJSON = (function () {
+                    try {
+                        return JSON.parse(jqXHR.responseText);
+                    } catch (e) { }
+                })();
+
+                if (typeof window.console !== 'undefined') {
+                    window.console.log((responseJSON && responseJSON.error) || jqXHR.status || errorThrown.message);
+                } else {
+                    window.alert('Error requesting media from ' + that.options.oembedProxy + ' to insert: ' + errorThrown + ' (response status: ' + jqXHR.status + ')');
+                }
+
+                $.proxy(that, 'convertBadEmbed', url)();
+            }
+        });
+    };
+
+    /**
+     * Get HTML using regexp
+     *
+     * @param {string} url
+     * @param {bool} pasted
+     * @return {void}
+     */
+
+    Embeds.prototype.parseUrl = function (url, pasted) {
+        var html;
+
+        if (!(new RegExp(['youtube', 'youtu.be', 'vimeo', 'instagram', 'twitter', 'facebook', 'vidio'].join('|')).test(url))) {
+            $.proxy(this, 'convertBadEmbed', url)();
+            return false;
+        }
+
+        html = url.replace(/\n?/g, '')
+            .replace(/^((http(s)?:\/\/)?(www\.|m\.)?(youtube\.com|youtu\.be)\/(watch\?v=|v\/)?)([a-zA-Z0-9\-_]+)(.*)?$/, '<div class="video video-youtube"><iframe height="408" src="//www.youtube.com/embed/$7" frameborder="0" allowfullscreen style="width:100%;"></iframe></div>')
+            .replace(/^https?:\/\/(www\.|m\.)?vimeo\.com(\/.+)?\/([0-9]+)$/, '<div class="video video-vimeo"><iframe src="//player.vimeo.com/video/$3" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>')
+            .replace(/^https:\/\/(www\.|m\.)?twitter\.com\/(\w+)\/status\/(\d+)\/?$/, '<blockquote class="twitter-tweet" align="center" lang="en"><a href="https://twitter.com/$2/statuses/$3"></a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>')
+            .replace(/^(https:\/\/(www\.|m\.)?facebook\.com\/(.*))$/, '<div class="fb-post" data-href="$1" data-width="500" data-show-text="true"></div>')//'<script src="//connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v2.2" async></script><div class="fb-post" data-href="$3"><div class="fb-xfbml-parse-ignore"><a href="$3">Loading Facebook post...</a></div></div>')
+            .replace(/^https?:\/\/(www\.|m\.)?vidio\.com\/watch\/(.*)?$/, '<div class="video video-vidio"><iframe class="vidio-embed" src="https://www.vidio.com/embed/$2?autoplay=false&player_only=false&" width="560" height="480" scrolling="no" frameborder="0" allowfullscreen></iframe></div>')
+            .replace(/^https?:\/\/(www\.|m\.)?instagram\.com\/p\/(.*?)(\/(.*?))?$/, '<span class="instagram"><iframe src="//instagram.com/p/$2/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe></span>');
+
+        if ((/<("[^"]*"|'[^']*'|[^'">])*>/).test(html) === false) {
+            $.proxy(this, 'convertBadEmbed', url)();
+            return false;
+        }
+
+        if (pasted) {
+            this.embed(html, url);
+        } else {
+            this.embed(html);
+        }
+    };
+
+    /**
+     * Add html to page
+     *
+     * @param {string} html
+     * @param {string} pastedUrl
+     * @return {void}
+     */
+
+    Embeds.prototype.embed = function (html, pastedUrl) {
+        var $place = this.$el.find('.medium-insert-embeds-active'),
+            $div;
+
+        if (!html) {
+            alert('Incorrect URL format specified');
+            return false;
+        } else {
+            if (html.indexOf('</script>') > -1) {
+                // Store embed code with <script> tag inside wrapper attribute value.
+                // Make nice attribute value escaping using jQuery.
+                $div = $('<div>')
+                    .attr('data-embed-code', html)
+                    .html(html);
+                html = $('<div>').append($div).html();
+            }
+
+            if (pastedUrl) {
+                // Get the element with the pasted url
+                // place the embed template and remove the pasted text
+                $place = this.$el.find(":not(iframe, script, style)")
+                    .contents().filter(
+                        function () {
+                            return this.nodeType === 3 && this.textContent.indexOf(pastedUrl) > -1;
+                        }).parent();
+
+                $place.after(this.templates['vendor/medium/templates/embeds-wrapper.hbs']({
+                    html: html
+                }));
+                $place.text($place.text().replace(pastedUrl, ''));
+            } else {
+                $place.after(this.templates['vendor/medium/templates/embeds-wrapper.hbs']({
+                    html: html
+                }));
+                $place.remove();
+            }
+
+
+            this.core.triggerInput();
+
+            if (html.indexOf('facebook') !== -1) {
+                if (typeof (FB) !== 'undefined') {
+                    setTimeout(function () {
+                        FB.XFBML.parse();
+                    }, 2000);
+                }
+            }
+        }
+    };
+
+    /**
+     * Convert bad oEmbed content to an actual line.
+     * Instead of displaying the error message we convert the bad embed
+     *
+     * @param {string} content Bad content
+     *
+     * @return {void}
+     */
+    Embeds.prototype.convertBadEmbed = function (content) {
+        var $place, $empty, $content,
+            emptyTemplate = this.templates['vendor/medium/templates/core-empty-line.hbs']().trim();
+
+        $place = this.$el.find('.medium-insert-embeds-active');
+
+        // convert embed node to an empty node and insert the bad embed inside
+        $content = $(emptyTemplate);
+        $place.before($content);
+        $place.remove();
+        $content.html(content);
+
+        // add an new empty node right after to simulate Enter press
+        $empty = $(emptyTemplate);
+        $content.after($empty);
+
+        this.core.triggerInput();
+
+        this.core.moveCaret($empty);
+    };
+
+    /**
+     * Select clicked embed
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Embeds.prototype.selectEmbed = function (e) {
+        var that = this,
+            $embed;
+        if (this.core.options.enabled) {
+            $embed = $(e.target).hasClass('medium-insert-embeds') ? $(e.target) : $(e.target).closest('.medium-insert-embeds');
+
+            $embed.addClass('medium-insert-embeds-selected');
+
+            setTimeout(function () {
+                that.addToolbar();
+
+                if (that.options.captions) {
+                    that.core.addCaption($embed.find('figure'), that.options.captionPlaceholder);
+                }
+            }, 50);
+        }
+    };
+
+    /**
+     * Unselect selected embed
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Embeds.prototype.unselectEmbed = function (e) {
+        var $el = $(e.target).hasClass('medium-insert-embeds') ? $(e.target) : $(e.target).closest('.medium-insert-embeds'),
+            $embed = this.$el.find('.medium-insert-embeds-selected');
+
+        if ($el.hasClass('medium-insert-embeds-selected')) {
+            $embed.not($el).removeClass('medium-insert-embeds-selected');
+            $('.medium-insert-embeds-toolbar, .medium-insert-embeds-toolbar2').remove();
+            this.core.removeCaptions($el.find('figcaption'));
+
+            if ($(e.target).is('.medium-insert-caption-placeholder') || $(e.target).is('figcaption')) {
+                $el.removeClass('medium-insert-embeds-selected');
+                this.core.removeCaptionPlaceholder($el.find('figure'));
+            }
+            return;
+        }
+
+        $embed.removeClass('medium-insert-embeds-selected');
+        $('.medium-insert-embeds-toolbar, .medium-insert-embeds-toolbar2').remove();
+
+        if ($(e.target).is('.medium-insert-caption-placeholder')) {
+            this.core.removeCaptionPlaceholder($el.find('figure'));
+        } else if ($(e.target).is('figcaption') === false) {
+            this.core.removeCaptions();
+        }
+    };
+
+    /**
+     * Remove embed
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Embeds.prototype.removeEmbed = function (e) {
+        var $embed, $empty;
+
+        if (e.which === 8 || e.which === 46) {
+            $embed = this.$el.find('.medium-insert-embeds-selected');
+
+            if ($embed.length) {
+                e.preventDefault();
+
+                $('.medium-insert-embeds-toolbar, .medium-insert-embeds-toolbar2').remove();
+
+                $empty = $(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
+                $embed.before($empty);
+                $embed.remove();
+
+                // Hide addons
+                this.core.hideAddons();
+
+                this.core.moveCaret($empty);
+                this.core.triggerInput();
+            }
+        }
+    };
+
+    /**
+     * Adds embed toolbar to editor
+     *
+     * @returns {void}
+     */
+
+    Embeds.prototype.addToolbar = function () {
+        var $embed = this.$el.find('.medium-insert-embeds-selected'),
+            active = false,
+            $toolbar, $toolbar2, mediumEditor, toolbarContainer;
+
+        if ($embed.length === 0) {
+            return;
+        }
+
+        mediumEditor = this.core.getEditor();
+        toolbarContainer = mediumEditor.options.elementsContainer || 'body';
+        console.log( mediumEditor );
+        $(toolbarContainer).append(this.templates['vendor/medium/templates/embeds-toolbar.hbs']({
+            styles: this.options.styles,
+            actions: this.options.actions
+        }).trim());
+
+        $toolbar = $('.medium-insert-embeds-toolbar');
+        $toolbar2 = $('.medium-insert-embeds-toolbar2');
+
+        $toolbar.find('button').each(function () {
+            if ($embed.hasClass('medium-insert-embeds-' + $(this).data('action'))) {
+                $(this).addClass('medium-editor-button-active');
+                active = true;
+            }
+        });
+
+        if (active === false) {
+            $toolbar.find('button').first().addClass('medium-editor-button-active');
+        }
+
+        this.repositionToolbars();
+        $toolbar.fadeIn();
+        $toolbar2.fadeIn();
+    };
+
+    Embeds.prototype.autoRepositionToolbars = function () {
+        setTimeout(function () {
+            this.repositionToolbars();
+            this.repositionToolbars();
+        }.bind(this), 0);
+    };
+
+    Embeds.prototype.repositionToolbars = function () {
+        var $toolbar = $('.medium-insert-embeds-toolbar'),
+            $toolbar2 = $('.medium-insert-embeds-toolbar2'),
+            $embed = this.$el.find('.medium-insert-embeds-selected'),
+            elementsContainer = this.core.getEditor().options.elementsContainer,
+            elementsContainerAbsolute = ['absolute', 'fixed'].indexOf(window.getComputedStyle(elementsContainer).getPropertyValue('position')) > -1,
+            elementsContainerBoundary = elementsContainerAbsolute ? elementsContainer.getBoundingClientRect() : null,
+            containerWidth = $(window).width(),
+            position = {};
+
+        if ($toolbar2.length) {
+            position.top = $embed.offset().top + 2; // 2px - distance from a border
+            position.left = $embed.offset().left + $embed.width() - $toolbar2.width() - 4; // 4px - distance from a border
+
+            if (elementsContainerAbsolute) {
+                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
+                position.left -= elementsContainerBoundary.left;
+                containerWidth = $(elementsContainer).width();
+            }
+
+            if (position.left + $toolbar2.width() > containerWidth) {
+                position.left = containerWidth - $toolbar2.width();
+            }
+
+            $toolbar2.css(position);
+        }
+
+        if ($toolbar.length) {
+            position.left = $embed.offset().left + $embed.width() / 2 - $toolbar.width() / 2;
+            position.top = $embed.offset().top - $toolbar.height() - 8 - 2 - 5; // 8px - hight of an arrow under toolbar, 2px - height of an embed outset, 5px - distance from an embed
+
+            if (elementsContainerAbsolute) {
+                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
+                position.left -= elementsContainerBoundary.left;
+            }
+
+            if (position.top < 0) {
+                position.top = 0;
+            }
+
+            $toolbar.css(position);
+        }
+    };
+
+    /**
+     * Fires toolbar action
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Embeds.prototype.toolbarAction = function (e) {
+        var $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button'),
+            $li = $button.closest('li'),
+            $ul = $li.closest('ul'),
+            $lis = $ul.find('li'),
+            $embed = this.$el.find('.medium-insert-embeds-selected'),
+            that = this;
+
+        $button.addClass('medium-editor-button-active');
+        $li.siblings().find('.medium-editor-button-active').removeClass('medium-editor-button-active');
+
+        $lis.find('button').each(function () {
+            var className = 'medium-insert-embeds-' + $(this).data('action');
+
+            if ($(this).hasClass('medium-editor-button-active')) {
+                $embed.addClass(className);
+
+                if ($embed.parent('.medium-insert-embeds-clearfix').length) {
+                  $embed.unwrap('<div class="medium-insert-embeds-clearfix clearfix"></div>');
+                }
+
+                //if (className == 'medium-insert-embeds-left' || className == 'medium-insert-embeds-right') {
+                if (className == 'medium-insert-embeds-wide') {
+                  $embed.wrap('<div class="medium-insert-embeds-clearfix clearfix"></div>');
+                }
+
+                if (that.options.styles[$(this).data('action')].added) {
+                    that.options.styles[$(this).data('action')].added($embed);
+                }
+            } else {
+                $embed.removeClass(className);
+
+                if (that.options.styles[$(this).data('action')].removed) {
+                    that.options.styles[$(this).data('action')].removed($embed);
+                }
+            }
+        });
+
+        this.core.triggerInput();
+    };
+
+    /**
+     * Fires toolbar2 action
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Embeds.prototype.toolbar2Action = function (e) {
+        var $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button'),
+            callback = this.options.actions[$button.data('action')].clicked;
+
+        if (callback) {
+            callback(this.$el.find('.medium-insert-embeds-selected'));
+        }
+
+        this.core.triggerInput();
+    };
+
+    /** Plugin initialization */
+
+    $.fn[pluginName + addonName] = function (options) {
+        return this.each(function () {
+            if (!$.data(this, 'plugin_' + pluginName + addonName)) {
+                $.data(this, 'plugin_' + pluginName + addonName, new Embeds(this, options));
+            }
+        });
+    };
+
+})(jQuery, window, document);
+
+/*global MediumEditor*/
+
+; (function ($, window, document, Util, undefined) {
+
+    'use strict';
+
+    /** Default values */
+    var pluginName = 'mediumInsert',
+        addonName = 'Images', // first char is uppercase
+        defaults = {
+            label: '<span class="icon-camera"></span>',
+            deleteMethod: 'POST',
+            deleteScript: 'delete.php',
+            preview: true,
+            captions: true,
+            captionPlaceholder: 'Type caption for image (optional)',
+            autoGrid: 3,
+            fileUploadOptions: { // See https://github.com/blueimp/jQuery-File-Upload/wiki/Options
+                url: 'upload.php',
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                maxFileSize: 1000000
+            },
+            fileDeleteOptions: {},
+            styles: {
+                wide: {
+                    label: '<span class="icon-align-justify"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                },
+                left: {
+                    label: '<span class="icon-align-right"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                },
+                right: {
+                    label: '<span class="icon-align-left"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                },
+                grid: {
+                    label: '<span class="icon-table"></span>'
+                    // added: function ($el) {},
+                    // removed: function ($el) {}
+                }
+            },
+            actions: {
+                remove: {
+                    label: '<span class="icon-cancel"></span>',
+                    clicked: function () {
+                        var $event = $.Event('keydown');
+
+                        $event.which = 8;
+                        $(document).trigger($event);
+                    }
+                }
+            },
+            sorting: function () {
+                var that = this;
+
+                $('.medium-insert-images').sortable({
+                    group: 'medium-insert-images',
+                    containerSelector: '.medium-insert-images',
+                    itemSelector: 'figure',
+                    placeholder: '<figure class="placeholder">',
+                    handle: 'img',
+                    nested: false,
+                    vertical: false,
+                    afterMove: function () {
+                        that.core.triggerInput();
+                    }
+                });
+            },
+            messages: {
+                acceptFileTypesError: 'This file is not in a supported format: ',
+                maxFileSizeError: 'This file is too big: '
+            }
+            // uploadCompleted: function ($el, data) {}
+        };
+
+    /**
+     * Images object
+     *
+     * Sets options, variables and calls init() function
+     *
+     * @constructor
+     * @param {DOM} el - DOM element to init the plugin on
+     * @param {object} options - Options to override defaults
+     * @return {void}
+     */
+
+    function Images(el, options) {
+        this.el = el;
+        this.$el = $(el);
+        this.$currentImage = null;
+        this.templates = window.MediumInsert.Templates;
+        this.core = this.$el.data('plugin_' + pluginName);
+
+        this.options = $.extend(true, {}, defaults, options);
+
+        this._defaults = defaults;
+        this._name = pluginName;
+
+        // Allow image preview only in browsers, that support's that
+        if (this.options.preview && !window.FileReader) {
+            this.options.preview = false;
+        }
+
+        // Extend editor's functions
+        if (this.core.getEditor()) {
+            this.core.getEditor()._serializePreImages = this.core.getEditor().serialize;
+            this.core.getEditor().serialize = this.editorSerialize;
+        }
+
+        this.init();
+    }
+
+    /**
+     * Initialization
+     *
+     * @return {void}
+     */
+
+    Images.prototype.init = function () {
+        var $images = this.$el.find('.medium-insert-images');
+
+        $images.find('figcaption').attr('contenteditable', true);
+        $images.find('figure').attr('contenteditable', false);
+
+        this.events();
+        this.backwardsCompatibility();
+        this.sorting();
+    };
+
+    /**
+     * Event listeners
+     *
+     * @return {void}
+     */
+
+    Images.prototype.events = function () {
+        $(document)
+            .on('click', $.proxy(this, 'unselectImage'))
+            .on('keydown', $.proxy(this, 'removeImage'))
+            .on('click', '.medium-insert-images-toolbar .medium-editor-action', $.proxy(this, 'toolbarAction'))
+            .on('click', '.medium-insert-images-toolbar2 .medium-editor-action', $.proxy(this, 'toolbar2Action'));
+
+        this.$el
+            .on('click', '.medium-insert-images img', $.proxy(this, 'selectImage'));
+
+        $(window)
+            .on('resize', $.proxy(this, 'autoRepositionToolbars'));
+    };
+
+    /**
+     * Replace v0.* class names with new ones
+     *
+     * @return {void}
+     */
+
+    Images.prototype.backwardsCompatibility = function () {
+        this.$el.find('.mediumInsert')
+            .removeClass('mediumInsert')
+            .addClass('medium-insert-images');
+
+        this.$el.find('.medium-insert-images.small')
+            .removeClass('small')
+            .addClass('medium-insert-images-left');
+    };
+
+    /**
+     * Extend editor's serialize function
+     *
+     * @return {object} Serialized data
+     */
+
+    Images.prototype.editorSerialize = function () {
+        var data = this._serializePreImages();
+
+        $.each(data, function (key) {
+            var $data = $('<div />').html(data[key].value);
+
+            $data.find('.medium-insert-images').find('figcaption, figure').removeAttr('contenteditable');
+
+            data[key].value = $data.html();
+        });
+
+        return data;
+    };
+
+    /**
+     * Add image
+     *
+     * @return {void}
+     */
+
+    Images.prototype.add = function () {
+        var that = this,
+            $file = $(this.templates['vendor/medium/templates/images-fileupload.hbs']()),
+            fileUploadOptions = {
+                dataType: 'json',
+                add: function (e, data) {
+                    $.proxy(that, 'uploadAdd', e, data)();
+                },
+                done: function (e, data) {
+                    $.proxy(that, 'uploadDone', e, data)();
+                }
+            };
+
+        // Only add progress callbacks for browsers that support XHR2,
+        // and test for XHR2 per:
+        // http://stackoverflow.com/questions/6767887/
+        // what-is-the-best-way-to-check-for-xhr2-file-upload-support
+        if (new XMLHttpRequest().upload) {
+            fileUploadOptions.progress = function (e, data) {
+                $.proxy(that, 'uploadProgress', e, data)();
+            };
+
+            fileUploadOptions.progressall = function (e, data) {
+                $.proxy(that, 'uploadProgressall', e, data)();
+            };
+        }
+
+        $file.fileupload($.extend(true, {}, this.options.fileUploadOptions, fileUploadOptions));
+
+        $file.click();
+    };
+
+    /**
+     * Callback invoked as soon as files are added to the fileupload widget - via file input selection, drag & drop or add API call.
+     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#add
+     *
+     * @param {Event} e
+     * @param {object} data
+     * @return {void}
+     */
+
+    Images.prototype.uploadAdd = function (e, data) {
+        var $place = this.$el.find('.medium-insert-active'),
+            that = this,
+            uploadErrors = [],
+            file = data.files[0],
+            acceptFileTypes = this.options.fileUploadOptions.acceptFileTypes,
+            maxFileSize = this.options.fileUploadOptions.maxFileSize,
+            reader;
+
+        if (acceptFileTypes && !acceptFileTypes.test(file.type)) {
+            uploadErrors.push(this.options.messages.acceptFileTypesError + file.name);
+        } else if (maxFileSize && file.size > maxFileSize) {
+            uploadErrors.push(this.options.messages.maxFileSizeError + file.name);
+        }
+        if (uploadErrors.length > 0) {
+            alert(uploadErrors.join("\n"));
+            return;
+        }
+
+        this.core.hideButtons();
+
+        // Replace paragraph with div, because figure elements can't be inside paragraph
+        if ($place.is('p')) {
+            $place.replaceWith('<div class="medium-insert-active">' + $place.html() + '</div>');
+            $place = this.$el.find('.medium-insert-active');
+            if ($place.next().is('p')) {
+                this.core.moveCaret($place.next());
+            } else {
+                $place.after('<p><br></p>'); // add empty paragraph so we can move the caret to the next line.
+                this.core.moveCaret($place.next());
+            }
+        }
+
+        $place.addClass('medium-insert-images');
+
+        if (this.options.preview === false && $place.find('progress').length === 0 && (new XMLHttpRequest().upload)) {
+            $place.append(this.templates['vendor/medium/templates/images-progressbar.hbs']());
+        }
+
+        // ------------------------------------------------------------------------
+
+        if (data.autoUpload || (data.autoUpload !== false && $(e.target).fileupload('option', 'autoUpload'))) {
+            data.process().done(function () {
+                // If preview is set to true, let the showImage handle the upload start
+                if (that.options.preview) {
+                    reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $.proxy(that, 'showImage', e.target.result, data)();
+                    };
+
+                    reader.readAsDataURL(data.files[0]);
+                } else {
+                    data.submit();
+                }
+            });
+        }
+    };
+
+    /**
+     * Callback for global upload progress events
+     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#progressall
+     *
+     * @param {Event} e
+     * @param {object} data
+     * @return {void}
+     */
+
+    Images.prototype.uploadProgressall = function (e, data) {
+        var progress, $progressbar;
+
+        if (this.options.preview === false) {
+            progress = parseInt(data.loaded / data.total * 100, 10);
+            $progressbar = this.$el.find('.medium-insert-active').find('progress');
+
+            $progressbar
+                .attr('value', progress)
+                .text(progress);
+
+            if (progress === 100) {
+                $progressbar.remove();
+            }
+        }
+    };
+
+    /**
+     * Callback for upload progress events.
+     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#progress
+     *
+     * @param {Event} e
+     * @param {object} data
+     * @return {void}
+     */
+
+    Images.prototype.uploadProgress = function (e, data) {
+        var progress, $progressbar;
+
+        if (this.options.preview) {
+            progress = 100 - parseInt(data.loaded / data.total * 100, 10);
+            $progressbar = data.context.find('.medium-insert-images-progress');
+
+            $progressbar.css('width', progress + '%');
+
+            if (progress === 0) {
+                $progressbar.remove();
+            }
+        }
+    };
+
+    /**
+     * Callback for successful upload requests.
+     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#done
+     *
+     * @param {Event} e
+     * @param {object} data
+     * @return {void}
+     */
+
+    Images.prototype.uploadDone = function (e, data) {
+
+        // ------------------------------------------------------------------------
+
+        if (! data.result.url) { return; }
+
+        $.proxy(this, 'showImage', data.result.url, data)();
+
+        this.core.clean();
+        this.sorting();
+    };
+
+    /**
+     * Add uploaded / preview image to DOM
+     *
+     * @param {string} img
+     * @returns {void}
+     */
+
+    Images.prototype.showImage = function (img, data) {
+        var $place = this.$el.find('.medium-insert-active'),
+            domImage,
+            that;
+
+        // Hide editor's placeholder
+        $place.click();
+
+        // If preview is allowed and preview image already exists,
+        // replace it with uploaded image
+        that = this;
+        if (this.options.preview && data.context) {
+            domImage = this.getDOMImage();
+            domImage.onload = function () {
+                if(domImage.src.match(/.gif/)){
+                  data.context.find('img').closest('.medium-insert-images').addClass('medium-insert-gif');
+                }
+
+                data.context.find('img').attr('src', domImage.src);
+                if (this.options.uploadCompleted) {
+                    this.options.uploadCompleted(data.context, data);
+                }
+
+                that.core.triggerInput();
+            }.bind(this);
+            domImage.src = img;
+        } else {
+            data.context = $(this.templates['vendor/medium/templates/images-image.hbs']({
+                img: img,
+                progress: this.options.preview
+            })).appendTo($place);
+
+            $place.find('br').remove();
+
+            if (this.options.autoGrid && $place.find('figure').length >= this.options.autoGrid) {
+                $.each(this.options.styles, function (style, options) {
+                    var className = 'medium-insert-images-' + style;
+
+                    $place.removeClass(className);
+
+                    if (options.removed) {
+                        options.removed($place);
+                    }
+                });
+
+                $place.addClass('medium-insert-images-grid');
+
+                if (this.options.styles.grid.added) {
+                    this.options.styles.grid.added($place);
+                }
+            }
+
+            if (this.options.preview) {
+                data.submit();
+            } else if (this.options.uploadCompleted) {
+                this.options.uploadCompleted(data.context, data);
+            }
+        }
+
+        this.core.triggerInput();
+
+        return data.context;
+    };
+
+    Images.prototype.getDOMImage = function () {
+        return new window.Image();
+    };
+
+    /**
+     * Select clicked image
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Images.prototype.selectImage = function (e) {
+        var that = this,
+            $image;
+
+        if (this.core.options.enabled) {
+            $image = $(e.target);
+
+            this.$currentImage = $image;
+
+            // Hide keyboard on mobile devices
+            this.$el.blur();
+
+            $image.addClass('medium-insert-image-active');
+            $image.closest('.medium-insert-images').addClass('medium-insert-active');
+
+            setTimeout(function () {
+                that.addToolbar();
+
+                if (that.options.captions) {
+                    that.core.addCaption($image.closest('figure'), that.options.captionPlaceholder);
+                }
+            }, 50);
+        }
+    };
+
+    /**
+     * Unselect selected image
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Images.prototype.unselectImage = function (e) {
+        var $el = $(e.target),
+            $image = this.$el.find('.medium-insert-image-active');
+
+        if ($el.is('img') && $el.hasClass('medium-insert-image-active')) {
+            $image.not($el).removeClass('medium-insert-image-active');
+            $('.medium-insert-images-toolbar, .medium-insert-images-toolbar2').remove();
+            this.core.removeCaptions($el);
+            return;
+        }
+
+        $image.removeClass('medium-insert-image-active');
+        $('.medium-insert-images-toolbar, .medium-insert-images-toolbar2').remove();
+
+        if ($el.is('.medium-insert-caption-placeholder')) {
+            this.core.removeCaptionPlaceholder($image.closest('figure'));
+        } else if ($el.is('figcaption') === false) {
+            this.core.removeCaptions();
+        }
+        this.$currentImage = null;
+    };
+
+    /**
+     * Remove image
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Images.prototype.removeImage = function (e) {
+        var images = [],
+            $selectedImage = this.$el.find('.medium-insert-image-active'),
+            $parent, $empty, selection, range, current, caretPosition, $current, $sibling, selectedHtml, i;
+
+        if (e.which === 8 || e.which === 46) {
+            if ($selectedImage.length) {
+                images.push($selectedImage);
+            }
+
+            // Remove image even if it's not selected, but backspace/del is pressed in text
+            selection = window.getSelection();
+            if (selection && selection.rangeCount) {
+                range = selection.getRangeAt(0);
+                current = range.commonAncestorContainer;
+                $current = current.nodeName === '#text' ? $(current).parent() : $(current);
+                caretPosition = MediumEditor.selection.getCaretOffsets(current).left;
+
+                // Is backspace pressed and caret is at the beginning of a paragraph, get previous element
+                if (e.which === 8 && caretPosition === 0) {
+                    $sibling = $current.prev();
+                // Is del pressed and caret is at the end of a paragraph, get next element
+                } else if (e.which === 46 && caretPosition === $current.text().length) {
+                    $sibling = $current.next();
+                }
+
+                if ($sibling && $sibling.hasClass('medium-insert-images')) {
+                    images.push($sibling.find('img'));
+                }
+
+                // If text is selected, find images in the selection
+                selectedHtml = MediumEditor.selection.getSelectionHtml(document);
+                if (selectedHtml) {
+                    $('<div></div>').html(selectedHtml).find('.medium-insert-images img').each(function () {
+                        images.push($(this));
+                    });
+                }
+            }
+
+            if (images.length) {
+                for (i = 0; i < images.length; i++) {
+                    this.deleteFile(images[i].attr('src'));
+
+                    $parent = images[i].closest('.medium-insert-images');
+                    images[i].closest('figure').remove();
+
+                    if ($parent.find('figure').length === 0) {
+                        $empty = $parent.next();
+                        if ($empty.is('p') === false || $empty.text() !== '') {
+                            $empty = $(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
+                            $parent.before($empty);
+                        }
+                        $parent.remove();
+                    }
+                }
+
+                // Hide addons
+                this.core.hideAddons();
+                if (!selectedHtml && $empty) {
+                    e.preventDefault();
+                    this.core.moveCaret($empty);
+                }
+
+                $('.medium-insert-images-toolbar, .medium-insert-images-toolbar2').remove();
+                this.core.triggerInput();
+            }
+        }
+    };
+
+    /**
+     * Makes ajax call to deleteScript
+     *
+     * @param {String} file File name
+     * @returns {void}
+     */
+
+    Images.prototype.deleteFile = function (file) {
+        if (this.options.deleteScript) {
+            $.ajax($.extend(true, {}, {
+                url: this.options.deleteScript,
+                type: this.options.deleteMethod || 'POST',
+                data: { file: file }
+            }, this.options.fileDeleteOptions));
+        }
+    };
+
+    /**
+     * Adds image toolbar to editor
+     *
+     * @returns {void}
+     */
+
+    Images.prototype.addToolbar = function () {
+        var $image = this.$el.find('.medium-insert-image-active'),
+            $p = $image.closest('.medium-insert-images'),
+            active = false,
+            mediumEditor = this.core.getEditor(),
+            toolbarContainer = mediumEditor.options.elementsContainer || 'body',
+            $toolbar, $toolbar2;
+
+        $(toolbarContainer).append(this.templates['vendor/medium/templates/images-toolbar.hbs']({
+            styles: this.options.styles,
+            actions: this.options.actions
+        }).trim());
+
+        $toolbar = $('.medium-insert-images-toolbar');
+        $toolbar2 = $('.medium-insert-images-toolbar2');
+
+        $toolbar.find('button').each(function () {
+            if ($p.hasClass('medium-insert-images-' + $(this).data('action'))) {
+                $(this).addClass('medium-editor-button-active');
+                active = true;
+            }
+        });
+
+        if (active === false) {
+            $toolbar.find('button').first().addClass('medium-editor-button-active');
+        }
+
+        this.repositionToolbars();
+
+        $toolbar.fadeIn();
+        $toolbar2.fadeIn();
+    };
+
+    Images.prototype.autoRepositionToolbars = function () {
+        setTimeout(function () {
+            this.repositionToolbars();
+            this.repositionToolbars();
+        }.bind(this), 0);
+    };
+
+    Images.prototype.repositionToolbars = function () {
+        var $toolbar = $('.medium-insert-images-toolbar'),
+            $toolbar2 = $('.medium-insert-images-toolbar2'),
+            $image = this.$el.find('.medium-insert-image-active'),
+            elementsContainer = this.core.getEditor().options.elementsContainer,
+            elementsContainerAbsolute = ['absolute', 'fixed'].indexOf(window.getComputedStyle(elementsContainer).getPropertyValue('position')) > -1,
+            elementsContainerBoundary = elementsContainerAbsolute ? elementsContainer.getBoundingClientRect() : null,
+            containerWidth = $(window).width(),
+            position = {};
+
+        if ($toolbar2.length) {
+            position.top = $image.offset().top + 2;
+            position.left = $image.offset().left + $image.width() - $toolbar2.width() - 4; // 4px - distance from a border
+
+            if (elementsContainerAbsolute) {
+                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
+                position.left -= elementsContainerBoundary.left;
+                containerWidth = $(elementsContainer).width();
+            }
+
+            if (position.left + $toolbar2.width() > containerWidth) {
+                position.left = containerWidth - $toolbar2.width();
+            }
+
+            $toolbar2.css(position);
+        }
+
+        if ($toolbar.length) {
+            if ($image.closest('.medium-insert-images-grid-active').length) {
+                $image = $image.closest('.medium-insert-images-grid-active');
+            }
+
+            position.top = $image.offset().top - $toolbar.height() - 8 - 2 - 5; // 8px - hight of an arrow under toolbar, 2px - height of an image outset, 5px - distance from an image
+            position.left = $image.offset().left + $image.width() / 2 - $toolbar.width() / 2;
+
+            if (elementsContainerAbsolute) {
+                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
+                position.left -= elementsContainerBoundary.left;
+            }
+
+            if (position.top < 0) {
+                position.top = 0;
+            }
+
+            $toolbar.css(position);
+        }
+    };
+
+    /**
+     * Fires toolbar action
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Images.prototype.toolbarAction = function (e) {
+        var that = this,
+            $button, $li, $ul, $lis, $p;
+
+        if (this.$currentImage === null) {
+            return;
+        }
+
+        $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button');
+        $li = $button.closest('li');
+        $ul = $li.closest('ul');
+        $lis = $ul.find('li');
+        $p = this.$el.find('.medium-insert-active');
+
+        $button.addClass('medium-editor-button-active');
+        $li.siblings().find('.medium-editor-button-active').removeClass('medium-editor-button-active');
+
+        $lis.find('button').each(function () {
+            var className = 'medium-insert-images-' + $(this).data('action');
+
+
+
+            if ($(this).hasClass('medium-editor-button-active')) {
+                $p.addClass(className);
+
+                /*if ($p.parent('.medium-insert-images-clearfix').length) {
+                  $p.unwrap('<div class="medium-insert-images-clearfix clearfix"></div>');
+                }
+
+                if (className == 'medium-insert-images-left' || className == 'medium-insert-images-right') {
+                  $p.wrap('<div class="medium-insert-images-clearfix clearfix"></div>');
+                }*/
+
+                if (that.options.styles[$(this).data('action')].added) {
+                    that.options.styles[$(this).data('action')].added($p);
+                }
+            } else {
+                $p.removeClass(className);
+
+                if (that.options.styles[$(this).data('action')].removed) {
+                    that.options.styles[$(this).data('action')].removed($p);
+                }
+            }
+        });
+
+        this.core.hideButtons();
+
+        this.core.triggerInput();
+    };
+
+    /**
+     * Fires toolbar2 action
+     *
+     * @param {Event} e
+     * @returns {void}
+     */
+
+    Images.prototype.toolbar2Action = function (e) {
+        var $button, callback;
+
+        if (this.$currentImage === null) {
+            return;
+        }
+
+        $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button');
+        callback = this.options.actions[$button.data('action')].clicked;
+
+        if (callback) {
+            callback(this.$el.find('.medium-insert-image-active'));
+        }
+
+        this.core.hideButtons();
+
+        this.core.triggerInput();
+    };
+
+    /**
+     * Initialize sorting
+     *
+     * @returns {void}
+     */
+
+    Images.prototype.sorting = function () {
+        $.proxy(this.options.sorting, this)();
+    };
+
+    /** Plugin initialization */
+
+    $.fn[pluginName + addonName] = function (options) {
+        return this.each(function () {
+            if (!$.data(this, 'plugin_' + pluginName + addonName)) {
+                $.data(this, 'plugin_' + pluginName + addonName, new Images(this, options));
+            }
+        });
+    };
+
+})(jQuery, window, document, MediumEditor.util);
+
+}));
+
+}.call(window));
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js__);
+
+
+const uploadCoverUrl = 'api/asset/cover-img';
+const uploadUrl      = 'api/asset/img';
+const baseURL   	 = window.baseURL;
+
+function _initFileUpload($element, options, $scope) {
+	var self 	= this,
+		fileUploadOptions;
+
+	if (! $element.length) { return false; }
+	// ------------------------------------------------------------------------
+
+	fileUploadOptions = {
+		url       : options.uploadURL ? options.uploadURL : this.uploadURL,
+		dropZone  : void 0,
+
+		add: function(e, data) {
+			var that 	= $(this).data('blueimpUIFileupload'),
+                options = that.options,
+                files 	= data.files;
+
+            // Validation
+            // ------------------------------------------------------------------------
+            that._adjustMaxNumberOfFiles(-files.length);
+            data.isAdjusted = true;
+            data.files.valid = data.isValidated = that._validate(files);
+
+            if (! data.files.valid){
+                that._showError(data.files);
+                return false;
+            }
+
+            // DOM manipulation
+            // ------------------------------------------------------------------------
+
+            that.options.dropZone.find('.option-url').hide();	
+            that.options.dropZone.siblings('.remove').hide();
+
+            data.context = that._renderTemplate(data.files).data('data', data);
+
+	        // ------------------------------------------------------------------------
+	        $scope.uploading = true;
+	        $scope.$apply();
+
+	        // ------------------------------------------------------------------------
+
+            // Trigger
+            // ------------------------------------------------------------------------
+
+            if ((that._trigger('added', e, data) !== false) &&
+                    (options.autoUpload || data.autoUpload) &&
+                    data.autoUpload !== false && data.isValidated) {
+
+                data.submit();
+            }
+		},
+
+		done: function(e, data) {
+			var that        = $(this).data('blueimpUIFileupload'),
+                $dropZone   = that.options.dropZone,
+                context     = $(data.context),
+                fid, fn, $input;
+
+	        // ------------------------------------------------------------------------
+			if($(this).closest('.eb-listicle')[0]){
+			// 	// var $scope = angular.element('[ng-controller=listicleController]').scope();
+				var indexPos = $(this).closest('.eb-listicle-item').index('.eb-listicle-item');
+				$scope.listicleItems[indexPos].image_str = data.result.url;
+				$scope.listicleItems[indexPos].image_id  = data.result.id;
+				$scope.$apply();
+			}
+
+     	// var $scope = angular.element($element).scope();
+			if(!$(this).closest('.eb-listicle')[0]){
+				$scope.data.image = {id: data.result.id, url: data.result.url, name: data.result.name};
+			}
+	        $scope.uploading = false;
+	        $scope.$apply();
+	        // ------------------------------------------------------------------------
+
+            // DOM manipulation
+            // ------------------------------------------------------------------------
+
+            $dropZone.find('.option-url').show();
+            $dropZone.siblings('.remove').show();
+
+            // On result
+            // ------------------------------------------------------------------------
+
+            if (data.result.error) {
+                data.errorThrown = data.result.error_description || data.result.error;
+                that._trigger('fail', e, data);
+            } else {
+            	// DOM manipulation
+            	// ------------------------------------------------------------------------
+
+				context.remove();
+
+				$dropZone.removeClass('on-progress').addClass('on-preview');
+            }
+		},
+
+		fail: function(e, data) {
+			var that 		= $(this).data('blueimpUIFileupload'),
+				$progress 	= data.context.find('.progressbar'),
+				$parent 	= data.context,
+				$ancestor   = data.context.parent('.fileupload-pool'),
+				fid;
+
+	        // ------------------------------------------------------------------------
+	        console.log( $scope )
+	        $scope.uploading = false;
+	        // $scope.$apply();
+
+	        // ------------------------------------------------------------------------
+
+			// DOM manipulation
+			// ------------------------------------------------------------------------
+
+    		$progress.removeClass('progress-info').addClass('progress-danger');
+    		$parent.addClass('has-status')
+    			   .append(
+    			   		$('<div />', {'class': 'status'}).text(data.errorThrown)
+    			   		.append($('<a />', {'class': 'error-close'}).append($('<i />', {'class': 'keepo-icon icon-cancel'})))
+    			   	);
+
+    		$parent.on('click', 'a.error-close', function(e) {
+    			e.preventDefault();
+
+    			$parent.remove();
+    			$ancestor.removeClass('on-progress');
+    			$ancestor.find('.helper').show();
+    			$ancestor.find('.drop_target').show();
+    		});
+
+    		// Remove input hidden
+    		// ------------------------------------------------------------------------
+
+    		//fid = 'fid_' + $(this).data('id');
+    		data.form.find('input[type=hidden][name=fid]').remove();
+    		data.form.find('input[type=hidden][name=fn]').remove();
+		}
+	};
+
+	__WEBPACK_IMPORTED_MODULE_0_imports_loader_jquery_define_false_this_window_vendor_medium_medium_editor_insert_plugin_js___default()($);
+	fileUploadOptions = $.extend(fileUploadOptions, options);
+	$element.fileupload(fileUploadOptions);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({_initFileUpload, uploadCoverUrl, uploadUrl, baseURL});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -998,7 +3541,7 @@ $.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var __WEBPACK_AMD_DEFINE_RESULT__;/*global self, document, DOMException */
@@ -8707,38 +11250,41 @@ MediumEditor.version = MediumEditor.parseVersionString.call(this, ({
     return MediumEditor;
 }()));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30)))
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scss_main_scss__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scss_main_scss__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scss_main_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__scss_main_scss__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__app__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_joii__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_joii___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_joii__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_template_mdl_editor_html__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_template_mdl_editor_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__modules_template_mdl_editor_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_template_editor_article_html__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_template_editor_article_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__modules_template_editor_article_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_template_editor_listicle_html__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_template_editor_listicle_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__modules_template_editor_listicle_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_template_editor_title_html__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_template_editor_title_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__modules_template_editor_title_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_template_editor_tags_html__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_template_editor_tags_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__modules_template_editor_tags_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_template_editor_channel_html__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_template_editor_channel_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__modules_template_editor_channel_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__modules_template_mdl_editor_created_html__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__modules_template_mdl_editor_created_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__modules_template_mdl_editor_created_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modules_directive_article_directive_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_directive_listicle_directive_js__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__modules_directive_created_directive_js__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__modules_directive_title_directive_js__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__content_template_editor_article_html__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__content_template_editor_article_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__content_template_editor_article_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__content_template_editor_listicle_html__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__content_template_editor_listicle_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__content_template_editor_listicle_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__content_template_editor_title_html__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__content_template_editor_title_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__content_template_editor_title_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__content_template_editor_tags_html__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__content_template_editor_tags_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__content_template_editor_tags_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__content_template_editor_channel_html__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__content_template_editor_channel_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__content_template_editor_channel_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__content_template_editor_img_cover_html__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__content_template_editor_img_cover_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__content_template_editor_img_cover_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__content_template_mdl_editor_html__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__content_template_mdl_editor_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__content_template_mdl_editor_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__content_template_mdl_editor_created_html__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__content_template_mdl_editor_created_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__content_template_mdl_editor_created_html__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__content_directive_article_directive_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__content_directive_listicle_directive_js__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__content_directive_created_directive_js__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__content_directive_title_directive_js__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__content_directive_img_cover_directive_js__ = __webpack_require__(35);
 
 
 
@@ -8749,10 +11295,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+ // Image cover
 
 
 
 /*DIRECTIVE*/
+
 
 
 
@@ -8771,9 +11319,10 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 			// this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput']);
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('app-controller', ['$scope', '$attrs', 'appService', 'tabService', function($scope, $attrs, appService, tabService) {
+			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', 'appService', 'tabService', function($scope, $attrs, $filter, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
+				// console.log( $filter('appFilter') );
 
 				$scope.mainApp         = self;
 				$scope.moderationCount = 0;
@@ -9024,23 +11573,72 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 				// Implement underscore to rootScope
 		        $rootScope._ = _;
 
-		        $templateCache.put('article.html', __WEBPACK_IMPORTED_MODULE_4__modules_template_editor_article_html___default.a);
-		        $templateCache.put('listicle.html', __WEBPACK_IMPORTED_MODULE_5__modules_template_editor_listicle_html___default.a);
-		        $templateCache.put('title.html', __WEBPACK_IMPORTED_MODULE_6__modules_template_editor_title_html___default.a);
-		        $templateCache.put('tags.html', __WEBPACK_IMPORTED_MODULE_7__modules_template_editor_tags_html___default.a);
-		        $templateCache.put('channel.html', __WEBPACK_IMPORTED_MODULE_8__modules_template_editor_channel_html___default.a);
-		        $templateCache.put('created.html', __WEBPACK_IMPORTED_MODULE_9__modules_template_mdl_editor_created_html___default.a);
+		        // Caching all templete -> Ferdi Ardiansa
+		        $templateCache.put('article.html', __WEBPACK_IMPORTED_MODULE_3__content_template_editor_article_html___default.a);
+		        $templateCache.put('listicle.html', __WEBPACK_IMPORTED_MODULE_4__content_template_editor_listicle_html___default.a);
+		        $templateCache.put('title.html', __WEBPACK_IMPORTED_MODULE_5__content_template_editor_title_html___default.a);
+		        $templateCache.put('tags.html', __WEBPACK_IMPORTED_MODULE_6__content_template_editor_tags_html___default.a);
+		        $templateCache.put('channel.html', __WEBPACK_IMPORTED_MODULE_7__content_template_editor_channel_html___default.a);
+		        $templateCache.put('created.html', __WEBPACK_IMPORTED_MODULE_10__content_template_mdl_editor_created_html___default.a);
+		        $templateCache.put('image.html', __WEBPACK_IMPORTED_MODULE_8__content_template_editor_img_cover_html___default.a);
 			});
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
 
 		directive: function() {
-			this.application.directive('feeds', ['$compile', '$rootScope', '$window', 'appService', function($compile, $rootScope, $window, appService) {
+			this.application.directive('feeds', ['$compile', '$rootScope', '$window', '$filter', 'appService', function($compile, $rootScope, $window, $filter, appService) {
 				return {
 					restrict: 'E',
 					replace: true,
                     templateUrl: 'feedListTemplate',
                     controller: function ($scope, appService) {
+                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo'];
+                    	
+                    	$scope.changeCover = function(post, index, type = 'img-cover') {
+
+							// This is only listicle and article type
+							if (_.contains(postList, post.post_type)) {
+								appService.modalEditor($scope, {});
+
+								$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
+								
+								// This use for all directives
+								$rootScope.allPosts = _.extend($scope, { post : post });
+							}
+						}; 
+
+						$scope.showFeature = {
+
+							// Who's could change the image cover
+							imgCover : function(post) {
+								if(_.contains(postList, post.post_type)) 
+								{ return true }
+							},
+
+							// Mouseover on image cover
+							title  : function(post) {
+								if(_.contains(postList, post.post_type)) 
+								{ return 'Change Cover' }	
+							},
+
+							// Who's couldn't get link view
+							viewLink : function(post) {
+								if(!_.contains(['quickpersonality', 'quicktrivia', 'quickpolling'], post.post_type))
+								{ return true }
+							},
+ 							
+ 							// Who's could edit this. like keepo editor (show modal)
+							editorLink : function(post) {
+								if(_.contains(['article', 'listicle'], post.post_type))
+								{ return true }
+							},
+
+							// Hide link if post type like on list
+							editorChannel : function(post) {
+								if(!_.contains(['meme', 'funquiz'], post.post_type))
+								{ return true }	
+							}
+						}
                     },
                     link: function($scope, $elements, $attrs) {
                     	$scope.post = {};
@@ -9079,7 +11677,7 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 							appService.appContext.setPremium(post, (!post.is_premium ? 1 : 0), $scope);
 						};
 
-						$scope.setEditor = function(post, type, index) {
+						$scope.setEditor   = function(post, type, index) {
 							appService.modalEditor($scope, {
 								ids  : index,
 								data : post,
@@ -9088,11 +11686,11 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 							$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
 							
 							// This use for all directives
-							$rootScope.allPosts = Object.assign($scope, { post : post });
+							$rootScope.allPosts = _.extend($scope, { post : post });
 						};
 
 						$scope.parseFeedsLink = function(post) {
-							$window.open('http://localhost:8000/' + post.user + '/' + post.slug, '_blank');
+							$window.open(post.url, '_blank');
 						}
                     }
 				};
@@ -9146,13 +11744,13 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 				return {
 					restrict    : 'E',
 					replace     :  true,
-					template    : __WEBPACK_IMPORTED_MODULE_3__modules_template_mdl_editor_html___default.a,
+					template    : __WEBPACK_IMPORTED_MODULE_9__content_template_mdl_editor_html___default.a,
 					controller  : function($scope, $element, $rootScope) {
 						var datas = {};
 
 						$scope.$on('mdl_data', function(item, args){ 
+
 							$scope.allPost = args.allPosts; 
-							// $scope.data    = args.posts; 
 							$scope.layout  = {
 								type : args.type,
 								url  : args.type + '.html'
@@ -9254,10 +11852,11 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 				};
 			}]);
 
-			this.application.directive('editorArticle',  __WEBPACK_IMPORTED_MODULE_10__modules_directive_article_directive_js__["a" /* default */]);
-			this.application.directive('editorListicle', __WEBPACK_IMPORTED_MODULE_11__modules_directive_listicle_directive_js__["a" /* default */]);
-			this.application.directive('editorCreated', __WEBPACK_IMPORTED_MODULE_12__modules_directive_created_directive_js__["a" /* default */]);
-			this.application.directive('editorTitle', __WEBPACK_IMPORTED_MODULE_13__modules_directive_title_directive_js__["a" /* default */]);
+			this.application.directive('editorArticle',  __WEBPACK_IMPORTED_MODULE_11__content_directive_article_directive_js__["a" /* default */]);
+			this.application.directive('editorListicle', __WEBPACK_IMPORTED_MODULE_12__content_directive_listicle_directive_js__["a" /* default */]);
+			this.application.directive('editorCreated', __WEBPACK_IMPORTED_MODULE_13__content_directive_created_directive_js__["a" /* default */]);
+			this.application.directive('editorTitle', __WEBPACK_IMPORTED_MODULE_14__content_directive_title_directive_js__["a" /* default */]);
+			this.application.directive('editorImgCover', __WEBPACK_IMPORTED_MODULE_15__content_directive_img_cover_directive_js__["a" /* default */]);
 		},
 
 		allController: function($scope, $attrs, appService) {
@@ -9386,7 +11985,6 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 				};
 
 				$scope.dropdownAction = function(name, selected) {
-					console.log( name, selected );
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
 				};
 
@@ -9450,13 +12048,13 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 
 
 /***/ }),
-/* 11 */,
-/* 12 */,
 /* 13 */,
-/* 14 */
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(15)(undefined);
+exports = module.exports = __webpack_require__(17)(undefined);
 // imports
 
 
@@ -9467,7 +12065,7 @@ exports.push([module.i, ".xdsoft_datetimepicker {\r\n\tbox-shadow: 0 5px 15px -5
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports) {
 
 /*
@@ -9549,2439 +12147,65 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 16 */,
-/* 17 */
+/* 18 */,
+/* 19 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"main-container\" editor-article>\r\n  <div class=\"editor-wrapper\" ng-class=\"{ 'on-progress' : onProgress }\">\r\n    <div class=\"editor-container\" data-editor=\"article\">\r\n      <header class=\"editor-image\">\r\n        <div class=\"fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>\" droppable>\r\n          <div class=\"helper\">\r\n            <div class=\"helper_text\">\r\n              <i class=\"keepo-icon icon-photo\"></i>\r\n              <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>\r\n              <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n            </div>\r\n          </div>\r\n\r\n          <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\" ng-click=\"browseFile($event)\"></span>\r\n\r\n          <div class=\"preview\" ng-if=\"data.image.id\">\r\n            <img ng-src=\"<@ data.image.url @>\" alt=\"\">\r\n            <a class=\"remove-preview\" ng-click=\"removePreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n          </div>\r\n\r\n          <input type=\"hidden\" name=\"fid\" value=\"<@ data.image.id @>\" ng-if=\"data.image.id\">\r\n          <input type=\"hidden\" name=\"fn\" value=\"<@ data.image.name @>\" ng-if=\"data.image.name\">\r\n        </div>\r\n      </header>\r\n      <!-- end of .editor-image -->\r\n\r\n      <div class=\"editor-body\">\r\n        <header class=\"eb-header\">\r\n          <h1 id=\"editor-title\" class=\"eb-title\" ng-model=\"data.title\" text-content></h1>\r\n          <h2 id=\"editor-lead\" class=\"eb-lead\" ng-model=\"data.lead\" text-content></h2>\r\n        </header>\r\n        <!-- end of .eb-header -->\r\n        <div id=\"editor-content\" class=\"eb-article text\" ondrop=\"return false;\" ng-bind-html=\"data.content\"></div>\r\n        <!-- end of .eb-article -->\r\n\r\n        <footer class=\"eb-footer\">\r\n          <div class=\"eb-footer-tags eb-footer-components\">\r\n            <tags-input ng-model=\"tags\">\r\n              <auto-complete source=\"loadTags($query)\"></auto-complete>\r\n            </tags-input>\r\n          </div>\r\n\r\n          <div class=\"eb-footer-source eb-footer-components\">\r\n            <input class=\"components\" type=\"text\" name=\"source\" placeholder=\"Source http://\" ng-model=\"data.source\">\r\n          </div>\r\n\r\n          <div class=\"eb-footer-category eb-footer-components\" ng-click=\"openCategory($event)\">\r\n            <div class=\"eb-category components\"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class=\"icon-down\"></i></div>\r\n\r\n            <ul class=\"eb-category-list\">\r\n              <li ng-click=\"setChannel($event, 'hobbies-channel')\">Art &amp; Design</li>\r\n              <li ng-click=\"setChannel($event, 'animals-channel')\">Cute</li>\r\n              <li ng-click=\"setChannel($event, 'creepy-channel')\">Creepy</li>\r\n              <li ng-click=\"setChannel($event, 'entertainments-channel')\">Entertainments</li>\r\n              <li ng-click=\"setChannel($event, 'facts-channel')\">Facts &amp; History</li>\r\n              <li ng-click=\"setChannel($event, 'anime-comic-channel')\">Games, Comic &amp; Anime</li>\r\n              <li ng-click=\"setChannel($event, 'inspirational-channel')\">Inspirational</li>\r\n              <li ng-click=\"setChannel($event, 'lifestyle-channel')\">Lifestyle</li>\r\n              <li ng-click=\"setChannel($event, 'fun-humor-channel')\">Fun &amp; Humor</li>\r\n              <li ng-click=\"setChannel($event, 'news-info-channel')\">News &amp; Info</li>\r\n              <li ng-click=\"setChannel($event, 'nsfw-channel')\">NSFW</li>\r\n              <li ng-click=\"setChannel($event, 'wtf-channel')\">WTF!</li>\r\n              <li ng-click=\"setChannel($event, 'sports-channel')\">Sports</li>\r\n              <li ng-click=\"setChannel($event, 'tech-channel')\">Tech</li>\r\n              <li ng-click=\"setChannel($event, 'travelling-channel')\">Travelling</li>\r\n              <li ng-click=\"setChannel($event, 'unique-weird-channel')\">Unique &amp; Weird</li>\r\n            </ul>\r\n          </div>\r\n        </footer>\r\n        <!-- end of .eb-footer -->\r\n      </div>\r\n      <!-- end of .editor-body -->\r\n    </div>\r\n    <!-- end of .editor-container -->\r\n  </div>\r\n  <!-- end of .editor-wrapper -->\r\n\r\n  <footer class=\"editor-bottom mdl-footer\">\r\n    <div class=\"wrap-footer_btn\">\r\n      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick()\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n    </div>\r\n  </footer>\r\n  <!-- end of .editor-bottom -->\r\n\r\n  <div class=\"editor-loading\">\r\n    <div id=\"loader\" class=\"overlay-loader\">\r\n      <div class=\"loader-background color-flip\"></div>\r\n    </div>\r\n  </div>\r\n</div>";
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"main-container\" data-app=\"editors\" editor-article>\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Change Category</h2></header>\r\n  \t\r\n  \t<article>\r\n      <div class=\"eb-footer-category eb-footer-components\" ng-click=\"openCategory($event)\">\r\n          <div class=\"eb-category components\"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class=\"icon-down\"></i></div>\r\n\r\n          <ul class=\"eb-category-list\">\r\n            <div class=\"rows-group\">\r\n              <div class=\"col-1\" ng-init=\"channel = data.channel\">\r\n                <li ng-click=\"setChannel($event, 'hobbies-channel')\" ng-class=\"{'active' : (channel.slug == 'hobbies-channel')}\">Art &amp; Design</li>\r\n                <li ng-click=\"setChannel($event, 'animals-channel')\" ng-class=\"{'active' : (channel.slug == 'animals-channel')}\">Cute</li>\r\n                <li ng-click=\"setChannel($event, 'creepy-channel')\" ng-class=\"{'active' : (channel.slug == 'creepy-channel')}\">Creepy</li>\r\n                <li ng-click=\"setChannel($event, 'entertainments-channel')\" ng-class=\"{'active' : (channel.slug == 'entertainments-channel')}\">Entertainments</li>\r\n                <li ng-click=\"setChannel($event, 'facts-channel')\" ng-class=\"{'active' : (channel.slug == 'facts-channel')}\">Facts &amp; History</li>\r\n                <li ng-click=\"setChannel($event, 'anime-comic-channel')\" ng-class=\"{'active' : (channel.slug == 'anime-comic-channel')}\">Games, Comic &amp; Anime</li>\r\n                <li ng-click=\"setChannel($event, 'inspirational-channel')\" ng-class=\"{'active' : (channel.slug == 'inspirational-channel')}\">Inspirational</li>\r\n              </div>\r\n              <div class=\"col-1\">\r\n                <li ng-click=\"setChannel($event, 'lifestyle-channel')\" ng-class=\"{'active' : (channel.slug == 'lifestyle-channel')}\">Lifestyle</li>\r\n                <li ng-click=\"setChannel($event, 'fun-humor-channel')\" ng-class=\"{'active' : (channel.slug == 'fun-humor-channel')}\">Fun &amp; Humor</li>\r\n                <li ng-click=\"setChannel($event, 'news-info-channel')\" ng-class=\"{'active' : (channel.slug == 'news-info-channel')}\">News &amp; Info</li>\r\n                <li ng-click=\"setChannel($event, 'nsfw-channel')\" ng-class=\"{'active' : (channel.slug == 'nsfw-channel')}\">NSFW</li>\r\n                <li ng-click=\"setChannel($event, 'wtf-channel')\" ng-class=\"{'active' : (channel.slug == 'wtf-channel')}\">WTF!</li>\r\n                <li ng-click=\"setChannel($event, 'sports-channel')\" ng-class=\"{'active' : (channel.slug == 'sports-channel')}\">Sports</li>\r\n                <li ng-click=\"setChannel($event, 'tech-channel')\" ng-class=\"{'active' : (channel.slug == 'tech-channel')}\">Tech</li>\r\n              </div>\r\n              <div class=\"col-1\">\r\n                <li ng-click=\"setChannel($event, 'travelling-channel')\" ng-class=\"{'active' : (channel.slug == 'travelling-channel')}\">Travelling</li>\r\n                <li ng-click=\"setChannel($event, 'unique-weird-channel')\" ng-class=\"{'active' : (channel.slug == 'unique-weird-channel')}\">Unique &amp; Weird</li>\r\n              </div>\r\n            </div>\r\n          </ul>\r\n        </div>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n      <div class=\"wrap-footer_btn\">\r\n        <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n        <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-channel')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n      </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
-
-/***/ }),
 /* 20 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"main-container\" feeds=\"allPost\" content=\"data\" editor-article>\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Post Listicle</h2></header>\r\n\r\n    <div class=\"editor-container\" data-editor=\"editorListicle\">\r\n      <header class=\"editor-image\">\r\n        <div class=\"fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>\" droppable>\r\n          <div class=\"helper\">\r\n            <div class=\"helper_text\">\r\n              <i class=\"keepo-icon icon-photo\"></i>\r\n              <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>\r\n\r\n              <div class=\"from_url hidden\"><input type=\"text\" id=\"image-url\" placeholder=\"or get image from URL\"><a class=\"keepo-btn light-btn01 get-image\" ng-click=\"getImage(this)\"><i class=\"icon-cloud-download\"></i> Get Image</a></div>\r\n\r\n              <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n            </div>\r\n          </div>\r\n\r\n          <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\" ng-click=\"browseFile($event)\"></span>\r\n\r\n          <div class=\"preview\" ng-show=\"data.image.id\">\r\n            <img ng-src=\"<@ data.image.url @>\" alt=\"<@ data.image.name @>\">\r\n            <a class=\"remove-preview\" ng-click=\"removePreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n          </div>\r\n\r\n          <input type=\"hidden\" name=\"fid\" value=\"<@ data.image.id @>\" ng-if=\"data.image.id\">\r\n          <input type=\"hidden\" name=\"fn\" value=\"<@ data.image.name @>\" ng-if=\"data.image.name\">\r\n        </div>\r\n      </header>\r\n      <!-- end of .editor-image -->\r\n\r\n      <div class=\"editor-body\" editor-listicle>\r\n        <header class=\"eb-header\">\r\n          <h1 id=\"editor-title\" class=\"eb-title\" ng-model=\"data.title\" text-content></h1>\r\n          <h2 id=\"editor-lead\" class=\"eb-lead\" ng-model=\"data.lead\" text-content></h2>\r\n        </header>\r\n        <!-- end of .eb-header -->\r\n\r\n        <div id=\"editor-content\" class=\"eb-article text\" ondrop=\"return false;\" ng-bind-html=\"data.content\"></div>\r\n        <!-- end of .eb-article -->\r\n\r\n        <div class=\"eb-listicle\">\r\n          <header class=\"eb-listicle-options options\">\r\n            <span class=\"option\" ng-class=\"{'active' : (data.content.sort == 'ordinal')}\" ng-click=\"setOrder($event, 'ordinal')\">Ordinal (1,2,3)</span>\r\n            <span class=\"option\" ng-class=\"{'active' : (data.content.sort == 'reverse')}\" ng-click=\"setOrder($event, 'reverse')\">Reverse (3,2,1)</span>\r\n            <span class=\"option\" ng-class=\"{'active' : (data.content.sort == 'points')}\" ng-click=\"setOrder($event, 'points')\">Point</span>\r\n          </header>\r\n\r\n          <div class=\"eb-listicle-list\">\r\n            <div class=\"eb-listicle-separator\"><div></div><span class=\"eb-listicle-separator-trigger\" ng-click=\"addItem($event)\"><i class=\"icon-cancel\"></i></span></div>\r\n            <!-- end of .eb-listicle-separator -->\r\n\r\n            <div class=\"eb-listicle-item <@ item.class @>\" ng-repeat-start=\"item in data.content.models\" ng-init=\"sortType = (data.content.sort)\">\r\n              <span class=\"listicle-item-numbers lin-<@ sortType @>\"><@ item.order @>.</span>\r\n\r\n              <header class=\"listicle-item-header\">\r\n                <header class=\"listicle-item-title-holder\">\r\n                  <h2 class=\"listicle-item-title\"><@ item.title @></h2>\r\n\r\n                  <a class=\"listicle-item-remove\" ng-click=\"removeItem($event)\"><i class=\"icon-cancel\"></i></a>\r\n                </header>\r\n                <!-- end of .listicle-item-title-holder -->\r\n\r\n                <div class=\"listicle-item-image\">\r\n                  <div class=\"fileupload-pool drop <@ item.image_str ? 'on-preview' : '' @>\" droppable>\r\n                    <div class=\"helper\">\r\n                      <div class=\"helper_text\">\r\n                        <i class=\"keepo-icon icon-photo\"></i>\r\n                        <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture</span>\r\n\r\n                        <div class=\"from_url video-image hidden\"><i class=\"icon-gallery i-vi\"></i> <i class=\"icon-video i-vi\"></i> <input type=\"text\" id=\"image-url\" placeholder=\"put image or video URL\"><a class=\"keepo-btn light-btn01 get-image\" ng-click=\"getImage($event)\"><i class=\"icon-cloud-download\"></i> Add</a></div>\r\n\r\n                        <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n                      </div>\r\n                    </div>\r\n\r\n                    <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\"  ng-click=\"browseFile($event)\"></span>\r\n\r\n                    <div class=\"preview\" ng-show=\"item.image_str\">\r\n                      <img ng-src=\"<@ item.image_str @>\" alt=\"\">\r\n                      <a class=\"remove-preview\" ng-click=\"removeItemPreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n                    </div>\r\n\r\n                    <input type=\"hidden\" name=\"fn\" value=\"<@ item.image_str @>\" ng-if=\"item.image_str\">\r\n                    <input type=\"hidden\" name=\"fid\" value=\"<@ item.image_id @>\" ng-if=\"item.image_id\"/>\r\n                  </div>\r\n                </div>\r\n                <!-- end of .listicle-item-image -->\r\n              </header>\r\n              <!-- end of .listicle-item-header -->\r\n              <div class=\"listicle-item-content text\" ondrop=\"return false;\" ng-bind-html=\"item.content\"></div>\r\n              <!-- end of .listicle-item-content -->\r\n            </div>\r\n            <!-- end of .eb-listicle-item -->\r\n\r\n            <div class=\"eb-listicle-separator\" ng-repeat-end><div></div><span class=\"eb-listicle-separator-trigger\" ng-click=\"addItem($event, 'middle')\"><i class=\"icon-cancel\"></i></span></div>\r\n          </div>\r\n          <!-- end of .eb-listicle-list -->\r\n        </div>\r\n        <!-- end of .eb-listicle -->\r\n\r\n        <footer class=\"eb-footer\">\r\n          <div class=\"eb-footer-tags eb-footer-components\">\r\n            <tags-input ng-model=\"tags\">\r\n              <auto-complete source=\"loadTags($query)\"></auto-complete>\r\n            </tags-input>\r\n          </div>\r\n\r\n          <div class=\"eb-footer-source eb-footer-components\">\r\n            <input class=\"components\" type=\"text\" name=\"source\" placeholder=\"Source http://\" ng-model=\"data.source\">\r\n          </div>\r\n\r\n          <div class=\"eb-footer-category eb-footer-components\" ng-click=\"openCategory($event)\">\r\n            <div class=\"eb-category components\"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class=\"icon-down\"></i></div>\r\n\r\n            <ul class=\"eb-category-list\">\r\n              <li ng-click=\"setChannel($event, 'hobbies-channel')\">Art &amp; Design</li>\r\n              <li ng-click=\"setChannel($event, 'animals-channel')\">Cute</li>\r\n              <li ng-click=\"setChannel($event, 'creepy-channel')\">Creepy</li>\r\n              <li ng-click=\"setChannel($event, 'entertainments-channel')\">Entertainments</li>\r\n              <li ng-click=\"setChannel($event, 'facts-channel')\">Facts &amp; History</li>\r\n              <li ng-click=\"setChannel($event, 'anime-comic-channel')\">Games, Comic &amp; Anime</li>\r\n              <li ng-click=\"setChannel($event, 'inspirational-channel')\">Inspirational</li>\r\n              <li ng-click=\"setChannel($event, 'lifestyle-channel')\">Lifestyle</li>\r\n              <li ng-click=\"setChannel($event, 'fun-humor-channel')\">Fun &amp; Humor</li>\r\n              <li ng-click=\"setChannel($event, 'news-info-channel')\">News &amp; Info</li>\r\n              <li ng-click=\"setChannel($event, 'nsfw-channel')\">NSFW</li>\r\n              <li ng-click=\"setChannel($event, 'wtf-channel')\">WTF!</li>\r\n              <li ng-click=\"setChannel($event, 'sports-channel')\">Sports</li>\r\n              <li ng-click=\"setChannel($event, 'tech-channel')\">Tech</li>\r\n              <li ng-click=\"setChannel($event, 'travelling-channel')\">Travelling</li>\r\n              <li ng-click=\"setChannel($event, 'unique-weird-channel')\">Unique &amp; Weird</li>\r\n            </ul>\r\n          </div>\r\n        </footer>\r\n        <!-- end of .eb-footer -->\r\n      </div>\r\n      <!-- end of .editor-body -->\r\n    </div>\r\n    <!-- end of .editor-container -->\r\n  </div>\r\n  <!-- end of .editor-wrapper -->\r\n\r\n  <footer class=\"editor-bottom mdl-footer\">\r\n    <div class=\"wrap-footer_btn\">\r\n      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick()\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n    </div>\r\n  </footer>\r\n  <!-- end of .editor-bottom -->\r\n\r\n  <div class=\"editor-loading\">\r\n    <div id=\"loader\" class=\"overlay-loader\">\r\n      <div class=\"loader-background color-flip\"></div>\r\n      <!-- <img class=\"loader-icon spinning-cog\" src=\"[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]\" data-cog=\"cog01\"> -->\r\n    </div>\r\n  </div>\r\n</div>\r\n";
+module.exports = "<div class=\"main-container\" editor-article>\r\n  <div class=\"editor-wrapper\" ng-class=\"{ 'on-progress' : onProgress }\">\r\n    <div class=\"editor-container\" data-editor=\"article\">\r\n      <header class=\"editor-image\">\r\n        <div class=\"fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>\" droppable>\r\n          <div class=\"helper\">\r\n            <div class=\"helper_text\">\r\n              <i class=\"keepo-icon icon-photo\"></i>\r\n              <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>\r\n              <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n            </div>\r\n          </div>\r\n\r\n          <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\" ng-click=\"browseFile($event)\"></span>\r\n\r\n          <div class=\"preview\" ng-if=\"data.image.id\">\r\n            <img ng-src=\"<@ data.image.url @>\" alt=\"\">\r\n            <a class=\"remove-preview\" ng-click=\"removePreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n          </div>\r\n\r\n          <input type=\"hidden\" name=\"fid\" value=\"<@ data.image.id @>\" ng-if=\"data.image.id\">\r\n          <input type=\"hidden\" name=\"fn\" value=\"<@ data.image.name @>\" ng-if=\"data.image.name\">\r\n        </div>\r\n      </header>\r\n      <!-- end of .editor-image -->\r\n\r\n      <div class=\"editor-body\">\r\n        <header class=\"eb-header\">\r\n          <h1 id=\"editor-title\" class=\"eb-title\" ng-model=\"data.title\" text-content></h1>\r\n          <h2 id=\"editor-lead\" class=\"eb-lead\" ng-model=\"data.lead\" text-content></h2>\r\n        </header>\r\n        <!-- end of .eb-header -->\r\n        <div id=\"editor-content\" class=\"eb-article text\" ondrop=\"return false;\" ng-bind-html=\"data.content\"></div>\r\n        <!-- end of .eb-article -->\r\n\r\n        <footer class=\"eb-footer\">\r\n          <div class=\"eb-footer-tags eb-footer-components\">\r\n            <tags-input ng-model=\"tags\">\r\n              <auto-complete source=\"loadTags($query)\"></auto-complete>\r\n            </tags-input>\r\n          </div>\r\n\r\n          <div class=\"eb-footer-source eb-footer-components\">\r\n            <input class=\"components\" type=\"text\" name=\"source\" placeholder=\"Source http://\" ng-model=\"data.source\">\r\n          </div>\r\n\r\n          <div class=\"eb-footer-category eb-footer-components\" ng-click=\"openCategory($event)\">\r\n            <div class=\"eb-category components\"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class=\"icon-down\"></i></div>\r\n\r\n            <ul class=\"eb-category-list\">\r\n              <li ng-click=\"setChannel($event, 'hobbies-channel')\">Art &amp; Design</li>\r\n              <li ng-click=\"setChannel($event, 'animals-channel')\">Cute</li>\r\n              <li ng-click=\"setChannel($event, 'creepy-channel')\">Creepy</li>\r\n              <li ng-click=\"setChannel($event, 'entertainments-channel')\">Entertainments</li>\r\n              <li ng-click=\"setChannel($event, 'facts-channel')\">Facts &amp; History</li>\r\n              <li ng-click=\"setChannel($event, 'anime-comic-channel')\">Games, Comic &amp; Anime</li>\r\n              <li ng-click=\"setChannel($event, 'inspirational-channel')\">Inspirational</li>\r\n              <li ng-click=\"setChannel($event, 'lifestyle-channel')\">Lifestyle</li>\r\n              <li ng-click=\"setChannel($event, 'fun-humor-channel')\">Fun &amp; Humor</li>\r\n              <li ng-click=\"setChannel($event, 'news-info-channel')\">News &amp; Info</li>\r\n              <li ng-click=\"setChannel($event, 'nsfw-channel')\">NSFW</li>\r\n              <li ng-click=\"setChannel($event, 'wtf-channel')\">WTF!</li>\r\n              <li ng-click=\"setChannel($event, 'sports-channel')\">Sports</li>\r\n              <li ng-click=\"setChannel($event, 'tech-channel')\">Tech</li>\r\n              <li ng-click=\"setChannel($event, 'travelling-channel')\">Travelling</li>\r\n              <li ng-click=\"setChannel($event, 'unique-weird-channel')\">Unique &amp; Weird</li>\r\n            </ul>\r\n          </div>\r\n        </footer>\r\n        <!-- end of .eb-footer -->\r\n      </div>\r\n      <!-- end of .editor-body -->\r\n    </div>\r\n    <!-- end of .editor-container -->\r\n  </div>\r\n  <!-- end of .editor-wrapper -->\r\n\r\n  <footer class=\"editor-bottom mdl-footer\">\r\n    <div class=\"wrap-footer_btn\" ng-hide=\"uploading\">\r\n      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick()\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n    </div>\r\n  </footer>\r\n  <!-- end of .editor-bottom -->\r\n\r\n  <div class=\"editor-loading\">\r\n    <div id=\"loader\" class=\"overlay-loader\">\r\n      <div class=\"loader-background color-flip\"></div>\r\n    </div>\r\n  </div>\r\n</div>";
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"main-container\" data-app=\"editors\" editor-article>\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Change Title</h2></header>\r\n  \t\r\n  \t<article>\r\n      <div class=\"eb-footer-tags eb-footer-components\">\r\n        <tags-input ng-model=\"tags\">\r\n          <auto-complete source=\"loadTags($query)\"></auto-complete>\r\n        </tags-input>\r\n      </div>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n      <div class=\"wrap-footer_btn\">\r\n        <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n        <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-tags')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n      </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
+module.exports = "<div class=\"main-container\" data-app=\"editors\" editor-article>\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Change Category</h2></header>\r\n  \t\r\n  \t<article>\r\n      <div class=\"eb-footer-category eb-footer-components\" ng-click=\"openCategory($event)\">\r\n          <div class=\"eb-category components\"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class=\"icon-down\"></i></div>\r\n\r\n          <ul class=\"eb-category-list\">\r\n            <div class=\"rows-group\">\r\n              <div class=\"col-1\" ng-init=\"channel = data.channel\">\r\n                <li ng-click=\"setChannel($event, 'hobbies-channel')\" ng-class=\"{'active' : (channel.slug == 'hobbies-channel')}\">Art &amp; Design</li>\r\n                <li ng-click=\"setChannel($event, 'animals-channel')\" ng-class=\"{'active' : (channel.slug == 'animals-channel')}\">Cute</li>\r\n                <li ng-click=\"setChannel($event, 'creepy-channel')\" ng-class=\"{'active' : (channel.slug == 'creepy-channel')}\">Creepy</li>\r\n                <li ng-click=\"setChannel($event, 'entertainments-channel')\" ng-class=\"{'active' : (channel.slug == 'entertainments-channel')}\">Entertainments</li>\r\n                <li ng-click=\"setChannel($event, 'facts-channel')\" ng-class=\"{'active' : (channel.slug == 'facts-channel')}\">Facts &amp; History</li>\r\n                <li ng-click=\"setChannel($event, 'anime-comic-channel')\" ng-class=\"{'active' : (channel.slug == 'anime-comic-channel')}\">Games, Comic &amp; Anime</li>\r\n                <li ng-click=\"setChannel($event, 'inspirational-channel')\" ng-class=\"{'active' : (channel.slug == 'inspirational-channel')}\">Inspirational</li>\r\n              </div>\r\n              <div class=\"col-1\">\r\n                <li ng-click=\"setChannel($event, 'lifestyle-channel')\" ng-class=\"{'active' : (channel.slug == 'lifestyle-channel')}\">Lifestyle</li>\r\n                <li ng-click=\"setChannel($event, 'fun-humor-channel')\" ng-class=\"{'active' : (channel.slug == 'fun-humor-channel')}\">Fun &amp; Humor</li>\r\n                <li ng-click=\"setChannel($event, 'news-info-channel')\" ng-class=\"{'active' : (channel.slug == 'news-info-channel')}\">News &amp; Info</li>\r\n                <li ng-click=\"setChannel($event, 'nsfw-channel')\" ng-class=\"{'active' : (channel.slug == 'nsfw-channel')}\">NSFW</li>\r\n                <li ng-click=\"setChannel($event, 'wtf-channel')\" ng-class=\"{'active' : (channel.slug == 'wtf-channel')}\">WTF!</li>\r\n                <li ng-click=\"setChannel($event, 'sports-channel')\" ng-class=\"{'active' : (channel.slug == 'sports-channel')}\">Sports</li>\r\n                <li ng-click=\"setChannel($event, 'tech-channel')\" ng-class=\"{'active' : (channel.slug == 'tech-channel')}\">Tech</li>\r\n              </div>\r\n              <div class=\"col-1\">\r\n                <li ng-click=\"setChannel($event, 'travelling-channel')\" ng-class=\"{'active' : (channel.slug == 'travelling-channel')}\">Travelling</li>\r\n                <li ng-click=\"setChannel($event, 'unique-weird-channel')\" ng-class=\"{'active' : (channel.slug == 'unique-weird-channel')}\">Unique &amp; Weird</li>\r\n              </div>\r\n            </div>\r\n          </ul>\r\n        </div>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n      <div class=\"wrap-footer_btn\">\r\n        <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n        <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-channel')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n      </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"main-container\" editor-article>\r\n  <div class=\"editor-wrapper\" editor-title>\r\n    <header class=\"editor-top\"><h2>Change Title</h2></header>\r\n  \t\r\n  \t<article>\r\n  \t\t<textarea ng-bind-html=\"data.title\" ng-model=\"data.title\" text-content></textarea>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n\t    <div class=\"wrap-footer_btn\">\r\n\t      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n\t      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-title')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n\t    </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
+module.exports = "<div class=\"main-container\">\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Change Image Cover</h2></header>\r\n  \t\r\n  \t<article class=\"editor-image\" editor-img-cover>\r\n      <div class=\"fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>\" droppable>\r\n        <div class=\"helper\">\r\n          <div class=\"helper_text\">\r\n            <i class=\"keepo-icon icon-photo\"></i>\r\n            <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>\r\n            <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n          </div>\r\n        </div>\r\n\r\n        <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\" ng-click=\"browseFile($event)\"></span>\r\n\r\n        <div class=\"preview\" ng-if=\"data.image.id\">\r\n          <img ng-src=\"<@ data.image.url @>\" alt=\"\">\r\n          <a class=\"remove-preview\" ng-click=\"removePreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n        </div>\r\n\r\n        <input type=\"hidden\" name=\"fid\" value=\"<@ data.image.id @>\" ng-if=\"data.image.id\">\r\n        <input type=\"hidden\" name=\"fn\" value=\"<@ data.image.name @>\" ng-if=\"data.image.name\">\r\n      </div>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n\t    <div class=\"wrap-footer_btn\" ng-hide=\"uploading\">\r\n\t      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n\t      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-img-cover')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n\t    </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"main-container\" editor-article>\r\n  <div class=\"editor-wrapper\" editor-created>\r\n    <header class=\"editor-top\"><h2>Change Created</h2></header>\r\n  \t\r\n  \t<article>\r\n      <input type=\"text\" datetime-picker>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n      <div class=\"wrap-footer_btn\">\r\n        <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n        <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-created')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n      </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
+module.exports = "<div class=\"main-container\" feeds=\"allPost\" content=\"data\" editor-article>\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Post Listicle</h2></header>\r\n\r\n    <div class=\"editor-container\" data-editor=\"editorListicle\">\r\n      <header class=\"editor-image\">\r\n        <div class=\"fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>\" droppable>\r\n          <div class=\"helper\">\r\n            <div class=\"helper_text\">\r\n              <i class=\"keepo-icon icon-photo\"></i>\r\n              <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>\r\n\r\n              <div class=\"from_url hidden\"><input type=\"text\" id=\"image-url\" placeholder=\"or get image from URL\"><a class=\"keepo-btn light-btn01 get-image\" ng-click=\"getImage(this)\"><i class=\"icon-cloud-download\"></i> Get Image</a></div>\r\n\r\n              <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n            </div>\r\n          </div>\r\n\r\n          <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\" ng-click=\"browseFile($event)\"></span>\r\n\r\n          <div class=\"preview\" ng-show=\"data.image.id\">\r\n            <img ng-src=\"<@ data.image.url @>\" alt=\"<@ data.image.name @>\">\r\n            <a class=\"remove-preview\" ng-click=\"removePreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n          </div>\r\n\r\n          <input type=\"hidden\" name=\"fid\" value=\"<@ data.image.id @>\" ng-if=\"data.image.id\">\r\n          <input type=\"hidden\" name=\"fn\" value=\"<@ data.image.name @>\" ng-if=\"data.image.name\">\r\n        </div>\r\n      </header>\r\n      <!-- end of .editor-image -->\r\n\r\n      <div class=\"editor-body\" editor-listicle>\r\n        <header class=\"eb-header\">\r\n          <h1 id=\"editor-title\" class=\"eb-title\" ng-model=\"data.title\" text-content></h1>\r\n          <h2 id=\"editor-lead\" class=\"eb-lead\" ng-model=\"data.lead\" text-content></h2>\r\n        </header>\r\n        <!-- end of .eb-header -->\r\n\r\n        <div id=\"editor-content\" class=\"eb-article text\" ondrop=\"return false;\" ng-bind-html=\"data.content\"></div>\r\n        <!-- end of .eb-article -->\r\n\r\n        <div class=\"eb-listicle\">\r\n          <header class=\"eb-listicle-options options\">\r\n            <span class=\"option\" ng-class=\"{'active' : (data.content.sort == 'ordinal')}\" ng-click=\"setOrder($event, 'ordinal')\">Ordinal (1,2,3)</span>\r\n            <span class=\"option\" ng-class=\"{'active' : (data.content.sort == 'reverse')}\" ng-click=\"setOrder($event, 'reverse')\">Reverse (3,2,1)</span>\r\n            <span class=\"option\" ng-class=\"{'active' : (data.content.sort == 'points')}\" ng-click=\"setOrder($event, 'points')\">Point</span>\r\n          </header>\r\n\r\n          <div class=\"eb-listicle-list\">\r\n            <div class=\"eb-listicle-separator\"><div></div><span class=\"eb-listicle-separator-trigger\" ng-click=\"addItem($event)\"><i class=\"icon-cancel\"></i></span></div>\r\n            <!-- end of .eb-listicle-separator -->\r\n\r\n            <div class=\"eb-listicle-item <@ item.class @>\" ng-repeat-start=\"item in data.content.models\" ng-init=\"sortType = (data.content.sort)\">\r\n              <span class=\"listicle-item-numbers lin-<@ sortType @>\"><@ item.order @>.</span>\r\n\r\n              <header class=\"listicle-item-header\">\r\n                <header class=\"listicle-item-title-holder\">\r\n                  <h2 class=\"listicle-item-title\"><@ item.title @></h2>\r\n\r\n                  <a class=\"listicle-item-remove\" ng-click=\"removeItem($event)\"><i class=\"icon-cancel\"></i></a>\r\n                </header>\r\n                <!-- end of .listicle-item-title-holder -->\r\n\r\n                <div class=\"listicle-item-image\">\r\n                  <div class=\"fileupload-pool drop <@ item.image_str ? 'on-preview' : '' @>\" droppable>\r\n                    <div class=\"helper\">\r\n                      <div class=\"helper_text\">\r\n                        <i class=\"keepo-icon icon-photo\"></i>\r\n                        <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture</span>\r\n\r\n                        <div class=\"from_url video-image hidden\"><i class=\"icon-gallery i-vi\"></i> <i class=\"icon-video i-vi\"></i> <input type=\"text\" id=\"image-url\" placeholder=\"put image or video URL\"><a class=\"keepo-btn light-btn01 get-image\" ng-click=\"getImage($event)\"><i class=\"icon-cloud-download\"></i> Add</a></div>\r\n\r\n                        <div class=\"input-file\"><input type=\"file\" name=\"file\" class=\"file-upload\" data-id=\"cover_picture\"></div>\r\n                      </div>\r\n                    </div>\r\n\r\n                    <span class=\"drop_target\" title=\"Click to browse or drag and drop the cover picture here\"  ng-click=\"browseFile($event)\"></span>\r\n\r\n                    <div class=\"preview\" ng-show=\"item.image_str\">\r\n                      <img ng-src=\"<@ item.image_str @>\" alt=\"\">\r\n                      <a class=\"remove-preview\" ng-click=\"removeItemPreview($event)\"><i class=\"keepo-icon icon-cancel\"></i></a>\r\n                    </div>\r\n\r\n                    <input type=\"hidden\" name=\"fn\" value=\"<@ item.image_str @>\" ng-if=\"item.image_str\">\r\n                    <input type=\"hidden\" name=\"fid\" value=\"<@ item.image_id @>\" ng-if=\"item.image_id\"/>\r\n                  </div>\r\n                </div>\r\n                <!-- end of .listicle-item-image -->\r\n              </header>\r\n              <!-- end of .listicle-item-header -->\r\n              <div class=\"listicle-item-content text\" ondrop=\"return false;\" ng-bind-html=\"item.content\"></div>\r\n              <!-- end of .listicle-item-content -->\r\n            </div>\r\n            <!-- end of .eb-listicle-item -->\r\n\r\n            <div class=\"eb-listicle-separator\" ng-repeat-end><div></div><span class=\"eb-listicle-separator-trigger\" ng-click=\"addItem($event, 'middle')\"><i class=\"icon-cancel\"></i></span></div>\r\n          </div>\r\n          <!-- end of .eb-listicle-list -->\r\n        </div>\r\n        <!-- end of .eb-listicle -->\r\n\r\n        <footer class=\"eb-footer\">\r\n          <div class=\"eb-footer-tags eb-footer-components\">\r\n            <tags-input ng-model=\"tags\">\r\n              <auto-complete source=\"loadTags($query)\"></auto-complete>\r\n            </tags-input>\r\n          </div>\r\n\r\n          <div class=\"eb-footer-source eb-footer-components\">\r\n            <input class=\"components\" type=\"text\" name=\"source\" placeholder=\"Source http://\" ng-model=\"data.source\">\r\n          </div>\r\n\r\n          <div class=\"eb-footer-category eb-footer-components\" ng-click=\"openCategory($event)\">\r\n            <div class=\"eb-category components\"><span><@ data.channel.name ? data.channel.name : 'Choose Category' @></span><i class=\"icon-down\"></i></div>\r\n\r\n            <ul class=\"eb-category-list\">\r\n              <li ng-click=\"setChannel($event, 'hobbies-channel')\">Art &amp; Design</li>\r\n              <li ng-click=\"setChannel($event, 'animals-channel')\">Cute</li>\r\n              <li ng-click=\"setChannel($event, 'creepy-channel')\">Creepy</li>\r\n              <li ng-click=\"setChannel($event, 'entertainments-channel')\">Entertainments</li>\r\n              <li ng-click=\"setChannel($event, 'facts-channel')\">Facts &amp; History</li>\r\n              <li ng-click=\"setChannel($event, 'anime-comic-channel')\">Games, Comic &amp; Anime</li>\r\n              <li ng-click=\"setChannel($event, 'inspirational-channel')\">Inspirational</li>\r\n              <li ng-click=\"setChannel($event, 'lifestyle-channel')\">Lifestyle</li>\r\n              <li ng-click=\"setChannel($event, 'fun-humor-channel')\">Fun &amp; Humor</li>\r\n              <li ng-click=\"setChannel($event, 'news-info-channel')\">News &amp; Info</li>\r\n              <li ng-click=\"setChannel($event, 'nsfw-channel')\">NSFW</li>\r\n              <li ng-click=\"setChannel($event, 'wtf-channel')\">WTF!</li>\r\n              <li ng-click=\"setChannel($event, 'sports-channel')\">Sports</li>\r\n              <li ng-click=\"setChannel($event, 'tech-channel')\">Tech</li>\r\n              <li ng-click=\"setChannel($event, 'travelling-channel')\">Travelling</li>\r\n              <li ng-click=\"setChannel($event, 'unique-weird-channel')\">Unique &amp; Weird</li>\r\n            </ul>\r\n          </div>\r\n        </footer>\r\n        <!-- end of .eb-footer -->\r\n      </div>\r\n      <!-- end of .editor-body -->\r\n    </div>\r\n    <!-- end of .editor-container -->\r\n  </div>\r\n  <!-- end of .editor-wrapper -->\r\n\r\n  <footer class=\"editor-bottom mdl-footer\" ng-hide=\"uploading\">\r\n    <div class=\"wrap-footer_btn\">\r\n      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick()\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n    </div>\r\n  </footer>\r\n  <!-- end of .editor-bottom -->\r\n\r\n  <div class=\"editor-loading\">\r\n    <div id=\"loader\" class=\"overlay-loader\">\r\n      <div class=\"loader-background color-flip\"></div>\r\n      <!-- <img class=\"loader-icon spinning-cog\" src=\"[[ https_url('desktop/css/images/editor-icons/keepo-loading.svg') ]]\" data-cog=\"cog01\"> -->\r\n    </div>\r\n  </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 24 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"mdl mdl-popup mdl-open mdl-editor\" data-post=\"data\">\r\n    <div class=\"mdl-component <@ layout.type @>\">\r\n        <article class=\"mdl-body\">\r\n            <ng-include src=\"layout.url\"></ng-include>\r\n        </article>\r\n        <a class=\"mdl-close\" ng-click=\"close()\">&times;</a>\r\n    </div>\r\n</div>";
+module.exports = "<div class=\"main-container\" data-app=\"editors\" editor-article>\r\n  <div class=\"editor-wrapper\">\r\n    <header class=\"editor-top\"><h2>Change Title</h2></header>\r\n  \t\r\n  \t<article>\r\n      <div class=\"eb-footer-tags eb-footer-components\">\r\n        <tags-input ng-model=\"tags\">\r\n          <auto-complete source=\"loadTags($query)\"></auto-complete>\r\n        </tags-input>\r\n      </div>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n      <div class=\"wrap-footer_btn\">\r\n        <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n        <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-tags')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n      </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 25 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(jQuery, __webpack_provided_window_dot_jQuery) {/*** IMPORTS FROM imports-loader ***/
-var $ = __webpack_require__(0);
-var define = false;
-(function() {
-
-/*!
- * medium-editor-insert-plugin v2.3.3 - jQuery insert plugin for MediumEditor
- *
- * http://linkesch.com/medium-editor-insert-plugin
- *
- * Copyright (c) 2014 Pavel Linkesch (http://linkesch.com)
- * Released under the MIT license
- */
-
-(function (factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(['jquery', 'handlebar', 'mediumEditor', 'blueimpUpload', 'jquerySortable'], factory);
-    } else if (typeof module === 'object' && module.exports) {
-        module.exports = function (jQuery) {
-            if (typeof window === 'undefined') {
-                throw new Error("medium-editor-insert-plugin runs only in a browser.")
-            }
-
-            if (jQuery === undefined) {
-                jQuery = __webpack_require__(0);
-            }
-            __webpack_provided_window_dot_jQuery = jQuery;
-
-            Handlebars = __webpack_require__(40);
-            MediumEditor = __webpack_require__(9);
-            __webpack_require__(41);
-            __webpack_require__(37);
-
-            factory(jQuery, Handlebars, MediumEditor);
-            return jQuery;
-        };
-    } else {
-        factory(jQuery, Handlebars, MediumEditor);
-    }
-}(function ($, Handlebars, MediumEditor) {
-
-this["MediumInsert"] = this["MediumInsert"] || {};
-this["MediumInsert"]["Templates"] = this["MediumInsert"]["Templates"] || {};
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/core-buttons.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
-
-  return "            <li><button data-addon=\""
-    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\" data-action=\"add\" class=\"medium-insert-action\">"
-    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</button></li>\n";
-},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "<div class=\"medium-insert-buttons\" contenteditable=\"false\" style=\"display: none\">\n    <button class=\"medium-insert-buttons-show\"><span>+</span></button>\n    <ul class=\"medium-insert-buttons-addons\" style=\"display: none\">\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.addons : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    </ul>\n</div>\n";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/core-caption.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var helper;
-
-  return "<figcaption contenteditable=\"true\" class=\"medium-insert-caption-placeholder\" data-placeholder=\""
-    + container.escapeExpression(((helper = (helper = helpers.placeholder || (depth0 != null ? depth0.placeholder : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"placeholder","hash":{},"data":data}) : helper)))
-    + "\"></figcaption>";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/core-empty-line.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<p><br></p>\n";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/embeds-toolbar.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "    <div class=\"medium-insert-embeds-toolbar medium-editor-toolbar medium-toolbar-arrow-under medium-editor-toolbar-active\">\n        <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.styles : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "        </ul>\n    </div>\n";
-},"2":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.label : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
-},"3":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
-
-  return "                    <li>\n                        <button class=\"medium-editor-action\" data-action=\""
-    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\">"
-    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</button>\n                    </li>\n";
-},"5":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "    <div class=\"medium-insert-embeds-toolbar2 medium-editor-toolbar medium-editor-toolbar-active\">\n        <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.actions : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "        </ul>\n    </div>\n";
-},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, alias1=depth0 != null ? depth0 : {};
-
-  return ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.styles : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.actions : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/embeds-wrapper.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper;
-
-  return "<div class=\"medium-insert-embeds\" contenteditable=\"false\">\n  <figure>\n      <div class=\"medium-insert-embed\">\n           "
-    + ((stack1 = ((helper = (helper = helpers.html || (depth0 != null ? depth0.html : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"html","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "\n       </div>\n    </figure>\n <div class=\"medium-insert-embeds-overlay\"></div>\n</div>";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/images-fileupload.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<input type=\"file\" name=\"file\">";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/images-image.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
-    return "        <div class=\"medium-insert-images-progress\"></div>\n";
-},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {};
-
-  return "<figure contenteditable=\"false\">\n    <img src=\""
-    + container.escapeExpression(((helper = (helper = helpers.img || (depth0 != null ? depth0.img : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"img","hash":{},"data":data}) : helper)))
-    + "\" alt=\"\" />\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.progress : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "</figure>\n";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/images-progressbar.hbs"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<progress min=\"0\" max=\"100\" value=\"0\">0</progress>";
-},"useData":true});
-
-this["MediumInsert"]["Templates"]["vendor/medium/templates/images-toolbar.hbs"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.label : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
-},"2":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
-
-  return "                <li>\n                    <button class=\"medium-editor-action\" data-action=\""
-    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\">"
-    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</button>\n                </li>\n";
-},"4":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "  <div class=\"medium-insert-images-toolbar2 medium-editor-toolbar medium-editor-toolbar-active\">\n      <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.actions : depth0),{"name":"each","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "     </ul>\n    </div>\n";
-},"5":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return ((stack1 = helpers["if"].call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.label : depth0),{"name":"if","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
-},"6":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
-
-  return "                  <li>\n                      <button class=\"medium-editor-action\" data-action=\""
-    + container.escapeExpression(((helper = (helper = helpers.key || (data && data.key)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"key","hash":{},"data":data}) : helper)))
-    + "\">"
-    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</button>\n                  </li>\n";
-},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, alias1=depth0 != null ? depth0 : {};
-
-  return "<div class=\"medium-insert-images-toolbar medium-editor-toolbar medium-toolbar-arrow-under medium-editor-toolbar-active\">\n    <ul class=\"medium-editor-toolbar-actions clearfix\">\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.styles : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    </ul>\n</div>\n\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.actions : depth0),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
-},"useData":true});
-;(function ($, window, document, undefined) {
-
-    'use strict';
-
-    /** Default values */
-    var pluginName = 'mediumInsert',
-        defaults = {
-            editor: null,
-            enabled: true,
-            addons: {
-                images: true, // boolean or object containing configuration
-                embeds: true
-            }
-        };
-
-    /**
-     * Capitalize first character
-     *
-     * @param {string} str
-     * @return {string}
-     */
-
-    function ucfirst(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    /**
-     * Core plugin's object
-     *
-     * Sets options, variables and calls init() function
-     *
-     * @constructor
-     * @param {DOM} el - DOM element to init the plugin on
-     * @param {object} options - Options to override defaults
-     * @return {void}
-     */
-
-    function Core(el, options) {
-        var editor;
-
-        this.el = el;
-        this.$el = $(el);
-        this.templates = window.MediumInsert.Templates;
-
-        if (options) {
-            // Fix #142
-            // Avoid deep copying editor object, because since v2.3.0 it contains circular references which causes jQuery.extend to break
-            // Instead copy editor object to this.options manually
-            editor = options.editor;
-            options.editor = null;
-        }
-        this.options = $.extend(true, {}, defaults, options);
-        this.options.editor = editor;
-
-        this._defaults = defaults;
-        this._name = pluginName;
-
-        // Extend editor's functions
-        if (this.options && this.options.editor) {
-            if (this.options.editor._serialize === undefined) {
-                this.options.editor._serialize = this.options.editor.serialize;
-            }
-            if (this.options.editor._destroy === undefined) {
-                this.options.editor._destroy = this.options.editor.destroy;
-            }
-            if (this.options.editor._setup === undefined) {
-                this.options.editor._setup = this.options.editor.setup;
-            }
-            this.options.editor._hideInsertButtons = this.hideButtons;
-
-            this.options.editor.serialize = this.editorSerialize;
-            this.options.editor.destroy = this.editorDestroy;
-            this.options.editor.setup = this.editorSetup;
-
-            if (this.options.editor.getExtensionByName('placeholder') !== undefined) {
-                this.options.editor.getExtensionByName('placeholder').updatePlaceholder = this.editorUpdatePlaceholder;
-            }
-        }
-    }
-
-    /**
-     * Initialization
-     *
-     * @return {void}
-     */
-
-    Core.prototype.init = function () {
-        this.$el.addClass('medium-editor-insert-plugin');
-
-        if (typeof this.options.addons !== 'object' || Object.keys(this.options.addons).length === 0) {
-            this.disable();
-        }
-
-        this.initAddons();
-        this.clean();
-        this.events();
-    };
-
-    /**
-     * Event listeners
-     *
-     * @return {void}
-     */
-
-    Core.prototype.events = function () {
-        var that = this;
-
-        this.$el
-            .on('dragover drop', function (e) {
-                e.preventDefault();
-            })
-            .on('keyup click', $.proxy(this, 'toggleButtons'))
-            .on('selectstart mousedown', '.medium-insert, .medium-insert-buttons', $.proxy(this, 'disableSelection'))
-            .on('click', '.medium-insert-buttons-show', $.proxy(this, 'toggleAddons'))
-            .on('click', '.medium-insert-action', $.proxy(this, 'addonAction'))
-            .on('paste', '.medium-insert-caption-placeholder', function (e) {
-                $.proxy(that, 'removeCaptionPlaceholder')($(e.target));
-            });
-
-        $(window).on('resize', $.proxy(this, 'positionButtons', null));
-    };
-
-    /**
-     * Return editor instance
-     *
-     * @return {object} MediumEditor
-     */
-
-    Core.prototype.getEditor = function () {
-        return this.options.editor;
-    };
-
-    /**
-     * Extend editor's serialize function
-     *
-     * @return {object} Serialized data
-     */
-
-    Core.prototype.editorSerialize = function () {
-        var data = this._serialize();
-
-        $.each(data, function (key) {
-            var $data = $('<div />').html(data[key].value);
-
-            $data.find('.medium-insert-buttons').remove();
-
-            // Restore original embed code from embed wrapper attribute value.
-            $data.find('[data-embed-code]').each(function () {
-                var $this = $(this);
-                $this.html($this.attr('data-embed-code'));
-            });
-
-            data[key].value = $data.html();
-        });
-
-        return data;
-    };
-
-    /**
-     * Extend editor's destroy function to deactivate this plugin too
-     *
-     * @return {void}
-     */
-
-    Core.prototype.editorDestroy = function () {
-        $.each(this.elements, function (key, el) {
-            if ($(el).data('plugin_' + pluginName) instanceof Core) {
-                $(el).data('plugin_' + pluginName).disable();
-            }
-        });
-
-        this._destroy();
-    };
-
-    /**
-     * Extend editor's setup function to activate this plugin too
-     *
-     * @return {void}
-     */
-
-    Core.prototype.editorSetup = function () {
-        this._setup();
-
-        $.each(this.elements, function (key, el) {
-            if ($(el).data('plugin_' + pluginName) instanceof Core) {
-                $(el).data('plugin_' + pluginName).enable();
-            }
-        });
-    };
-
-    /**
-     * Extend editor's placeholder.updatePlaceholder function to show placeholder dispite of the plugin buttons
-     *
-     * @return {void}
-     */
-
-    Core.prototype.editorUpdatePlaceholder = function (el, dontShow) {
-        var contents = $(el).children()
-            .not('.medium-insert-buttons').contents();
-
-        if (!dontShow && contents.length === 1 && contents[0].nodeName.toLowerCase() === 'br') {
-            this.showPlaceholder(el);
-            this.base._hideInsertButtons($(el));
-        } else {
-            this.hidePlaceholder(el);
-        }
-    };
-
-    /**
-     * Trigger editableInput on editor
-     *
-     * @return {void}
-     */
-
-    Core.prototype.triggerInput = function () {
-        if (this.getEditor()) {
-            this.getEditor().trigger('editableInput', null, this.el);
-        }
-    };
-
-    /**
-     * Deselects selected text
-     *
-     * @return {void}
-     */
-
-    Core.prototype.deselect = function () {
-        document.getSelection().removeAllRanges();
-    };
-
-    /**
-     * Disables the plugin
-     *
-     * @return {void}
-     */
-
-    Core.prototype.disable = function () {
-        this.options.enabled = false;
-
-        this.$el.find('.medium-insert-buttons').addClass('hide');
-    };
-
-    /**
-     * Enables the plugin
-     *
-     * @return {void}
-     */
-
-    Core.prototype.enable = function () {
-        this.options.enabled = true;
-
-        this.$el.find('.medium-insert-buttons').removeClass('hide');
-    };
-
-    /**
-     * Disables selectstart mousedown events on plugin elements except images
-     *
-     * @return {void}
-     */
-
-    Core.prototype.disableSelection = function (e) {
-        var $el = $(e.target);
-
-        if ($el.is('img') === false || $el.hasClass('medium-insert-buttons-show')) {
-            e.preventDefault();
-        }
-    };
-
-    /**
-     * Initialize addons
-     *
-     * @return {void}
-     */
-
-    Core.prototype.initAddons = function () {
-        var that = this;
-
-        if (!this.options.addons || this.options.addons.length === 0) {
-            return;
-        }
-
-        $.each(this.options.addons, function (addon, options) {
-            var addonName = pluginName + ucfirst(addon);
-
-            if (options === false) {
-                delete that.options.addons[addon];
-                return;
-            }
-
-            that.$el[addonName](options);
-            that.options.addons[addon] = that.$el.data('plugin_' + addonName).options;
-        });
-    };
-
-    /**
-     * Cleans a content of the editor
-     *
-     * @return {void}
-     */
-
-    Core.prototype.clean = function () {
-        var that = this,
-            $buttons, $lastEl, $text;
-
-        if (this.options.enabled === false) {
-            return;
-        }
-
-        if (this.$el.children().length === 0) {
-            this.$el.html(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
-        }
-
-        // Fix #29
-        // Wrap content text in <p></p> to avoid Firefox problems
-        $text = this.$el
-            .contents()
-            .filter(function () {
-                return (this.nodeName === '#text' && $.trim($(this).text()) !== '') || this.nodeName.toLowerCase() === 'br';
-            });
-
-        $text.each(function () {
-            $(this).wrap('<p />');
-
-            // Fix #145
-            // Move caret at the end of the element that's being wrapped
-            that.moveCaret($(this).parent(), $(this).text().length);
-        });
-
-        this.addButtons();
-
-        $buttons = this.$el.find('.medium-insert-buttons');
-        $lastEl = $buttons.prev();
-        if ($lastEl.attr('class') && $lastEl.attr('class').match(/medium\-insert(?!\-active)/)) {
-            $buttons.before(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
-        }
-    };
-
-    /**
-     * Returns HTML template of buttons
-     *
-     * @return {string} HTML template of buttons
-     */
-
-    Core.prototype.getButtons = function () {
-        if (this.options.enabled === false) {
-            return;
-        }
-
-        return this.templates['vendor/medium/templates/core-buttons.hbs']({
-            addons: this.options.addons
-        }).trim();
-    };
-
-    /**
-     * Appends buttons at the end of the $el
-     *
-     * @return {void}
-     */
-
-    Core.prototype.addButtons = function () {
-        if (this.$el.find('.medium-insert-buttons').length === 0) {
-            this.$el.append(this.getButtons());
-        }
-    };
-
-    /**
-     * Move buttons to current active, empty paragraph and show them
-     *
-     * @return {void}
-     */
-
-    Core.prototype.toggleButtons = function (e) {
-        var $el = $(e.target),
-            selection = window.getSelection(),
-            that = this,
-            range, $current, $p, activeAddon;
-
-        if (this.options.enabled === false) {
-            return;
-        }
-
-        if (!selection || selection.rangeCount === 0) {
-            $current = $el;
-        } else {
-            range = selection.getRangeAt(0);
-            $current = $(range.commonAncestorContainer);
-        }
-
-        // When user clicks on  editor's placeholder in FF, $current el is editor itself, not the first paragraph as it should
-        if ($current.hasClass('medium-editor-insert-plugin')) {
-            $current = $current.find('p:first');
-        }
-
-        $p = $current.is('p') ? $current : $current.closest('p');
-
-        this.clean();
-
-        if ($el.hasClass('medium-editor-placeholder') === false && $el.closest('.medium-insert-buttons').length === 0 && $current.closest('.medium-insert-buttons').length === 0) {
-
-            this.$el.find('.medium-insert-active').removeClass('medium-insert-active');
-
-            $.each(this.options.addons, function (addon) {
-                if ($el.closest('.medium-insert-' + addon).length) {
-                    $current = $el;
-                }
-
-                if ($current.closest('.medium-insert-' + addon).length) {
-                    $p = $current.closest('.medium-insert-' + addon);
-                    activeAddon = addon;
-                    return;
-                }
-            });
-
-            if ($p.length && (($p.text().trim() === '' && !activeAddon) || activeAddon === 'images')) {
-                $p.addClass('medium-insert-active');
-
-                if (activeAddon === 'images') {
-                    this.$el.find('.medium-insert-buttons').attr('data-active-addon', activeAddon);
-                } else {
-                    this.$el.find('.medium-insert-buttons').removeAttr('data-active-addon');
-                }
-
-                // If buttons are displayed on addon paragraph, wait 100ms for possible captions to display
-                setTimeout(function () {
-                    that.positionButtons(activeAddon);
-                    that.showButtons(activeAddon);
-                }, activeAddon ? 100 : 0);
-            } else {
-                this.hideButtons();
-            }
-        }
-    };
-
-    /**
-     * Show buttons
-     *
-     * @param {string} activeAddon - Name of active addon
-     * @returns {void}
-     */
-
-    Core.prototype.showButtons = function (activeAddon) {
-        var $buttons = this.$el.find('.medium-insert-buttons');
-
-        $buttons.show();
-        $buttons.find('li').show();
-
-        if (activeAddon) {
-            $buttons.find('li').hide();
-            $buttons.find('button[data-addon="' + activeAddon + '"]').parent().show();
-        }
-    };
-
-    /**
-     * Hides buttons
-     *
-     * @param {jQuery} $el - Editor element
-     * @returns {void}
-     */
-
-    Core.prototype.hideButtons = function ($el) {
-        $el = $el || this.$el;
-
-        $el.find('.medium-insert-buttons').hide();
-        $el.find('.medium-insert-buttons-addons').hide();
-        $el.find('.medium-insert-buttons-show').removeClass('medium-insert-buttons-rotate');
-    };
-
-    /**
-     * Position buttons
-     *
-     * @param {string} activeAddon - Name of active addon
-     * @return {void}
-     */
-
-    Core.prototype.positionButtons = function (activeAddon) {
-        var $buttons = this.$el.find('.medium-insert-buttons'),
-            $p = this.$el.find('.medium-insert-active'),
-            $lastCaption = $p.hasClass('medium-insert-images-grid') ? [] : $p.find('figure:last figcaption'),
-            elementsContainer = this.getEditor() ? this.getEditor().options.elementsContainer : $('body').get(0),
-            elementsContainerAbsolute = ['absolute', 'fixed'].indexOf(window.getComputedStyle(elementsContainer).getPropertyValue('position')) > -1,
-            position = {};
-
-        if ($p.length) {
-            position.left = $p.position().left;
-            position.top = $p.position().top;
-
-            if (activeAddon) {
-                position.left += $p.width() - $buttons.find('.medium-insert-buttons-show').width() - 10;
-                position.top += $p.height() - 20 + ($lastCaption.length ? -$lastCaption.height() - parseInt($lastCaption.css('margin-top'), 10) : 10);
-            } else {
-                position.left += -parseInt($buttons.find('.medium-insert-buttons-addons').css('left'), 10) - parseInt($buttons.find('.medium-insert-buttons-addons button:first').css('margin-left'), 10);
-                position.top += parseInt($p.css('margin-top'), 10);
-            }
-
-            if (elementsContainerAbsolute) {
-                position.top += elementsContainer.scrollTop;
-            }
-
-            if (this.$el.hasClass('medium-editor-placeholder') === false && position.left < 0) {
-                position.left = $p.position().left;
-            }
-
-            $buttons.css(position);
-        }
-    };
-
-    /**
-     * Toggles addons buttons
-     *
-     * @return {void}
-     */
-
-    Core.prototype.toggleAddons = function () {
-        if (this.$el.find('.medium-insert-buttons').attr('data-active-addon') === 'images') {
-            this.$el.find('.medium-insert-buttons').find('button[data-addon="images"]').click();
-            return;
-        }
-
-        this.$el.find('.medium-insert-buttons-addons').fadeToggle();
-        this.$el.find('.medium-insert-buttons-show').toggleClass('medium-insert-buttons-rotate');
-    };
-
-    /**
-     * Hide addons buttons
-     *
-     * @return {void}
-     */
-
-    Core.prototype.hideAddons = function () {
-        this.$el.find('.medium-insert-buttons-addons').hide();
-        this.$el.find('.medium-insert-buttons-show').removeClass('medium-insert-buttons-rotate');
-    };
-
-    /**
-     * Call addon's action
-     *
-     * @param {Event} e
-     * @return {void}
-     */
-
-    Core.prototype.addonAction = function (e) {
-        var $a = $(e.currentTarget),
-            addon = $a.data('addon'),
-            action = $a.data('action');
-
-        this.$el.data('plugin_' + pluginName + ucfirst(addon))[action]();
-    };
-
-    /**
-     * Move caret at the beginning of the empty paragraph
-     *
-     * @param {jQuery} $el Element where to place the caret
-     * @param {integer} position Position where to move caret. Default: 0
-     *
-     * @return {void}
-     */
-
-    Core.prototype.moveCaret = function ($el, position) {
-        var range, sel, el, textEl;
-
-        position = position || 0;
-        range = document.createRange();
-        sel = window.getSelection();
-        el = $el.get(0);
-
-        if (!el.childNodes.length) {
-            textEl = document.createTextNode(' ');
-            el.appendChild(textEl);
-        }
-
-        range.setStart(el.childNodes[0], position);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    };
-
-    /**
-     * Add caption
-     *
-     * @param {jQuery Element} $el
-     * @param {string} placeholder
-     * @return {void}
-     */
-
-    Core.prototype.addCaption = function ($el, placeholder) {
-        var $caption = $el.find('figcaption');
-
-        if ($caption.length === 0) {
-            $el.append(this.templates['vendor/medium/templates/core-caption.hbs']({
-                placeholder: placeholder
-            }));
-        }
-    };
-
-    /**
-     * Remove captions
-     *
-     * @param {jQuery Element} $ignore
-     * @return {void}
-     */
-
-    Core.prototype.removeCaptions = function ($ignore) {
-        var $captions = this.$el.find('figcaption');
-
-        if ($ignore) {
-            $captions = $captions.not($ignore);
-        }
-
-        $captions.each(function () {
-            if ($(this).hasClass('medium-insert-caption-placeholder') || $(this).text().trim() === '') {
-                $(this).remove();
-            }
-        });
-    };
-
-    /**
-     * Remove caption placeholder
-     *
-     * @param {jQuery Element} $el
-     * @return {void}
-     */
-
-    Core.prototype.removeCaptionPlaceholder = function ($el) {
-        var $caption = $el.is('figcaption') ? $el : $el.find('figcaption');
-
-        if ($caption.length) {
-            $caption
-                .removeClass('medium-insert-caption-placeholder')
-                .removeAttr('data-placeholder');
-        }
-    };
-
-    /** Plugin initialization */
-
-    $.fn[pluginName] = function (options) {
-        return this.each(function () {
-            var that = this,
-                textareaId;
-
-            if ($(that).is('textarea')) {
-                textareaId = $(that).attr('medium-editor-textarea-id');
-                that = $(that).siblings('[medium-editor-textarea-id="' + textareaId + '"]').get(0);
-            }
-
-            if (!$.data(that, 'plugin_' + pluginName)) {
-                // Plugin initialization
-                $.data(that, 'plugin_' + pluginName, new Core(that, options));
-                $.data(that, 'plugin_' + pluginName).init();
-            } else if (typeof options === 'string' && $.data(that, 'plugin_' + pluginName)[options]) {
-                // Method call
-                $.data(that, 'plugin_' + pluginName)[options]();
-            }
-        });
-    };
-
-})(jQuery, window, document);
-
-; (function ($, window, document, undefined) {
-
-    'use strict';
-
-    /** Default values */
-    var pluginName = 'mediumInsert',
-        addonName = 'Embeds', // first char is uppercase
-        defaults = {
-            label: '<span class="icon-youtube-play"></span>',
-            placeholder: 'Paste a YouTube, Vimeo, Facebook, Twitter or Instagram link and press Enter',
-            oembedProxy: 'http://medium.iframe.ly/api/oembed?iframe=1',
-            captions: true,
-            captionPlaceholder: 'Type caption (optional)',
-            styles: {
-                wide: {
-                    label: '<span class="icon-align-justify"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                },
-                left: {
-                    label: '<span class="icon-align-left"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                },
-                right: {
-                    label: '<span class="icon-align-right"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                }
-            },
-            actions: {
-                remove: {
-                    label: '<span class="icon-cancel"></span>',
-                    clicked: function () {
-                        var $event = $.Event('keydown');
-
-                        $event.which = 8;
-                        $(document).trigger($event);
-                    }
-                }
-            },
-            parseOnPaste: false
-        };
-
-    /**
-     * Embeds object
-     *
-     * Sets options, variables and calls init() function
-     *
-     * @constructor
-     * @param {DOM} el - DOM element to init the plugin on
-     * @param {object} options - Options to override defaults
-     * @return {void}
-     */
-
-    function Embeds(el, options) {
-        this.el = el;
-        this.$el = $(el);
-        this.templates = window.MediumInsert.Templates;
-        this.core = this.$el.data('plugin_' + pluginName);
-
-        this.options = $.extend(true, {}, defaults, options);
-
-        this._defaults = defaults;
-        this._name = pluginName;
-
-        // Extend editor's functions
-        if (this.core.getEditor()) {
-            this.core.getEditor()._serializePreEmbeds = this.core.getEditor().serialize;
-            this.core.getEditor().serialize = this.editorSerialize;
-        }
-
-        this.init();
-    }
-
-    /**
-     * Initialization
-     *
-     * @return {void}
-     */
-
-    Embeds.prototype.init = function () {
-        var $embeds = this.$el.find('.medium-insert-embeds');
-
-        $embeds.attr('contenteditable', false);
-        $embeds.each(function () {
-            if ($(this).find('.medium-insert-embeds-overlay').length === 0) {
-                $(this).append($('<div />').addClass('medium-insert-embeds-overlay'));
-            }
-        });
-
-        this.events();
-        this.backwardsCompatibility();
-    };
-
-    /**
-     * Event listeners
-     *
-     * @return {void}
-     */
-
-    Embeds.prototype.events = function () {
-        $(document)
-            .on('click', $.proxy(this, 'unselectEmbed'))
-            .on('keydown', $.proxy(this, 'removeEmbed'))
-            .on('click', '.medium-insert-embeds-toolbar .medium-editor-action', $.proxy(this, 'toolbarAction'))
-            .on('click', '.medium-insert-embeds-toolbar2 .medium-editor-action', $.proxy(this, 'toolbar2Action'));
-
-        this.$el
-            .on('keyup click paste', $.proxy(this, 'togglePlaceholder'))
-            .on('keydown', $.proxy(this, 'processLink'))
-            .on('click', '.medium-insert-embeds-overlay', $.proxy(this, 'selectEmbed'))
-            .on('contextmenu', '.medium-insert-embeds-placeholder', $.proxy(this, 'fixRightClickOnPlaceholder'));
-
-        if (this.options.parseOnPaste) {
-            this.$el
-                .on('paste', $.proxy(this, 'processPasted'));
-        }
-
-        $(window)
-            .on('resize', $.proxy(this, 'autoRepositionToolbars'));
-    };
-
-    /**
-     * Replace v0.* class names with new ones, wrap embedded content to new structure
-     *
-     * @return {void}
-     */
-
-    Embeds.prototype.backwardsCompatibility = function () {
-        var that = this;
-
-        this.$el.find('.mediumInsert-embeds')
-            .removeClass('mediumInsert-embeds')
-            .addClass('medium-insert-embeds');
-
-        this.$el.find('.medium-insert-embeds').each(function () {
-            if ($(this).find('.medium-insert-embed').length === 0) {
-                $(this).after(that.templates['vendor/medium/templates/embeds-wrapper.hbs']({
-                    html: $(this).html()
-                }));
-                $(this).remove();
-            }
-        });
-    };
-
-    /**
-     * Extend editor's serialize function
-     *
-     * @return {object} Serialized data
-     */
-
-    Embeds.prototype.editorSerialize = function () {
-        var data = this._serializePreEmbeds();
-
-        $.each(data, function (key) {
-            var $data = $('<div />').html(data[key].value);
-
-            $data.find('.medium-insert-embeds').removeAttr('contenteditable');
-            $data.find('.medium-insert-embeds-overlay').remove();
-
-            data[key].value = $data.html();
-        });
-
-        return data;
-    };
-
-    /**
-     * Add embedded element
-     *
-     * @return {void}
-     */
-
-    Embeds.prototype.add = function () {
-        var $place = this.$el.find('.medium-insert-active');
-
-        // Fix #132
-        // Make sure that the content of the paragraph is empty and <br> is wrapped in <p></p> to avoid Firefox problems
-        $place.html(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
-
-        // Replace paragraph with div to prevent #124 issue with pasting in Chrome,
-        // because medium editor wraps inserted content into paragraph and paragraphs can't be nested
-        if ($place.is('p')) {
-            $place.replaceWith('<div class="medium-insert-active">' + $place.html() + '</div>');
-            $place = this.$el.find('.medium-insert-active');
-            this.core.moveCaret($place);
-        }
-
-        $place.addClass('medium-insert-embeds medium-insert-embeds-input medium-insert-embeds-active');
-
-        this.togglePlaceholder({ target: $place.get(0) });
-
-        $place.click();
-        this.core.hideButtons();
-    };
-
-    /**
-     * Toggles placeholder
-     *
-     * @param {Event} e
-     * @return {void}
-     */
-
-    Embeds.prototype.togglePlaceholder = function (e) {
-        var $place = $(e.target),
-            selection = window.getSelection(),
-            range, $current, text;
-
-        if (!selection || selection.rangeCount === 0) {
-            return;
-        }
-
-        range = selection.getRangeAt(0);
-        $current = $(range.commonAncestorContainer);
-
-        if ($current.hasClass('medium-insert-embeds-active')) {
-            $place = $current;
-        } else if ($current.closest('.medium-insert-embeds-active').length) {
-            $place = $current.closest('.medium-insert-embeds-active');
-        }
-
-        if ($place.hasClass('medium-insert-embeds-active')) {
-
-            text = $place.text().trim();
-
-            if (text === '' && $place.hasClass('medium-insert-embeds-placeholder') === false) {
-                $place
-                    .addClass('medium-insert-embeds-placeholder')
-                    .attr('data-placeholder', this.options.placeholder);
-            } else if (text !== '' && $place.hasClass('medium-insert-embeds-placeholder')) {
-                $place
-                    .removeClass('medium-insert-embeds-placeholder')
-                    .removeAttr('data-placeholder');
-            }
-
-        } else {
-            this.$el.find('.medium-insert-embeds-active').remove();
-        }
-    };
-
-    /**
-     * Right click on placeholder in Chrome selects whole line. Fix this by placing caret at the end of line
-     *
-     * @param {Event} e
-     * @return {void}
-     */
-
-    Embeds.prototype.fixRightClickOnPlaceholder = function (e) {
-        this.core.moveCaret($(e.target));
-    };
-
-    /**
-     * Process link
-     *
-     * @param {Event} e
-     * @return {void}
-     */
-
-    Embeds.prototype.processLink = function (e) {
-        var $place = this.$el.find('.medium-insert-embeds-active'),
-            url;
-
-        if (!$place.length) {
-            return;
-        }
-
-        url = $place.text().trim();
-
-        // Return empty placeholder on backspace, delete or enter
-        if (url === '' && [8, 46, 13].indexOf(e.which) !== -1) {
-            $place.remove();
-            return;
-        }
-
-        if (e.which === 13) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (this.options.oembedProxy) {
-                this.oembed(url);
-            } else {
-                this.parseUrl(url);
-            }
-        }
-    };
-
-    /**
-     * Process Pasted
-     *
-     * @param {Event} e
-     * @return {void}
-     */
-
-    Embeds.prototype.processPasted = function (e) {
-        var pastedUrl, linkRegEx;
-        if ($(".medium-insert-embeds-active").length) {
-            return;
-        }
-
-        pastedUrl = e.originalEvent.clipboardData.getData('text');
-        linkRegEx = new RegExp('^(http(s?):)?\/\/','i');
-        if (linkRegEx.test(pastedUrl)) {
-            if (this.options.oembedProxy) {
-                this.oembed(pastedUrl, true);
-            } else {
-                this.parseUrl(pastedUrl, true);
-            }
-        }
-    };
-
-    /**
-     * Get HTML via oEmbed proxy
-     *
-     * @param {string} url
-     * @return {void}
-     */
-
-    Embeds.prototype.oembed = function (url, pasted) {
-        var that = this;
-
-        $.support.cors = true;
-
-        $.ajax({
-            crossDomain: true,
-            cache: false,
-            url: this.options.oembedProxy,
-            dataType: 'json',
-            data: {
-                url: url
-            },
-            success: function (data) {
-                var html = data && data.html;
-
-                if (data && !html && data.type === 'photo' && data.url) {
-                    html = '<img src="' + data.url + '" alt="">';
-                }
-
-                if (!html) {
-                    // Prevent render empty embed.
-                    $.proxy(that, 'convertBadEmbed', url)();
-                    return;
-                }
-
-                if (pasted) {
-                    $.proxy(that, 'embed', html, url)();
-                } else {
-                    $.proxy(that, 'embed', html)();
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                var responseJSON = (function () {
-                    try {
-                        return JSON.parse(jqXHR.responseText);
-                    } catch (e) { }
-                })();
-
-                if (typeof window.console !== 'undefined') {
-                    window.console.log((responseJSON && responseJSON.error) || jqXHR.status || errorThrown.message);
-                } else {
-                    window.alert('Error requesting media from ' + that.options.oembedProxy + ' to insert: ' + errorThrown + ' (response status: ' + jqXHR.status + ')');
-                }
-
-                $.proxy(that, 'convertBadEmbed', url)();
-            }
-        });
-    };
-
-    /**
-     * Get HTML using regexp
-     *
-     * @param {string} url
-     * @param {bool} pasted
-     * @return {void}
-     */
-
-    Embeds.prototype.parseUrl = function (url, pasted) {
-        var html;
-
-        if (!(new RegExp(['youtube', 'youtu.be', 'vimeo', 'instagram', 'twitter', 'facebook', 'vidio'].join('|')).test(url))) {
-            $.proxy(this, 'convertBadEmbed', url)();
-            return false;
-        }
-
-        html = url.replace(/\n?/g, '')
-            .replace(/^((http(s)?:\/\/)?(www\.|m\.)?(youtube\.com|youtu\.be)\/(watch\?v=|v\/)?)([a-zA-Z0-9\-_]+)(.*)?$/, '<div class="video video-youtube"><iframe height="408" src="//www.youtube.com/embed/$7" frameborder="0" allowfullscreen style="width:100%;"></iframe></div>')
-            .replace(/^https?:\/\/(www\.|m\.)?vimeo\.com(\/.+)?\/([0-9]+)$/, '<div class="video video-vimeo"><iframe src="//player.vimeo.com/video/$3" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>')
-            .replace(/^https:\/\/(www\.|m\.)?twitter\.com\/(\w+)\/status\/(\d+)\/?$/, '<blockquote class="twitter-tweet" align="center" lang="en"><a href="https://twitter.com/$2/statuses/$3"></a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>')
-            .replace(/^(https:\/\/(www\.|m\.)?facebook\.com\/(.*))$/, '<div class="fb-post" data-href="$1" data-width="500" data-show-text="true"></div>')//'<script src="//connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v2.2" async></script><div class="fb-post" data-href="$3"><div class="fb-xfbml-parse-ignore"><a href="$3">Loading Facebook post...</a></div></div>')
-            .replace(/^https?:\/\/(www\.|m\.)?vidio\.com\/watch\/(.*)?$/, '<div class="video video-vidio"><iframe class="vidio-embed" src="https://www.vidio.com/embed/$2?autoplay=false&player_only=false&" width="560" height="480" scrolling="no" frameborder="0" allowfullscreen></iframe></div>')
-            .replace(/^https?:\/\/(www\.|m\.)?instagram\.com\/p\/(.*?)(\/(.*?))?$/, '<span class="instagram"><iframe src="//instagram.com/p/$2/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe></span>');
-
-        if ((/<("[^"]*"|'[^']*'|[^'">])*>/).test(html) === false) {
-            $.proxy(this, 'convertBadEmbed', url)();
-            return false;
-        }
-
-        if (pasted) {
-            this.embed(html, url);
-        } else {
-            this.embed(html);
-        }
-    };
-
-    /**
-     * Add html to page
-     *
-     * @param {string} html
-     * @param {string} pastedUrl
-     * @return {void}
-     */
-
-    Embeds.prototype.embed = function (html, pastedUrl) {
-        var $place = this.$el.find('.medium-insert-embeds-active'),
-            $div;
-
-        if (!html) {
-            alert('Incorrect URL format specified');
-            return false;
-        } else {
-            if (html.indexOf('</script>') > -1) {
-                // Store embed code with <script> tag inside wrapper attribute value.
-                // Make nice attribute value escaping using jQuery.
-                $div = $('<div>')
-                    .attr('data-embed-code', html)
-                    .html(html);
-                html = $('<div>').append($div).html();
-            }
-
-            if (pastedUrl) {
-                // Get the element with the pasted url
-                // place the embed template and remove the pasted text
-                $place = this.$el.find(":not(iframe, script, style)")
-                    .contents().filter(
-                        function () {
-                            return this.nodeType === 3 && this.textContent.indexOf(pastedUrl) > -1;
-                        }).parent();
-
-                $place.after(this.templates['vendor/medium/templates/embeds-wrapper.hbs']({
-                    html: html
-                }));
-                $place.text($place.text().replace(pastedUrl, ''));
-            } else {
-                $place.after(this.templates['vendor/medium/templates/embeds-wrapper.hbs']({
-                    html: html
-                }));
-                $place.remove();
-            }
-
-
-            this.core.triggerInput();
-
-            if (html.indexOf('facebook') !== -1) {
-                if (typeof (FB) !== 'undefined') {
-                    setTimeout(function () {
-                        FB.XFBML.parse();
-                    }, 2000);
-                }
-            }
-        }
-    };
-
-    /**
-     * Convert bad oEmbed content to an actual line.
-     * Instead of displaying the error message we convert the bad embed
-     *
-     * @param {string} content Bad content
-     *
-     * @return {void}
-     */
-    Embeds.prototype.convertBadEmbed = function (content) {
-        var $place, $empty, $content,
-            emptyTemplate = this.templates['vendor/medium/templates/core-empty-line.hbs']().trim();
-
-        $place = this.$el.find('.medium-insert-embeds-active');
-
-        // convert embed node to an empty node and insert the bad embed inside
-        $content = $(emptyTemplate);
-        $place.before($content);
-        $place.remove();
-        $content.html(content);
-
-        // add an new empty node right after to simulate Enter press
-        $empty = $(emptyTemplate);
-        $content.after($empty);
-
-        this.core.triggerInput();
-
-        this.core.moveCaret($empty);
-    };
-
-    /**
-     * Select clicked embed
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Embeds.prototype.selectEmbed = function (e) {
-        var that = this,
-            $embed;
-        if (this.core.options.enabled) {
-            $embed = $(e.target).hasClass('medium-insert-embeds') ? $(e.target) : $(e.target).closest('.medium-insert-embeds');
-
-            $embed.addClass('medium-insert-embeds-selected');
-
-            setTimeout(function () {
-                that.addToolbar();
-
-                if (that.options.captions) {
-                    that.core.addCaption($embed.find('figure'), that.options.captionPlaceholder);
-                }
-            }, 50);
-        }
-    };
-
-    /**
-     * Unselect selected embed
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Embeds.prototype.unselectEmbed = function (e) {
-        var $el = $(e.target).hasClass('medium-insert-embeds') ? $(e.target) : $(e.target).closest('.medium-insert-embeds'),
-            $embed = this.$el.find('.medium-insert-embeds-selected');
-
-        if ($el.hasClass('medium-insert-embeds-selected')) {
-            $embed.not($el).removeClass('medium-insert-embeds-selected');
-            $('.medium-insert-embeds-toolbar, .medium-insert-embeds-toolbar2').remove();
-            this.core.removeCaptions($el.find('figcaption'));
-
-            if ($(e.target).is('.medium-insert-caption-placeholder') || $(e.target).is('figcaption')) {
-                $el.removeClass('medium-insert-embeds-selected');
-                this.core.removeCaptionPlaceholder($el.find('figure'));
-            }
-            return;
-        }
-
-        $embed.removeClass('medium-insert-embeds-selected');
-        $('.medium-insert-embeds-toolbar, .medium-insert-embeds-toolbar2').remove();
-
-        if ($(e.target).is('.medium-insert-caption-placeholder')) {
-            this.core.removeCaptionPlaceholder($el.find('figure'));
-        } else if ($(e.target).is('figcaption') === false) {
-            this.core.removeCaptions();
-        }
-    };
-
-    /**
-     * Remove embed
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Embeds.prototype.removeEmbed = function (e) {
-        var $embed, $empty;
-
-        if (e.which === 8 || e.which === 46) {
-            $embed = this.$el.find('.medium-insert-embeds-selected');
-
-            if ($embed.length) {
-                e.preventDefault();
-
-                $('.medium-insert-embeds-toolbar, .medium-insert-embeds-toolbar2').remove();
-
-                $empty = $(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
-                $embed.before($empty);
-                $embed.remove();
-
-                // Hide addons
-                this.core.hideAddons();
-
-                this.core.moveCaret($empty);
-                this.core.triggerInput();
-            }
-        }
-    };
-
-    /**
-     * Adds embed toolbar to editor
-     *
-     * @returns {void}
-     */
-
-    Embeds.prototype.addToolbar = function () {
-        var $embed = this.$el.find('.medium-insert-embeds-selected'),
-            active = false,
-            $toolbar, $toolbar2, mediumEditor, toolbarContainer;
-
-        if ($embed.length === 0) {
-            return;
-        }
-
-        mediumEditor = this.core.getEditor();
-        toolbarContainer = mediumEditor.options.elementsContainer || 'body';
-        console.log( mediumEditor );
-        $(toolbarContainer).append(this.templates['vendor/medium/templates/embeds-toolbar.hbs']({
-            styles: this.options.styles,
-            actions: this.options.actions
-        }).trim());
-
-        $toolbar = $('.medium-insert-embeds-toolbar');
-        $toolbar2 = $('.medium-insert-embeds-toolbar2');
-
-        $toolbar.find('button').each(function () {
-            if ($embed.hasClass('medium-insert-embeds-' + $(this).data('action'))) {
-                $(this).addClass('medium-editor-button-active');
-                active = true;
-            }
-        });
-
-        if (active === false) {
-            $toolbar.find('button').first().addClass('medium-editor-button-active');
-        }
-
-        this.repositionToolbars();
-        $toolbar.fadeIn();
-        $toolbar2.fadeIn();
-    };
-
-    Embeds.prototype.autoRepositionToolbars = function () {
-        setTimeout(function () {
-            this.repositionToolbars();
-            this.repositionToolbars();
-        }.bind(this), 0);
-    };
-
-    Embeds.prototype.repositionToolbars = function () {
-        var $toolbar = $('.medium-insert-embeds-toolbar'),
-            $toolbar2 = $('.medium-insert-embeds-toolbar2'),
-            $embed = this.$el.find('.medium-insert-embeds-selected'),
-            elementsContainer = this.core.getEditor().options.elementsContainer,
-            elementsContainerAbsolute = ['absolute', 'fixed'].indexOf(window.getComputedStyle(elementsContainer).getPropertyValue('position')) > -1,
-            elementsContainerBoundary = elementsContainerAbsolute ? elementsContainer.getBoundingClientRect() : null,
-            containerWidth = $(window).width(),
-            position = {};
-
-        if ($toolbar2.length) {
-            position.top = $embed.offset().top + 2; // 2px - distance from a border
-            position.left = $embed.offset().left + $embed.width() - $toolbar2.width() - 4; // 4px - distance from a border
-
-            if (elementsContainerAbsolute) {
-                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
-                position.left -= elementsContainerBoundary.left;
-                containerWidth = $(elementsContainer).width();
-            }
-
-            if (position.left + $toolbar2.width() > containerWidth) {
-                position.left = containerWidth - $toolbar2.width();
-            }
-
-            $toolbar2.css(position);
-        }
-
-        if ($toolbar.length) {
-            position.left = $embed.offset().left + $embed.width() / 2 - $toolbar.width() / 2;
-            position.top = $embed.offset().top - $toolbar.height() - 8 - 2 - 5; // 8px - hight of an arrow under toolbar, 2px - height of an embed outset, 5px - distance from an embed
-
-            if (elementsContainerAbsolute) {
-                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
-                position.left -= elementsContainerBoundary.left;
-            }
-
-            if (position.top < 0) {
-                position.top = 0;
-            }
-
-            $toolbar.css(position);
-        }
-    };
-
-    /**
-     * Fires toolbar action
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Embeds.prototype.toolbarAction = function (e) {
-        var $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button'),
-            $li = $button.closest('li'),
-            $ul = $li.closest('ul'),
-            $lis = $ul.find('li'),
-            $embed = this.$el.find('.medium-insert-embeds-selected'),
-            that = this;
-
-        $button.addClass('medium-editor-button-active');
-        $li.siblings().find('.medium-editor-button-active').removeClass('medium-editor-button-active');
-
-        $lis.find('button').each(function () {
-            var className = 'medium-insert-embeds-' + $(this).data('action');
-
-            if ($(this).hasClass('medium-editor-button-active')) {
-                $embed.addClass(className);
-
-                if ($embed.parent('.medium-insert-embeds-clearfix').length) {
-                  $embed.unwrap('<div class="medium-insert-embeds-clearfix clearfix"></div>');
-                }
-
-                //if (className == 'medium-insert-embeds-left' || className == 'medium-insert-embeds-right') {
-                if (className == 'medium-insert-embeds-wide') {
-                  $embed.wrap('<div class="medium-insert-embeds-clearfix clearfix"></div>');
-                }
-
-                if (that.options.styles[$(this).data('action')].added) {
-                    that.options.styles[$(this).data('action')].added($embed);
-                }
-            } else {
-                $embed.removeClass(className);
-
-                if (that.options.styles[$(this).data('action')].removed) {
-                    that.options.styles[$(this).data('action')].removed($embed);
-                }
-            }
-        });
-
-        this.core.triggerInput();
-    };
-
-    /**
-     * Fires toolbar2 action
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Embeds.prototype.toolbar2Action = function (e) {
-        var $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button'),
-            callback = this.options.actions[$button.data('action')].clicked;
-
-        if (callback) {
-            callback(this.$el.find('.medium-insert-embeds-selected'));
-        }
-
-        this.core.triggerInput();
-    };
-
-    /** Plugin initialization */
-
-    $.fn[pluginName + addonName] = function (options) {
-        return this.each(function () {
-            if (!$.data(this, 'plugin_' + pluginName + addonName)) {
-                $.data(this, 'plugin_' + pluginName + addonName, new Embeds(this, options));
-            }
-        });
-    };
-
-})(jQuery, window, document);
-
-/*global MediumEditor*/
-
-; (function ($, window, document, Util, undefined) {
-
-    'use strict';
-
-    /** Default values */
-    var pluginName = 'mediumInsert',
-        addonName = 'Images', // first char is uppercase
-        defaults = {
-            label: '<span class="icon-camera"></span>',
-            deleteMethod: 'POST',
-            deleteScript: 'delete.php',
-            preview: true,
-            captions: true,
-            captionPlaceholder: 'Type caption for image (optional)',
-            autoGrid: 3,
-            fileUploadOptions: { // See https://github.com/blueimp/jQuery-File-Upload/wiki/Options
-                url: 'upload.php',
-                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                maxFileSize: 1000000
-            },
-            fileDeleteOptions: {},
-            styles: {
-                wide: {
-                    label: '<span class="icon-align-justify"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                },
-                left: {
-                    label: '<span class="icon-align-right"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                },
-                right: {
-                    label: '<span class="icon-align-left"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                },
-                grid: {
-                    label: '<span class="icon-table"></span>'
-                    // added: function ($el) {},
-                    // removed: function ($el) {}
-                }
-            },
-            actions: {
-                remove: {
-                    label: '<span class="icon-cancel"></span>',
-                    clicked: function () {
-                        var $event = $.Event('keydown');
-
-                        $event.which = 8;
-                        $(document).trigger($event);
-                    }
-                }
-            },
-            sorting: function () {
-                var that = this;
-
-                $('.medium-insert-images').sortable({
-                    group: 'medium-insert-images',
-                    containerSelector: '.medium-insert-images',
-                    itemSelector: 'figure',
-                    placeholder: '<figure class="placeholder">',
-                    handle: 'img',
-                    nested: false,
-                    vertical: false,
-                    afterMove: function () {
-                        that.core.triggerInput();
-                    }
-                });
-            },
-            messages: {
-                acceptFileTypesError: 'This file is not in a supported format: ',
-                maxFileSizeError: 'This file is too big: '
-            }
-            // uploadCompleted: function ($el, data) {}
-        };
-
-    /**
-     * Images object
-     *
-     * Sets options, variables and calls init() function
-     *
-     * @constructor
-     * @param {DOM} el - DOM element to init the plugin on
-     * @param {object} options - Options to override defaults
-     * @return {void}
-     */
-
-    function Images(el, options) {
-        this.el = el;
-        this.$el = $(el);
-        this.$currentImage = null;
-        this.templates = window.MediumInsert.Templates;
-        this.core = this.$el.data('plugin_' + pluginName);
-
-        this.options = $.extend(true, {}, defaults, options);
-
-        this._defaults = defaults;
-        this._name = pluginName;
-
-        // Allow image preview only in browsers, that support's that
-        if (this.options.preview && !window.FileReader) {
-            this.options.preview = false;
-        }
-
-        // Extend editor's functions
-        if (this.core.getEditor()) {
-            this.core.getEditor()._serializePreImages = this.core.getEditor().serialize;
-            this.core.getEditor().serialize = this.editorSerialize;
-        }
-
-        this.init();
-    }
-
-    /**
-     * Initialization
-     *
-     * @return {void}
-     */
-
-    Images.prototype.init = function () {
-        var $images = this.$el.find('.medium-insert-images');
-
-        $images.find('figcaption').attr('contenteditable', true);
-        $images.find('figure').attr('contenteditable', false);
-
-        this.events();
-        this.backwardsCompatibility();
-        this.sorting();
-    };
-
-    /**
-     * Event listeners
-     *
-     * @return {void}
-     */
-
-    Images.prototype.events = function () {
-        $(document)
-            .on('click', $.proxy(this, 'unselectImage'))
-            .on('keydown', $.proxy(this, 'removeImage'))
-            .on('click', '.medium-insert-images-toolbar .medium-editor-action', $.proxy(this, 'toolbarAction'))
-            .on('click', '.medium-insert-images-toolbar2 .medium-editor-action', $.proxy(this, 'toolbar2Action'));
-
-        this.$el
-            .on('click', '.medium-insert-images img', $.proxy(this, 'selectImage'));
-
-        $(window)
-            .on('resize', $.proxy(this, 'autoRepositionToolbars'));
-    };
-
-    /**
-     * Replace v0.* class names with new ones
-     *
-     * @return {void}
-     */
-
-    Images.prototype.backwardsCompatibility = function () {
-        this.$el.find('.mediumInsert')
-            .removeClass('mediumInsert')
-            .addClass('medium-insert-images');
-
-        this.$el.find('.medium-insert-images.small')
-            .removeClass('small')
-            .addClass('medium-insert-images-left');
-    };
-
-    /**
-     * Extend editor's serialize function
-     *
-     * @return {object} Serialized data
-     */
-
-    Images.prototype.editorSerialize = function () {
-        var data = this._serializePreImages();
-
-        $.each(data, function (key) {
-            var $data = $('<div />').html(data[key].value);
-
-            $data.find('.medium-insert-images').find('figcaption, figure').removeAttr('contenteditable');
-
-            data[key].value = $data.html();
-        });
-
-        return data;
-    };
-
-    /**
-     * Add image
-     *
-     * @return {void}
-     */
-
-    Images.prototype.add = function () {
-        var that = this,
-            $file = $(this.templates['vendor/medium/templates/images-fileupload.hbs']()),
-            fileUploadOptions = {
-                dataType: 'json',
-                add: function (e, data) {
-                    $.proxy(that, 'uploadAdd', e, data)();
-                },
-                done: function (e, data) {
-                    $.proxy(that, 'uploadDone', e, data)();
-                }
-            };
-
-        // Only add progress callbacks for browsers that support XHR2,
-        // and test for XHR2 per:
-        // http://stackoverflow.com/questions/6767887/
-        // what-is-the-best-way-to-check-for-xhr2-file-upload-support
-        if (new XMLHttpRequest().upload) {
-            fileUploadOptions.progress = function (e, data) {
-                $.proxy(that, 'uploadProgress', e, data)();
-            };
-
-            fileUploadOptions.progressall = function (e, data) {
-                $.proxy(that, 'uploadProgressall', e, data)();
-            };
-        }
-
-        $file.fileupload($.extend(true, {}, this.options.fileUploadOptions, fileUploadOptions));
-
-        $file.click();
-    };
-
-    /**
-     * Callback invoked as soon as files are added to the fileupload widget - via file input selection, drag & drop or add API call.
-     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#add
-     *
-     * @param {Event} e
-     * @param {object} data
-     * @return {void}
-     */
-
-    Images.prototype.uploadAdd = function (e, data) {
-        var $place = this.$el.find('.medium-insert-active'),
-            that = this,
-            uploadErrors = [],
-            file = data.files[0],
-            acceptFileTypes = this.options.fileUploadOptions.acceptFileTypes,
-            maxFileSize = this.options.fileUploadOptions.maxFileSize,
-            reader;
-
-        if (acceptFileTypes && !acceptFileTypes.test(file.type)) {
-            uploadErrors.push(this.options.messages.acceptFileTypesError + file.name);
-        } else if (maxFileSize && file.size > maxFileSize) {
-            uploadErrors.push(this.options.messages.maxFileSizeError + file.name);
-        }
-        if (uploadErrors.length > 0) {
-            alert(uploadErrors.join("\n"));
-            return;
-        }
-
-        this.core.hideButtons();
-
-        // Replace paragraph with div, because figure elements can't be inside paragraph
-        if ($place.is('p')) {
-            $place.replaceWith('<div class="medium-insert-active">' + $place.html() + '</div>');
-            $place = this.$el.find('.medium-insert-active');
-            if ($place.next().is('p')) {
-                this.core.moveCaret($place.next());
-            } else {
-                $place.after('<p><br></p>'); // add empty paragraph so we can move the caret to the next line.
-                this.core.moveCaret($place.next());
-            }
-        }
-
-        $place.addClass('medium-insert-images');
-
-        if (this.options.preview === false && $place.find('progress').length === 0 && (new XMLHttpRequest().upload)) {
-            $place.append(this.templates['vendor/medium/templates/images-progressbar.hbs']());
-        }
-
-        // ------------------------------------------------------------------------
-
-        if (data.autoUpload || (data.autoUpload !== false && $(e.target).fileupload('option', 'autoUpload'))) {
-            data.process().done(function () {
-                // If preview is set to true, let the showImage handle the upload start
-                if (that.options.preview) {
-                    reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        $.proxy(that, 'showImage', e.target.result, data)();
-                    };
-
-                    reader.readAsDataURL(data.files[0]);
-                } else {
-                    data.submit();
-                }
-            });
-        }
-    };
-
-    /**
-     * Callback for global upload progress events
-     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#progressall
-     *
-     * @param {Event} e
-     * @param {object} data
-     * @return {void}
-     */
-
-    Images.prototype.uploadProgressall = function (e, data) {
-        var progress, $progressbar;
-
-        if (this.options.preview === false) {
-            progress = parseInt(data.loaded / data.total * 100, 10);
-            $progressbar = this.$el.find('.medium-insert-active').find('progress');
-
-            $progressbar
-                .attr('value', progress)
-                .text(progress);
-
-            if (progress === 100) {
-                $progressbar.remove();
-            }
-        }
-    };
-
-    /**
-     * Callback for upload progress events.
-     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#progress
-     *
-     * @param {Event} e
-     * @param {object} data
-     * @return {void}
-     */
-
-    Images.prototype.uploadProgress = function (e, data) {
-        var progress, $progressbar;
-
-        if (this.options.preview) {
-            progress = 100 - parseInt(data.loaded / data.total * 100, 10);
-            $progressbar = data.context.find('.medium-insert-images-progress');
-
-            $progressbar.css('width', progress + '%');
-
-            if (progress === 0) {
-                $progressbar.remove();
-            }
-        }
-    };
-
-    /**
-     * Callback for successful upload requests.
-     * https://github.com/blueimp/jQuery-File-Upload/wiki/Options#done
-     *
-     * @param {Event} e
-     * @param {object} data
-     * @return {void}
-     */
-
-    Images.prototype.uploadDone = function (e, data) {
-
-        // ------------------------------------------------------------------------
-
-        if (! data.result.url) { return; }
-
-        $.proxy(this, 'showImage', data.result.url, data)();
-
-        this.core.clean();
-        this.sorting();
-    };
-
-    /**
-     * Add uploaded / preview image to DOM
-     *
-     * @param {string} img
-     * @returns {void}
-     */
-
-    Images.prototype.showImage = function (img, data) {
-        var $place = this.$el.find('.medium-insert-active'),
-            domImage,
-            that;
-
-        // Hide editor's placeholder
-        $place.click();
-
-        // If preview is allowed and preview image already exists,
-        // replace it with uploaded image
-        that = this;
-        if (this.options.preview && data.context) {
-            domImage = this.getDOMImage();
-            domImage.onload = function () {
-                if(domImage.src.match(/.gif/)){
-                  data.context.find('img').closest('.medium-insert-images').addClass('medium-insert-gif');
-                }
-
-                data.context.find('img').attr('src', domImage.src);
-                if (this.options.uploadCompleted) {
-                    this.options.uploadCompleted(data.context, data);
-                }
-
-                that.core.triggerInput();
-            }.bind(this);
-            domImage.src = img;
-        } else {
-            data.context = $(this.templates['vendor/medium/templates/images-image.hbs']({
-                img: img,
-                progress: this.options.preview
-            })).appendTo($place);
-
-            $place.find('br').remove();
-
-            if (this.options.autoGrid && $place.find('figure').length >= this.options.autoGrid) {
-                $.each(this.options.styles, function (style, options) {
-                    var className = 'medium-insert-images-' + style;
-
-                    $place.removeClass(className);
-
-                    if (options.removed) {
-                        options.removed($place);
-                    }
-                });
-
-                $place.addClass('medium-insert-images-grid');
-
-                if (this.options.styles.grid.added) {
-                    this.options.styles.grid.added($place);
-                }
-            }
-
-            if (this.options.preview) {
-                data.submit();
-            } else if (this.options.uploadCompleted) {
-                this.options.uploadCompleted(data.context, data);
-            }
-        }
-
-        this.core.triggerInput();
-
-        return data.context;
-    };
-
-    Images.prototype.getDOMImage = function () {
-        return new window.Image();
-    };
-
-    /**
-     * Select clicked image
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Images.prototype.selectImage = function (e) {
-        var that = this,
-            $image;
-
-        if (this.core.options.enabled) {
-            $image = $(e.target);
-
-            this.$currentImage = $image;
-
-            // Hide keyboard on mobile devices
-            this.$el.blur();
-
-            $image.addClass('medium-insert-image-active');
-            $image.closest('.medium-insert-images').addClass('medium-insert-active');
-
-            setTimeout(function () {
-                that.addToolbar();
-
-                if (that.options.captions) {
-                    that.core.addCaption($image.closest('figure'), that.options.captionPlaceholder);
-                }
-            }, 50);
-        }
-    };
-
-    /**
-     * Unselect selected image
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Images.prototype.unselectImage = function (e) {
-        var $el = $(e.target),
-            $image = this.$el.find('.medium-insert-image-active');
-
-        if ($el.is('img') && $el.hasClass('medium-insert-image-active')) {
-            $image.not($el).removeClass('medium-insert-image-active');
-            $('.medium-insert-images-toolbar, .medium-insert-images-toolbar2').remove();
-            this.core.removeCaptions($el);
-            return;
-        }
-
-        $image.removeClass('medium-insert-image-active');
-        $('.medium-insert-images-toolbar, .medium-insert-images-toolbar2').remove();
-
-        if ($el.is('.medium-insert-caption-placeholder')) {
-            this.core.removeCaptionPlaceholder($image.closest('figure'));
-        } else if ($el.is('figcaption') === false) {
-            this.core.removeCaptions();
-        }
-        this.$currentImage = null;
-    };
-
-    /**
-     * Remove image
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Images.prototype.removeImage = function (e) {
-        var images = [],
-            $selectedImage = this.$el.find('.medium-insert-image-active'),
-            $parent, $empty, selection, range, current, caretPosition, $current, $sibling, selectedHtml, i;
-
-        if (e.which === 8 || e.which === 46) {
-            if ($selectedImage.length) {
-                images.push($selectedImage);
-            }
-
-            // Remove image even if it's not selected, but backspace/del is pressed in text
-            selection = window.getSelection();
-            if (selection && selection.rangeCount) {
-                range = selection.getRangeAt(0);
-                current = range.commonAncestorContainer;
-                $current = current.nodeName === '#text' ? $(current).parent() : $(current);
-                caretPosition = MediumEditor.selection.getCaretOffsets(current).left;
-
-                // Is backspace pressed and caret is at the beginning of a paragraph, get previous element
-                if (e.which === 8 && caretPosition === 0) {
-                    $sibling = $current.prev();
-                // Is del pressed and caret is at the end of a paragraph, get next element
-                } else if (e.which === 46 && caretPosition === $current.text().length) {
-                    $sibling = $current.next();
-                }
-
-                if ($sibling && $sibling.hasClass('medium-insert-images')) {
-                    images.push($sibling.find('img'));
-                }
-
-                // If text is selected, find images in the selection
-                selectedHtml = MediumEditor.selection.getSelectionHtml(document);
-                if (selectedHtml) {
-                    $('<div></div>').html(selectedHtml).find('.medium-insert-images img').each(function () {
-                        images.push($(this));
-                    });
-                }
-            }
-
-            if (images.length) {
-                for (i = 0; i < images.length; i++) {
-                    this.deleteFile(images[i].attr('src'));
-
-                    $parent = images[i].closest('.medium-insert-images');
-                    images[i].closest('figure').remove();
-
-                    if ($parent.find('figure').length === 0) {
-                        $empty = $parent.next();
-                        if ($empty.is('p') === false || $empty.text() !== '') {
-                            $empty = $(this.templates['vendor/medium/templates/core-empty-line.hbs']().trim());
-                            $parent.before($empty);
-                        }
-                        $parent.remove();
-                    }
-                }
-
-                // Hide addons
-                this.core.hideAddons();
-                if (!selectedHtml && $empty) {
-                    e.preventDefault();
-                    this.core.moveCaret($empty);
-                }
-
-                $('.medium-insert-images-toolbar, .medium-insert-images-toolbar2').remove();
-                this.core.triggerInput();
-            }
-        }
-    };
-
-    /**
-     * Makes ajax call to deleteScript
-     *
-     * @param {String} file File name
-     * @returns {void}
-     */
-
-    Images.prototype.deleteFile = function (file) {
-        if (this.options.deleteScript) {
-            $.ajax($.extend(true, {}, {
-                url: this.options.deleteScript,
-                type: this.options.deleteMethod || 'POST',
-                data: { file: file }
-            }, this.options.fileDeleteOptions));
-        }
-    };
-
-    /**
-     * Adds image toolbar to editor
-     *
-     * @returns {void}
-     */
-
-    Images.prototype.addToolbar = function () {
-        var $image = this.$el.find('.medium-insert-image-active'),
-            $p = $image.closest('.medium-insert-images'),
-            active = false,
-            mediumEditor = this.core.getEditor(),
-            toolbarContainer = mediumEditor.options.elementsContainer || 'body',
-            $toolbar, $toolbar2;
-
-        $(toolbarContainer).append(this.templates['vendor/medium/templates/images-toolbar.hbs']({
-            styles: this.options.styles,
-            actions: this.options.actions
-        }).trim());
-
-        $toolbar = $('.medium-insert-images-toolbar');
-        $toolbar2 = $('.medium-insert-images-toolbar2');
-
-        $toolbar.find('button').each(function () {
-            if ($p.hasClass('medium-insert-images-' + $(this).data('action'))) {
-                $(this).addClass('medium-editor-button-active');
-                active = true;
-            }
-        });
-
-        if (active === false) {
-            $toolbar.find('button').first().addClass('medium-editor-button-active');
-        }
-
-        this.repositionToolbars();
-
-        $toolbar.fadeIn();
-        $toolbar2.fadeIn();
-    };
-
-    Images.prototype.autoRepositionToolbars = function () {
-        setTimeout(function () {
-            this.repositionToolbars();
-            this.repositionToolbars();
-        }.bind(this), 0);
-    };
-
-    Images.prototype.repositionToolbars = function () {
-        var $toolbar = $('.medium-insert-images-toolbar'),
-            $toolbar2 = $('.medium-insert-images-toolbar2'),
-            $image = this.$el.find('.medium-insert-image-active'),
-            elementsContainer = this.core.getEditor().options.elementsContainer,
-            elementsContainerAbsolute = ['absolute', 'fixed'].indexOf(window.getComputedStyle(elementsContainer).getPropertyValue('position')) > -1,
-            elementsContainerBoundary = elementsContainerAbsolute ? elementsContainer.getBoundingClientRect() : null,
-            containerWidth = $(window).width(),
-            position = {};
-
-        if ($toolbar2.length) {
-            position.top = $image.offset().top + 2;
-            position.left = $image.offset().left + $image.width() - $toolbar2.width() - 4; // 4px - distance from a border
-
-            if (elementsContainerAbsolute) {
-                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
-                position.left -= elementsContainerBoundary.left;
-                containerWidth = $(elementsContainer).width();
-            }
-
-            if (position.left + $toolbar2.width() > containerWidth) {
-                position.left = containerWidth - $toolbar2.width();
-            }
-
-            $toolbar2.css(position);
-        }
-
-        if ($toolbar.length) {
-            if ($image.closest('.medium-insert-images-grid-active').length) {
-                $image = $image.closest('.medium-insert-images-grid-active');
-            }
-
-            position.top = $image.offset().top - $toolbar.height() - 8 - 2 - 5; // 8px - hight of an arrow under toolbar, 2px - height of an image outset, 5px - distance from an image
-            position.left = $image.offset().left + $image.width() / 2 - $toolbar.width() / 2;
-
-            if (elementsContainerAbsolute) {
-                position.top += elementsContainer.scrollTop - elementsContainerBoundary.top;
-                position.left -= elementsContainerBoundary.left;
-            }
-
-            if (position.top < 0) {
-                position.top = 0;
-            }
-
-            $toolbar.css(position);
-        }
-    };
-
-    /**
-     * Fires toolbar action
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Images.prototype.toolbarAction = function (e) {
-        var that = this,
-            $button, $li, $ul, $lis, $p;
-
-        if (this.$currentImage === null) {
-            return;
-        }
-
-        $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button');
-        $li = $button.closest('li');
-        $ul = $li.closest('ul');
-        $lis = $ul.find('li');
-        $p = this.$el.find('.medium-insert-active');
-
-        $button.addClass('medium-editor-button-active');
-        $li.siblings().find('.medium-editor-button-active').removeClass('medium-editor-button-active');
-
-        $lis.find('button').each(function () {
-            var className = 'medium-insert-images-' + $(this).data('action');
-
-
-
-            if ($(this).hasClass('medium-editor-button-active')) {
-                $p.addClass(className);
-
-                /*if ($p.parent('.medium-insert-images-clearfix').length) {
-                  $p.unwrap('<div class="medium-insert-images-clearfix clearfix"></div>');
-                }
-
-                if (className == 'medium-insert-images-left' || className == 'medium-insert-images-right') {
-                  $p.wrap('<div class="medium-insert-images-clearfix clearfix"></div>');
-                }*/
-
-                if (that.options.styles[$(this).data('action')].added) {
-                    that.options.styles[$(this).data('action')].added($p);
-                }
-            } else {
-                $p.removeClass(className);
-
-                if (that.options.styles[$(this).data('action')].removed) {
-                    that.options.styles[$(this).data('action')].removed($p);
-                }
-            }
-        });
-
-        this.core.hideButtons();
-
-        this.core.triggerInput();
-    };
-
-    /**
-     * Fires toolbar2 action
-     *
-     * @param {Event} e
-     * @returns {void}
-     */
-
-    Images.prototype.toolbar2Action = function (e) {
-        var $button, callback;
-
-        if (this.$currentImage === null) {
-            return;
-        }
-
-        $button = $(e.target).is('button') ? $(e.target) : $(e.target).closest('button');
-        callback = this.options.actions[$button.data('action')].clicked;
-
-        if (callback) {
-            callback(this.$el.find('.medium-insert-image-active'));
-        }
-
-        this.core.hideButtons();
-
-        this.core.triggerInput();
-    };
-
-    /**
-     * Initialize sorting
-     *
-     * @returns {void}
-     */
-
-    Images.prototype.sorting = function () {
-        $.proxy(this.options.sorting, this)();
-    };
-
-    /** Plugin initialization */
-
-    $.fn[pluginName + addonName] = function (options) {
-        return this.each(function () {
-            if (!$.data(this, 'plugin_' + pluginName + addonName)) {
-                $.data(this, 'plugin_' + pluginName + addonName, new Images(this, options));
-            }
-        });
-    };
-
-})(jQuery, window, document, MediumEditor.util);
-
-}));
-
-}.call(window));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
+module.exports = "<div class=\"main-container\" editor-article>\r\n  <div class=\"editor-wrapper\" editor-title>\r\n    <header class=\"editor-top\"><h2>Change Title</h2></header>\r\n  \t\r\n  \t<article>\r\n  \t\t<textarea ng-bind-html=\"data.title\" ng-model=\"data.title\" text-content></textarea>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n\t    <div class=\"wrap-footer_btn\">\r\n\t      <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n\t      <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-title')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n\t    </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 26 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"main-container\" editor-article>\r\n  <div class=\"editor-wrapper\" editor-created>\r\n    <header class=\"editor-top\"><h2>Change Created</h2></header>\r\n  \t\r\n  \t<article>\r\n      <input type=\"text\" datetime-picker>\r\n  \t</article>\r\n\r\n  \t<footer class=\"editor-bottom mdl-footer\">\r\n      <div class=\"wrap-footer_btn\">\r\n        <a ng-click=\"closeCallback ? callback(closeCallback) : close()\" ng-hide=\"onProgress\">Cancel</a>\r\n        <a ng-if=\"!singleButton\" class=\"ok\" ng-click=\"saveClick('set-created')\"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>\r\n      </div>\r\n    </footer>\r\n  </div>\r\n</div>\r\n";
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"mdl mdl-popup mdl-open mdl-editor\" data-post=\"data\">\r\n    <div class=\"mdl-component <@ layout.type @>\">\r\n        <article class=\"mdl-body\">\r\n            <ng-include src=\"layout.url\"></ng-include>\r\n        </article>\r\n        <a class=\"mdl-close\" ng-click=\"close()\">&times;</a>\r\n    </div>\r\n</div>";
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var DateFormatter;!function(){"use strict";var e,t,a,r,n,o;n=864e5,o=3600,e=function(e,t){return"string"==typeof e&&"string"==typeof t&&e.toLowerCase()===t.toLowerCase()},t=function(e,a,r){var n=r||"0",o=e.toString();return o.length<a?t(n+o,a):o},a=function(e){var t,r;for(e=e||{},t=1;t<arguments.length;t++)if(r=arguments[t])for(var n in r)r.hasOwnProperty(n)&&("object"==typeof r[n]?a(e[n],r[n]):e[n]=r[n]);return e},r={dateSettings:{days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],daysShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],monthsShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],meridiem:["AM","PM"],ordinal:function(e){var t=e%10,a={1:"st",2:"nd",3:"rd"};return 1!==Math.floor(e%100/10)&&a[t]?a[t]:"th"}},separators:/[ \-+\/\.T:@]/g,validParts:/[dDjlNSwzWFmMntLoYyaABgGhHisueTIOPZcrU]/g,intParts:/[djwNzmnyYhHgGis]/g,tzParts:/\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,tzClip:/[^-+\dA-Z]/g},DateFormatter=function(e){var t=this,n=a(r,e);t.dateSettings=n.dateSettings,t.separators=n.separators,t.validParts=n.validParts,t.intParts=n.intParts,t.tzParts=n.tzParts,t.tzClip=n.tzClip},DateFormatter.prototype={constructor:DateFormatter,parseDate:function(t,a){var r,n,o,i,s,d,u,l,f,c,m=this,h=!1,g=!1,p=m.dateSettings,y={date:null,year:null,month:null,day:null,hour:0,min:0,sec:0};if(!t)return void 0;if(t instanceof Date)return t;if("number"==typeof t)return new Date(t);if("U"===a)return o=parseInt(t),o?new Date(1e3*o):t;if("string"!=typeof t)return"";if(r=a.match(m.validParts),!r||0===r.length)throw new Error("Invalid date format definition.");for(n=t.replace(m.separators,"\x00").split("\x00"),o=0;o<n.length;o++)switch(i=n[o],s=parseInt(i),r[o]){case"y":case"Y":f=i.length,2===f?y.year=parseInt((70>s?"20":"19")+i):4===f&&(y.year=s),h=!0;break;case"m":case"n":case"M":case"F":isNaN(i)?(d=p.monthsShort.indexOf(i),d>-1&&(y.month=d+1),d=p.months.indexOf(i),d>-1&&(y.month=d+1)):s>=1&&12>=s&&(y.month=s),h=!0;break;case"d":case"j":s>=1&&31>=s&&(y.day=s),h=!0;break;case"g":case"h":u=r.indexOf("a")>-1?r.indexOf("a"):r.indexOf("A")>-1?r.indexOf("A"):-1,c=n[u],u>-1?(l=e(c,p.meridiem[0])?0:e(c,p.meridiem[1])?12:-1,s>=1&&12>=s&&l>-1?y.hour=s+l-1:s>=0&&23>=s&&(y.hour=s)):s>=0&&23>=s&&(y.hour=s),g=!0;break;case"G":case"H":s>=0&&23>=s&&(y.hour=s),g=!0;break;case"i":s>=0&&59>=s&&(y.min=s),g=!0;break;case"s":s>=0&&59>=s&&(y.sec=s),g=!0}if(h===!0&&y.year&&y.month&&y.day)y.date=new Date(y.year,y.month-1,y.day,y.hour,y.min,y.sec,0);else{if(g!==!0)return!1;y.date=new Date(0,0,0,y.hour,y.min,y.sec,0)}return y.date},guessDate:function(e,t){if("string"!=typeof e)return e;var a,r,n,o,i=this,s=e.replace(i.separators,"\x00").split("\x00"),d=/^[djmn]/g,u=t.match(i.validParts),l=new Date,f=0;if(!d.test(u[0]))return e;for(r=0;r<s.length;r++){switch(f=2,n=s[r],o=parseInt(n.substr(0,2)),r){case 0:"m"===u[0]||"n"===u[0]?l.setMonth(o-1):l.setDate(o);break;case 1:"m"===u[0]||"n"===u[0]?l.setDate(o):l.setMonth(o-1);break;case 2:a=l.getFullYear(),n.length<4?(l.setFullYear(parseInt(a.toString().substr(0,4-n.length)+n)),f=n.length):(l.setFullYear=parseInt(n.substr(0,4)),f=4);break;case 3:l.setHours(o);break;case 4:l.setMinutes(o);break;case 5:l.setSeconds(o)}n.substr(f).length>0&&s.splice(r+1,0,n.substr(f))}return l},parseFormat:function(e,a){var r,i=this,s=i.dateSettings,d=/\\?(.?)/gi,u=function(e,t){return r[e]?r[e]():t};return r={d:function(){return t(r.j(),2)},D:function(){return s.daysShort[r.w()]},j:function(){return a.getDate()},l:function(){return s.days[r.w()]},N:function(){return r.w()||7},w:function(){return a.getDay()},z:function(){var e=new Date(r.Y(),r.n()-1,r.j()),t=new Date(r.Y(),0,1);return Math.round((e-t)/n)},W:function(){var e=new Date(r.Y(),r.n()-1,r.j()-r.N()+3),a=new Date(e.getFullYear(),0,4);return t(1+Math.round((e-a)/n/7),2)},F:function(){return s.months[a.getMonth()]},m:function(){return t(r.n(),2)},M:function(){return s.monthsShort[a.getMonth()]},n:function(){return a.getMonth()+1},t:function(){return new Date(r.Y(),r.n(),0).getDate()},L:function(){var e=r.Y();return e%4===0&&e%100!==0||e%400===0?1:0},o:function(){var e=r.n(),t=r.W(),a=r.Y();return a+(12===e&&9>t?1:1===e&&t>9?-1:0)},Y:function(){return a.getFullYear()},y:function(){return r.Y().toString().slice(-2)},a:function(){return r.A().toLowerCase()},A:function(){var e=r.G()<12?0:1;return s.meridiem[e]},B:function(){var e=a.getUTCHours()*o,r=60*a.getUTCMinutes(),n=a.getUTCSeconds();return t(Math.floor((e+r+n+o)/86.4)%1e3,3)},g:function(){return r.G()%12||12},G:function(){return a.getHours()},h:function(){return t(r.g(),2)},H:function(){return t(r.G(),2)},i:function(){return t(a.getMinutes(),2)},s:function(){return t(a.getSeconds(),2)},u:function(){return t(1e3*a.getMilliseconds(),6)},e:function(){var e=/\((.*)\)/.exec(String(a))[1];return e||"Coordinated Universal Time"},T:function(){var e=(String(a).match(i.tzParts)||[""]).pop().replace(i.tzClip,"");return e||"UTC"},I:function(){var e=new Date(r.Y(),0),t=Date.UTC(r.Y(),0),a=new Date(r.Y(),6),n=Date.UTC(r.Y(),6);return e-t!==a-n?1:0},O:function(){var e=a.getTimezoneOffset(),r=Math.abs(e);return(e>0?"-":"+")+t(100*Math.floor(r/60)+r%60,4)},P:function(){var e=r.O();return e.substr(0,3)+":"+e.substr(3,2)},Z:function(){return 60*-a.getTimezoneOffset()},c:function(){return"Y-m-d\\TH:i:sP".replace(d,u)},r:function(){return"D, d M Y H:i:s O".replace(d,u)},U:function(){return a.getTime()/1e3||0}},u(e,e)},formatDate:function(e,t){var a,r,n,o,i,s=this,d="";if("string"==typeof e&&(e=s.parseDate(e,t),e===!1))return!1;if(e instanceof Date){for(n=t.length,a=0;n>a;a++)i=t.charAt(a),"S"!==i&&(o=s.parseFormat(i,e),a!==n-1&&s.intParts.test(i)&&"S"===t.charAt(a+1)&&(r=parseInt(o),o+=s.dateSettings.ordinal(r)),d+=o);return d}return""}}}(),function(e){ true?!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0),__webpack_require__(27)], __WEBPACK_AMD_DEFINE_FACTORY__ = (e),
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var DateFormatter;!function(){"use strict";var e,t,a,r,n,o;n=864e5,o=3600,e=function(e,t){return"string"==typeof e&&"string"==typeof t&&e.toLowerCase()===t.toLowerCase()},t=function(e,a,r){var n=r||"0",o=e.toString();return o.length<a?t(n+o,a):o},a=function(e){var t,r;for(e=e||{},t=1;t<arguments.length;t++)if(r=arguments[t])for(var n in r)r.hasOwnProperty(n)&&("object"==typeof r[n]?a(e[n],r[n]):e[n]=r[n]);return e},r={dateSettings:{days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],daysShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],monthsShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],meridiem:["AM","PM"],ordinal:function(e){var t=e%10,a={1:"st",2:"nd",3:"rd"};return 1!==Math.floor(e%100/10)&&a[t]?a[t]:"th"}},separators:/[ \-+\/\.T:@]/g,validParts:/[dDjlNSwzWFmMntLoYyaABgGhHisueTIOPZcrU]/g,intParts:/[djwNzmnyYhHgGis]/g,tzParts:/\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,tzClip:/[^-+\dA-Z]/g},DateFormatter=function(e){var t=this,n=a(r,e);t.dateSettings=n.dateSettings,t.separators=n.separators,t.validParts=n.validParts,t.intParts=n.intParts,t.tzParts=n.tzParts,t.tzClip=n.tzClip},DateFormatter.prototype={constructor:DateFormatter,parseDate:function(t,a){var r,n,o,i,s,d,u,l,f,c,m=this,h=!1,g=!1,p=m.dateSettings,y={date:null,year:null,month:null,day:null,hour:0,min:0,sec:0};if(!t)return void 0;if(t instanceof Date)return t;if("number"==typeof t)return new Date(t);if("U"===a)return o=parseInt(t),o?new Date(1e3*o):t;if("string"!=typeof t)return"";if(r=a.match(m.validParts),!r||0===r.length)throw new Error("Invalid date format definition.");for(n=t.replace(m.separators,"\x00").split("\x00"),o=0;o<n.length;o++)switch(i=n[o],s=parseInt(i),r[o]){case"y":case"Y":f=i.length,2===f?y.year=parseInt((70>s?"20":"19")+i):4===f&&(y.year=s),h=!0;break;case"m":case"n":case"M":case"F":isNaN(i)?(d=p.monthsShort.indexOf(i),d>-1&&(y.month=d+1),d=p.months.indexOf(i),d>-1&&(y.month=d+1)):s>=1&&12>=s&&(y.month=s),h=!0;break;case"d":case"j":s>=1&&31>=s&&(y.day=s),h=!0;break;case"g":case"h":u=r.indexOf("a")>-1?r.indexOf("a"):r.indexOf("A")>-1?r.indexOf("A"):-1,c=n[u],u>-1?(l=e(c,p.meridiem[0])?0:e(c,p.meridiem[1])?12:-1,s>=1&&12>=s&&l>-1?y.hour=s+l-1:s>=0&&23>=s&&(y.hour=s)):s>=0&&23>=s&&(y.hour=s),g=!0;break;case"G":case"H":s>=0&&23>=s&&(y.hour=s),g=!0;break;case"i":s>=0&&59>=s&&(y.min=s),g=!0;break;case"s":s>=0&&59>=s&&(y.sec=s),g=!0}if(h===!0&&y.year&&y.month&&y.day)y.date=new Date(y.year,y.month-1,y.day,y.hour,y.min,y.sec,0);else{if(g!==!0)return!1;y.date=new Date(0,0,0,y.hour,y.min,y.sec,0)}return y.date},guessDate:function(e,t){if("string"!=typeof e)return e;var a,r,n,o,i=this,s=e.replace(i.separators,"\x00").split("\x00"),d=/^[djmn]/g,u=t.match(i.validParts),l=new Date,f=0;if(!d.test(u[0]))return e;for(r=0;r<s.length;r++){switch(f=2,n=s[r],o=parseInt(n.substr(0,2)),r){case 0:"m"===u[0]||"n"===u[0]?l.setMonth(o-1):l.setDate(o);break;case 1:"m"===u[0]||"n"===u[0]?l.setDate(o):l.setMonth(o-1);break;case 2:a=l.getFullYear(),n.length<4?(l.setFullYear(parseInt(a.toString().substr(0,4-n.length)+n)),f=n.length):(l.setFullYear=parseInt(n.substr(0,4)),f=4);break;case 3:l.setHours(o);break;case 4:l.setMinutes(o);break;case 5:l.setSeconds(o)}n.substr(f).length>0&&s.splice(r+1,0,n.substr(f))}return l},parseFormat:function(e,a){var r,i=this,s=i.dateSettings,d=/\\?(.?)/gi,u=function(e,t){return r[e]?r[e]():t};return r={d:function(){return t(r.j(),2)},D:function(){return s.daysShort[r.w()]},j:function(){return a.getDate()},l:function(){return s.days[r.w()]},N:function(){return r.w()||7},w:function(){return a.getDay()},z:function(){var e=new Date(r.Y(),r.n()-1,r.j()),t=new Date(r.Y(),0,1);return Math.round((e-t)/n)},W:function(){var e=new Date(r.Y(),r.n()-1,r.j()-r.N()+3),a=new Date(e.getFullYear(),0,4);return t(1+Math.round((e-a)/n/7),2)},F:function(){return s.months[a.getMonth()]},m:function(){return t(r.n(),2)},M:function(){return s.monthsShort[a.getMonth()]},n:function(){return a.getMonth()+1},t:function(){return new Date(r.Y(),r.n(),0).getDate()},L:function(){var e=r.Y();return e%4===0&&e%100!==0||e%400===0?1:0},o:function(){var e=r.n(),t=r.W(),a=r.Y();return a+(12===e&&9>t?1:1===e&&t>9?-1:0)},Y:function(){return a.getFullYear()},y:function(){return r.Y().toString().slice(-2)},a:function(){return r.A().toLowerCase()},A:function(){var e=r.G()<12?0:1;return s.meridiem[e]},B:function(){var e=a.getUTCHours()*o,r=60*a.getUTCMinutes(),n=a.getUTCSeconds();return t(Math.floor((e+r+n+o)/86.4)%1e3,3)},g:function(){return r.G()%12||12},G:function(){return a.getHours()},h:function(){return t(r.g(),2)},H:function(){return t(r.G(),2)},i:function(){return t(a.getMinutes(),2)},s:function(){return t(a.getSeconds(),2)},u:function(){return t(1e3*a.getMilliseconds(),6)},e:function(){var e=/\((.*)\)/.exec(String(a))[1];return e||"Coordinated Universal Time"},T:function(){var e=(String(a).match(i.tzParts)||[""]).pop().replace(i.tzClip,"");return e||"UTC"},I:function(){var e=new Date(r.Y(),0),t=Date.UTC(r.Y(),0),a=new Date(r.Y(),6),n=Date.UTC(r.Y(),6);return e-t!==a-n?1:0},O:function(){var e=a.getTimezoneOffset(),r=Math.abs(e);return(e>0?"-":"+")+t(100*Math.floor(r/60)+r%60,4)},P:function(){var e=r.O();return e.substr(0,3)+":"+e.substr(3,2)},Z:function(){return 60*-a.getTimezoneOffset()},c:function(){return"Y-m-d\\TH:i:sP".replace(d,u)},r:function(){return"D, d M Y H:i:s O".replace(d,u)},U:function(){return a.getTime()/1e3||0}},u(e,e)},formatDate:function(e,t){var a,r,n,o,i,s=this,d="";if("string"==typeof e&&(e=s.parseDate(e,t),e===!1))return!1;if(e instanceof Date){for(n=t.length,a=0;n>a;a++)i=t.charAt(a),"S"!==i&&(o=s.parseFormat(i,e),a!==n-1&&s.intParts.test(i)&&"S"===t.charAt(a+1)&&(r=parseInt(o),o+=s.dateSettings.ordinal(r)),d+=o);return d}return""}}}(),function(e){ true?!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0),__webpack_require__(29)], __WEBPACK_AMD_DEFINE_FACTORY__ = (e),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"object"==typeof exports?module.exports=e:e(jQuery)}(function(e){"use strict";function t(e,t,a){this.date=e,this.desc=t,this.style=a}var a={i18n:{ar:{months:["كانون الثاني","شباط","آذار","نيسان","مايو","حزيران","تموز","آب","أيلول","تشرين الأول","تشرين الثاني","كانون الأول"],dayOfWeekShort:["ن","ث","ع","خ","ج","س","ح"],dayOfWeek:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت","الأحد"]},ro:{months:["Ianuarie","Februarie","Martie","Aprilie","Mai","Iunie","Iulie","August","Septembrie","Octombrie","Noiembrie","Decembrie"],dayOfWeekShort:["Du","Lu","Ma","Mi","Jo","Vi","Sâ"],dayOfWeek:["Duminică","Luni","Marţi","Miercuri","Joi","Vineri","Sâmbătă"]},id:{months:["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],dayOfWeekShort:["Min","Sen","Sel","Rab","Kam","Jum","Sab"],dayOfWeek:["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"]},is:{months:["Janúar","Febrúar","Mars","Apríl","Maí","Júní","Júlí","Ágúst","September","Október","Nóvember","Desember"],dayOfWeekShort:["Sun","Mán","Þrið","Mið","Fim","Fös","Lau"],dayOfWeek:["Sunnudagur","Mánudagur","Þriðjudagur","Miðvikudagur","Fimmtudagur","Föstudagur","Laugardagur"]},bg:{months:["Януари","Февруари","Март","Април","Май","Юни","Юли","Август","Септември","Октомври","Ноември","Декември"],dayOfWeekShort:["Нд","Пн","Вт","Ср","Чт","Пт","Сб"],dayOfWeek:["Неделя","Понеделник","Вторник","Сряда","Четвъртък","Петък","Събота"]},fa:{months:["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"],dayOfWeekShort:["یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه","شنبه"],dayOfWeek:["یک‌شنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنج‌شنبه","جمعه","شنبه","یک‌شنبه"]},ru:{months:["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"],dayOfWeekShort:["Вс","Пн","Вт","Ср","Чт","Пт","Сб"],dayOfWeek:["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"]},uk:{months:["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"],dayOfWeekShort:["Ндл","Пнд","Втр","Срд","Чтв","Птн","Сбт"],dayOfWeek:["Неділя","Понеділок","Вівторок","Середа","Четвер","П'ятниця","Субота"]},en:{months:["January","February","March","April","May","June","July","August","September","October","November","December"],dayOfWeekShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],dayOfWeek:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},el:{months:["Ιανουάριος","Φεβρουάριος","Μάρτιος","Απρίλιος","Μάιος","Ιούνιος","Ιούλιος","Αύγουστος","Σεπτέμβριος","Οκτώβριος","Νοέμβριος","Δεκέμβριος"],dayOfWeekShort:["Κυρ","Δευ","Τρι","Τετ","Πεμ","Παρ","Σαβ"],dayOfWeek:["Κυριακή","Δευτέρα","Τρίτη","Τετάρτη","Πέμπτη","Παρασκευή","Σάββατο"]},de:{months:["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],dayOfWeekShort:["So","Mo","Di","Mi","Do","Fr","Sa"],dayOfWeek:["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"]},nl:{months:["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"],dayOfWeekShort:["zo","ma","di","wo","do","vr","za"],dayOfWeek:["zondag","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag"]},tr:{months:["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],dayOfWeekShort:["Paz","Pts","Sal","Çar","Per","Cum","Cts"],dayOfWeek:["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"]},fr:{months:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],dayOfWeekShort:["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],dayOfWeek:["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"]},es:{months:["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],dayOfWeekShort:["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"],dayOfWeek:["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"]},th:{months:["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"],dayOfWeekShort:["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."],dayOfWeek:["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"]},pl:{months:["styczeń","luty","marzec","kwiecień","maj","czerwiec","lipiec","sierpień","wrzesień","październik","listopad","grudzień"],dayOfWeekShort:["nd","pn","wt","śr","cz","pt","sb"],dayOfWeek:["niedziela","poniedziałek","wtorek","środa","czwartek","piątek","sobota"]},pt:{months:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"],dayOfWeekShort:["Dom","Seg","Ter","Qua","Qui","Sex","Sab"],dayOfWeek:["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"]},ch:{months:["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],dayOfWeekShort:["日","一","二","三","四","五","六"]},se:{months:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"],dayOfWeekShort:["Sön","Mån","Tis","Ons","Tor","Fre","Lör"]},kr:{months:["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],dayOfWeekShort:["일","월","화","수","목","금","토"],dayOfWeek:["일요일","월요일","화요일","수요일","목요일","금요일","토요일"]},it:{months:["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"],dayOfWeekShort:["Dom","Lun","Mar","Mer","Gio","Ven","Sab"],dayOfWeek:["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"]},da:{months:["January","Februar","Marts","April","Maj","Juni","July","August","September","Oktober","November","December"],dayOfWeekShort:["Søn","Man","Tir","Ons","Tor","Fre","Lør"],dayOfWeek:["søndag","mandag","tirsdag","onsdag","torsdag","fredag","lørdag"]},no:{months:["Januar","Februar","Mars","April","Mai","Juni","Juli","August","September","Oktober","November","Desember"],dayOfWeekShort:["Søn","Man","Tir","Ons","Tor","Fre","Lør"],dayOfWeek:["Søndag","Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag"]},ja:{months:["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],dayOfWeekShort:["日","月","火","水","木","金","土"],dayOfWeek:["日曜","月曜","火曜","水曜","木曜","金曜","土曜"]},vi:{months:["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"],dayOfWeekShort:["CN","T2","T3","T4","T5","T6","T7"],dayOfWeek:["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"]},sl:{months:["Januar","Februar","Marec","April","Maj","Junij","Julij","Avgust","September","Oktober","November","December"],dayOfWeekShort:["Ned","Pon","Tor","Sre","Čet","Pet","Sob"],dayOfWeek:["Nedelja","Ponedeljek","Torek","Sreda","Četrtek","Petek","Sobota"]},cs:{months:["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"],dayOfWeekShort:["Ne","Po","Út","St","Čt","Pá","So"]},hu:{months:["Január","Február","Március","Április","Május","Június","Július","Augusztus","Szeptember","Október","November","December"],dayOfWeekShort:["Va","Hé","Ke","Sze","Cs","Pé","Szo"],dayOfWeek:["vasárnap","hétfő","kedd","szerda","csütörtök","péntek","szombat"]},az:{months:["Yanvar","Fevral","Mart","Aprel","May","Iyun","Iyul","Avqust","Sentyabr","Oktyabr","Noyabr","Dekabr"],dayOfWeekShort:["B","Be","Ça","Ç","Ca","C","Ş"],dayOfWeek:["Bazar","Bazar ertəsi","Çərşənbə axşamı","Çərşənbə","Cümə axşamı","Cümə","Şənbə"]},bs:{months:["Januar","Februar","Mart","April","Maj","Jun","Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"],dayOfWeekShort:["Ned","Pon","Uto","Sri","Čet","Pet","Sub"],dayOfWeek:["Nedjelja","Ponedjeljak","Utorak","Srijeda","Četvrtak","Petak","Subota"]},ca:{months:["Gener","Febrer","Març","Abril","Maig","Juny","Juliol","Agost","Setembre","Octubre","Novembre","Desembre"],dayOfWeekShort:["Dg","Dl","Dt","Dc","Dj","Dv","Ds"],dayOfWeek:["Diumenge","Dilluns","Dimarts","Dimecres","Dijous","Divendres","Dissabte"]},"en-GB":{months:["January","February","March","April","May","June","July","August","September","October","November","December"],dayOfWeekShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],dayOfWeek:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},et:{months:["Jaanuar","Veebruar","Märts","Aprill","Mai","Juuni","Juuli","August","September","Oktoober","November","Detsember"],dayOfWeekShort:["P","E","T","K","N","R","L"],dayOfWeek:["Pühapäev","Esmaspäev","Teisipäev","Kolmapäev","Neljapäev","Reede","Laupäev"]},eu:{months:["Urtarrila","Otsaila","Martxoa","Apirila","Maiatza","Ekaina","Uztaila","Abuztua","Iraila","Urria","Azaroa","Abendua"],dayOfWeekShort:["Ig.","Al.","Ar.","Az.","Og.","Or.","La."],dayOfWeek:["Igandea","Astelehena","Asteartea","Asteazkena","Osteguna","Ostirala","Larunbata"]},fi:{months:["Tammikuu","Helmikuu","Maaliskuu","Huhtikuu","Toukokuu","Kesäkuu","Heinäkuu","Elokuu","Syyskuu","Lokakuu","Marraskuu","Joulukuu"],dayOfWeekShort:["Su","Ma","Ti","Ke","To","Pe","La"],dayOfWeek:["sunnuntai","maanantai","tiistai","keskiviikko","torstai","perjantai","lauantai"]},gl:{months:["Xan","Feb","Maz","Abr","Mai","Xun","Xul","Ago","Set","Out","Nov","Dec"],dayOfWeekShort:["Dom","Lun","Mar","Mer","Xov","Ven","Sab"],dayOfWeek:["Domingo","Luns","Martes","Mércores","Xoves","Venres","Sábado"]},hr:{months:["Siječanj","Veljača","Ožujak","Travanj","Svibanj","Lipanj","Srpanj","Kolovoz","Rujan","Listopad","Studeni","Prosinac"],dayOfWeekShort:["Ned","Pon","Uto","Sri","Čet","Pet","Sub"],dayOfWeek:["Nedjelja","Ponedjeljak","Utorak","Srijeda","Četvrtak","Petak","Subota"]},ko:{months:["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],dayOfWeekShort:["일","월","화","수","목","금","토"],dayOfWeek:["일요일","월요일","화요일","수요일","목요일","금요일","토요일"]},lt:{months:["Sausio","Vasario","Kovo","Balandžio","Gegužės","Birželio","Liepos","Rugpjūčio","Rugsėjo","Spalio","Lapkričio","Gruodžio"],dayOfWeekShort:["Sek","Pir","Ant","Tre","Ket","Pen","Šeš"],dayOfWeek:["Sekmadienis","Pirmadienis","Antradienis","Trečiadienis","Ketvirtadienis","Penktadienis","Šeštadienis"]},lv:{months:["Janvāris","Februāris","Marts","Aprīlis ","Maijs","Jūnijs","Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"],dayOfWeekShort:["Sv","Pr","Ot","Tr","Ct","Pk","St"],dayOfWeek:["Svētdiena","Pirmdiena","Otrdiena","Trešdiena","Ceturtdiena","Piektdiena","Sestdiena"]},mk:{months:["јануари","февруари","март","април","мај","јуни","јули","август","септември","октомври","ноември","декември"],dayOfWeekShort:["нед","пон","вто","сре","чет","пет","саб"],dayOfWeek:["Недела","Понеделник","Вторник","Среда","Четврток","Петок","Сабота"]},mn:{months:["1-р сар","2-р сар","3-р сар","4-р сар","5-р сар","6-р сар","7-р сар","8-р сар","9-р сар","10-р сар","11-р сар","12-р сар"],dayOfWeekShort:["Дав","Мяг","Лха","Пүр","Бсн","Бям","Ням"],dayOfWeek:["Даваа","Мягмар","Лхагва","Пүрэв","Баасан","Бямба","Ням"]},"pt-BR":{months:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"],dayOfWeekShort:["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"],dayOfWeek:["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"]},sk:{months:["Január","Február","Marec","Apríl","Máj","Jún","Júl","August","September","Október","November","December"],dayOfWeekShort:["Ne","Po","Ut","St","Št","Pi","So"],dayOfWeek:["Nedeľa","Pondelok","Utorok","Streda","Štvrtok","Piatok","Sobota"]},sq:{months:["Janar","Shkurt","Mars","Prill","Maj","Qershor","Korrik","Gusht","Shtator","Tetor","Nëntor","Dhjetor"],dayOfWeekShort:["Die","Hën","Mar","Mër","Enj","Pre","Shtu"],dayOfWeek:["E Diel","E Hënë","E Martē","E Mërkurë","E Enjte","E Premte","E Shtunë"]},"sr-YU":{months:["Januar","Februar","Mart","April","Maj","Jun","Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"],dayOfWeekShort:["Ned","Pon","Uto","Sre","čet","Pet","Sub"],dayOfWeek:["Nedelja","Ponedeljak","Utorak","Sreda","Četvrtak","Petak","Subota"]},sr:{months:["јануар","фебруар","март","април","мај","јун","јул","август","септембар","октобар","новембар","децембар"],dayOfWeekShort:["нед","пон","уто","сре","чет","пет","суб"],dayOfWeek:["Недеља","Понедељак","Уторак","Среда","Четвртак","Петак","Субота"]},sv:{months:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"],dayOfWeekShort:["Sön","Mån","Tis","Ons","Tor","Fre","Lör"],dayOfWeek:["Söndag","Måndag","Tisdag","Onsdag","Torsdag","Fredag","Lördag"]},"zh-TW":{months:["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],dayOfWeekShort:["日","一","二","三","四","五","六"],dayOfWeek:["星期日","星期一","星期二","星期三","星期四","星期五","星期六"]},zh:{months:["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],dayOfWeekShort:["日","一","二","三","四","五","六"],dayOfWeek:["星期日","星期一","星期二","星期三","星期四","星期五","星期六"]},he:{months:["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"],dayOfWeekShort:["א'","ב'","ג'","ד'","ה'","ו'","שבת"],dayOfWeek:["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת","ראשון"]},hy:{months:["Հունվար","Փետրվար","Մարտ","Ապրիլ","Մայիս","Հունիս","Հուլիս","Օգոստոս","Սեպտեմբեր","Հոկտեմբեր","Նոյեմբեր","Դեկտեմբեր"],dayOfWeekShort:["Կի","Երկ","Երք","Չոր","Հնգ","Ուրբ","Շբթ"],dayOfWeek:["Կիրակի","Երկուշաբթի","Երեքշաբթի","Չորեքշաբթի","Հինգշաբթի","Ուրբաթ","Շաբաթ"]},kg:{months:["Үчтүн айы","Бирдин айы","Жалган Куран","Чын Куран","Бугу","Кулжа","Теке","Баш Оона","Аяк Оона","Тогуздун айы","Жетинин айы","Бештин айы"],dayOfWeekShort:["Жек","Дүй","Шей","Шар","Бей","Жум","Ише"],dayOfWeek:["Жекшемб","Дүйшөмб","Шейшемб","Шаршемб","Бейшемби","Жума","Ишенб"]},rm:{months:["Schaner","Favrer","Mars","Avrigl","Matg","Zercladur","Fanadur","Avust","Settember","October","November","December"],dayOfWeekShort:["Du","Gli","Ma","Me","Gie","Ve","So"],dayOfWeek:["Dumengia","Glindesdi","Mardi","Mesemna","Gievgia","Venderdi","Sonda"]},ka:{months:["იანვარი","თებერვალი","მარტი","აპრილი","მაისი","ივნისი","ივლისი","აგვისტო","სექტემბერი","ოქტომბერი","ნოემბერი","დეკემბერი"],dayOfWeekShort:["კვ","ორშ","სამშ","ოთხ","ხუთ","პარ","შაბ"],dayOfWeek:["კვირა","ორშაბათი","სამშაბათი","ოთხშაბათი","ხუთშაბათი","პარასკევი","შაბათი"]}},value:"",rtl:!1,format:"Y/m/d H:i",formatTime:"H:i",formatDate:"Y/m/d",startDate:!1,step:60,monthChangeSpinner:!0,closeOnDateSelect:!1,closeOnTimeSelect:!0,closeOnWithoutClick:!0,closeOnInputClick:!0,timepicker:!0,datepicker:!0,weeks:!1,defaultTime:!1,defaultDate:!1,minDate:!1,maxDate:!1,minTime:!1,maxTime:!1,disabledMinTime:!1,disabledMaxTime:!1,allowTimes:[],opened:!1,initTime:!0,inline:!1,theme:"",onSelectDate:function(){},onSelectTime:function(){},onChangeMonth:function(){},onGetWeekOfYear:function(){},onChangeYear:function(){},onChangeDateTime:function(){},onShow:function(){},onClose:function(){},onGenerate:function(){},withoutCopyright:!0,inverseButton:!1,hours12:!1,next:"xdsoft_next",prev:"xdsoft_prev",dayOfWeekStart:0,parentID:"body",timeHeightInTimePicker:25,timepickerScrollbar:!0,todayButton:!0,prevButton:!0,nextButton:!0,defaultSelect:!0,scrollMonth:!0,scrollTime:!0,scrollInput:!0,lazyInit:!1,mask:!1,validateOnBlur:!0,allowBlank:!0,yearStart:1950,yearEnd:2050,monthStart:0,monthEnd:11,style:"",id:"",fixed:!1,roundTime:"round",className:"",weekends:[],highlightedDates:[],highlightedPeriods:[],allowDates:[],allowDateRe:null,disabledDates:[],disabledWeekDays:[],yearOffset:0,beforeShowDay:null,enterLikeTab:!0,showApplyButton:!1},r=null,n="en",o="en",i={meridiem:["AM","PM"]},s=function(){var t=a.i18n[o],n={days:t.dayOfWeek,daysShort:t.dayOfWeekShort,months:t.months,monthsShort:e.map(t.months,function(e){return e.substring(0,3)})};r=new DateFormatter({dateSettings:e.extend({},i,n)})};e.datetimepicker={setLocale:function(e){var t=a.i18n[e]?e:n;o!=t&&(o=t,s())},setDateFormatter:function(e){r=e},RFC_2822:"D, d M Y H:i:s O",ATOM:"Y-m-dTH:i:sP",ISO_8601:"Y-m-dTH:i:sO",RFC_822:"D, d M y H:i:s O",RFC_850:"l, d-M-y H:i:s T",RFC_1036:"D, d M y H:i:s O",RFC_1123:"D, d M Y H:i:s O",RSS:"D, d M Y H:i:s O",W3C:"Y-m-dTH:i:sP"},s(),window.getComputedStyle||(window.getComputedStyle=function(e){return this.el=e,this.getPropertyValue=function(t){var a=/(\-([a-z]){1})/g;return"float"===t&&(t="styleFloat"),a.test(t)&&(t=t.replace(a,function(e,t,a){return a.toUpperCase()})),e.currentStyle[t]||null},this}),Array.prototype.indexOf||(Array.prototype.indexOf=function(e,t){var a,r;for(a=t||0,r=this.length;r>a;a+=1)if(this[a]===e)return a;return-1}),Date.prototype.countDaysInMonth=function(){return new Date(this.getFullYear(),this.getMonth()+1,0).getDate()},e.fn.xdsoftScroller=function(t){return this.each(function(){var a,r,n,o,i,s=e(this),d=function(e){var t,a={x:0,y:0};return"touchstart"===e.type||"touchmove"===e.type||"touchend"===e.type||"touchcancel"===e.type?(t=e.originalEvent.touches[0]||e.originalEvent.changedTouches[0],a.x=t.clientX,a.y=t.clientY):("mousedown"===e.type||"mouseup"===e.type||"mousemove"===e.type||"mouseover"===e.type||"mouseout"===e.type||"mouseenter"===e.type||"mouseleave"===e.type)&&(a.x=e.clientX,a.y=e.clientY),a},u=100,l=!1,f=0,c=0,m=0,h=!1,g=0,p=function(){};return"hide"===t?void s.find(".xdsoft_scrollbar").hide():(e(this).hasClass("xdsoft_scroller_box")||(a=s.children().eq(0),r=s[0].clientHeight,n=a[0].offsetHeight,o=e('<div class="xdsoft_scrollbar"></div>'),i=e('<div class="xdsoft_scroller"></div>'),o.append(i),s.addClass("xdsoft_scroller_box").append(o),p=function(e){var t=d(e).y-f+g;0>t&&(t=0),t+i[0].offsetHeight>m&&(t=m-i[0].offsetHeight),s.trigger("scroll_element.xdsoft_scroller",[u?t/u:0])},i.on("touchstart.xdsoft_scroller mousedown.xdsoft_scroller",function(a){r||s.trigger("resize_scroll.xdsoft_scroller",[t]),f=d(a).y,g=parseInt(i.css("margin-top"),10),m=o[0].offsetHeight,"mousedown"===a.type||"touchstart"===a.type?(document&&e(document.body).addClass("xdsoft_noselect"),e([document.body,window]).on("touchend mouseup.xdsoft_scroller",function n(){e([document.body,window]).off("touchend mouseup.xdsoft_scroller",n).off("mousemove.xdsoft_scroller",p).removeClass("xdsoft_noselect")}),e(document.body).on("mousemove.xdsoft_scroller",p)):(h=!0,a.stopPropagation(),a.preventDefault())}).on("touchmove",function(e){h&&(e.preventDefault(),p(e))}).on("touchend touchcancel",function(){h=!1,g=0}),s.on("scroll_element.xdsoft_scroller",function(e,t){r||s.trigger("resize_scroll.xdsoft_scroller",[t,!0]),t=t>1?1:0>t||isNaN(t)?0:t,i.css("margin-top",u*t),setTimeout(function(){a.css("marginTop",-parseInt((a[0].offsetHeight-r)*t,10))},10)}).on("resize_scroll.xdsoft_scroller",function(e,t,d){var l,f;r=s[0].clientHeight,n=a[0].offsetHeight,l=r/n,f=l*o[0].offsetHeight,l>1?i.hide():(i.show(),i.css("height",parseInt(f>10?f:10,10)),u=o[0].offsetHeight-i[0].offsetHeight,d!==!0&&s.trigger("scroll_element.xdsoft_scroller",[t||Math.abs(parseInt(a.css("marginTop"),10))/(n-r)]))}),s.on("mousewheel",function(e){var t=Math.abs(parseInt(a.css("marginTop"),10));return t-=20*e.deltaY,0>t&&(t=0),s.trigger("scroll_element.xdsoft_scroller",[t/(n-r)]),e.stopPropagation(),!1}),s.on("touchstart",function(e){l=d(e),c=Math.abs(parseInt(a.css("marginTop"),10))}),s.on("touchmove",function(e){if(l){e.preventDefault();var t=d(e);s.trigger("scroll_element.xdsoft_scroller",[(c-(t.y-l.y))/(n-r)])}}),s.on("touchend touchcancel",function(){l=!1,c=0})),void s.trigger("resize_scroll.xdsoft_scroller",[t]))})},e.fn.datetimepicker=function(n,i){var s,d,u=this,l=48,f=57,c=96,m=105,h=17,g=46,p=13,y=27,v=8,b=37,D=38,k=39,x=40,T=9,S=116,w=65,O=67,M=86,_=90,W=89,F=!1,C=e.isPlainObject(n)||!n?e.extend(!0,{},a,n):e.extend(!0,{},a),P=0,A=function(e){e.on("open.xdsoft focusin.xdsoft mousedown.xdsoft touchstart",function t(){e.is(":disabled")||e.data("xdsoft_datetimepicker")||(clearTimeout(P),P=setTimeout(function(){e.data("xdsoft_datetimepicker")||s(e),e.off("open.xdsoft focusin.xdsoft mousedown.xdsoft touchstart",t).trigger("open.xdsoft")},100))})};return s=function(a){function i(){var e,t=!1;return C.startDate?t=j.strToDate(C.startDate):(t=C.value||(a&&a.val&&a.val()?a.val():""),t?t=j.strToDateTime(t):C.defaultDate&&(t=j.strToDateTime(C.defaultDate),C.defaultTime&&(e=j.strtotime(C.defaultTime),t.setHours(e.getHours()),t.setMinutes(e.getMinutes())))),t&&j.isValidDate(t)?J.data("changed",!0):t="",t||0}function s(t){var r=function(e,t){var a=e.replace(/([\[\]\/\{\}\(\)\-\.\+]{1})/g,"\\$1").replace(/_/g,"{digit+}").replace(/([0-9]{1})/g,"{digit$1}").replace(/\{digit([0-9]{1})\}/g,"[0-$1_]{1}").replace(/\{digit[\+]\}/g,"[0-9_]{1}");return new RegExp(a).test(t)},n=function(e){try{if(document.selection&&document.selection.createRange){var t=document.selection.createRange();return t.getBookmark().charCodeAt(2)-2}if(e.setSelectionRange)return e.selectionStart}catch(a){return 0}},o=function(e,t){if(e="string"==typeof e||e instanceof String?document.getElementById(e):e,!e)return!1;if(e.createTextRange){var a=e.createTextRange();return a.collapse(!0),a.moveEnd("character",t),a.moveStart("character",t),a.select(),!0}return e.setSelectionRange?(e.setSelectionRange(t,t),!0):!1};t.mask&&a.off("keydown.xdsoft"),t.mask===!0&&(t.mask="undefined"!=typeof moment?t.format.replace(/Y{4}/g,"9999").replace(/Y{2}/g,"99").replace(/M{2}/g,"19").replace(/D{2}/g,"39").replace(/H{2}/g,"29").replace(/m{2}/g,"59").replace(/s{2}/g,"59"):t.format.replace(/Y/g,"9999").replace(/F/g,"9999").replace(/m/g,"19").replace(/d/g,"39").replace(/H/g,"29").replace(/i/g,"59").replace(/s/g,"59")),"string"===e.type(t.mask)&&(r(t.mask,a.val())||(a.val(t.mask.replace(/[0-9]/g,"_")),o(a[0],0)),a.on("keydown.xdsoft",function(i){var s,d,u=this.value,C=i.which;if(C>=l&&f>=C||C>=c&&m>=C||C===v||C===g){for(s=n(this),d=C!==v&&C!==g?String.fromCharCode(C>=c&&m>=C?C-l:C):"_",C!==v&&C!==g||!s||(s-=1,d="_");/[^0-9_]/.test(t.mask.substr(s,1))&&s<t.mask.length&&s>0;)s+=C===v||C===g?-1:1;if(u=u.substr(0,s)+d+u.substr(s+1),""===e.trim(u))u=t.mask.replace(/[0-9]/g,"_");else if(s===t.mask.length)return i.preventDefault(),!1;for(s+=C===v||C===g?0:1;/[^0-9_]/.test(t.mask.substr(s,1))&&s<t.mask.length&&s>0;)s+=C===v||C===g?-1:1;r(t.mask,u)?(this.value=u,o(this,s)):""===e.trim(u)?this.value=t.mask.replace(/[0-9]/g,"_"):a.trigger("error_input.xdsoft")}else if(-1!==[w,O,M,_,W].indexOf(C)&&F||-1!==[y,D,x,b,k,S,h,T,p].indexOf(C))return!0;return i.preventDefault(),!1}))}var d,u,P,A,Y,j,H,J=e('<div class="xdsoft_datetimepicker xdsoft_noselect"></div>'),z=e('<div class="xdsoft_copyright"><a target="_blank" href="http://xdsoft.net/jqplugins/datetimepicker/">xdsoft.net</a></div>'),I=e('<div class="xdsoft_datepicker active"></div>'),N=e('<div class="xdsoft_mounthpicker"><button type="button" class="xdsoft_prev"></button><button type="button" class="xdsoft_today_button"></button><div class="xdsoft_label xdsoft_month"><span></span><i></i></div><div class="xdsoft_label xdsoft_year"><span></span><i></i></div><button type="button" class="xdsoft_next"></button></div>'),L=e('<div class="xdsoft_calendar"></div>'),E=e('<div class="xdsoft_timepicker active"><button type="button" class="xdsoft_prev"></button><div class="xdsoft_time_box"></div><button type="button" class="xdsoft_next"></button></div>'),R=E.find(".xdsoft_time_box").eq(0),B=e('<div class="xdsoft_time_variant"></div>'),V=e('<button type="button" class="xdsoft_save_selected blue-gradient-button">Save Selected</button>'),G=e('<div class="xdsoft_select xdsoft_monthselect"><div></div></div>'),U=e('<div class="xdsoft_select xdsoft_yearselect"><div></div></div>'),q=!1,X=0;C.id&&J.attr("id",C.id),C.style&&J.attr("style",C.style),C.weeks&&J.addClass("xdsoft_showweeks"),C.rtl&&J.addClass("xdsoft_rtl"),J.addClass("xdsoft_"+C.theme),J.addClass(C.className),N.find(".xdsoft_month span").after(G),N.find(".xdsoft_year span").after(U),N.find(".xdsoft_month,.xdsoft_year").on("touchstart mousedown.xdsoft",function(t){var a,r,n=e(this).find(".xdsoft_select").eq(0),o=0,i=0,s=n.is(":visible");for(N.find(".xdsoft_select").hide(),j.currentTime&&(o=j.currentTime[e(this).hasClass("xdsoft_month")?"getMonth":"getFullYear"]()),n[s?"hide":"show"](),a=n.find("div.xdsoft_option"),r=0;r<a.length&&a.eq(r).data("value")!==o;r+=1)i+=a[0].offsetHeight;return n.xdsoftScroller(i/(n.children()[0].offsetHeight-n[0].clientHeight)),t.stopPropagation(),!1}),N.find(".xdsoft_select").xdsoftScroller().on("touchstart mousedown.xdsoft",function(e){e.stopPropagation(),e.preventDefault()}).on("touchstart mousedown.xdsoft",".xdsoft_option",function(){(void 0===j.currentTime||null===j.currentTime)&&(j.currentTime=j.now());var t=j.currentTime.getFullYear();j&&j.currentTime&&j.currentTime[e(this).parent().parent().hasClass("xdsoft_monthselect")?"setMonth":"setFullYear"](e(this).data("value")),e(this).parent().parent().hide(),J.trigger("xchange.xdsoft"),C.onChangeMonth&&e.isFunction(C.onChangeMonth)&&C.onChangeMonth.call(J,j.currentTime,J.data("input")),t!==j.currentTime.getFullYear()&&e.isFunction(C.onChangeYear)&&C.onChangeYear.call(J,j.currentTime,J.data("input"))}),J.getValue=function(){return j.getCurrentTime()},J.setOptions=function(n){var o={};C=e.extend(!0,{},C,n),n.allowTimes&&e.isArray(n.allowTimes)&&n.allowTimes.length&&(C.allowTimes=e.extend(!0,[],n.allowTimes)),n.weekends&&e.isArray(n.weekends)&&n.weekends.length&&(C.weekends=e.extend(!0,[],n.weekends)),n.allowDates&&e.isArray(n.allowDates)&&n.allowDates.length&&(C.allowDates=e.extend(!0,[],n.allowDates)),n.allowDateRe&&"[object String]"===Object.prototype.toString.call(n.allowDateRe)&&(C.allowDateRe=new RegExp(n.allowDateRe)),n.highlightedDates&&e.isArray(n.highlightedDates)&&n.highlightedDates.length&&(e.each(n.highlightedDates,function(a,n){var i,s=e.map(n.split(","),e.trim),d=new t(r.parseDate(s[0],C.formatDate),s[1],s[2]),u=r.formatDate(d.date,C.formatDate);void 0!==o[u]?(i=o[u].desc,i&&i.length&&d.desc&&d.desc.length&&(o[u].desc=i+"\n"+d.desc)):o[u]=d}),C.highlightedDates=e.extend(!0,[],o)),n.highlightedPeriods&&e.isArray(n.highlightedPeriods)&&n.highlightedPeriods.length&&(o=e.extend(!0,[],C.highlightedDates),
@@ -11991,7 +12215,7 @@ e.each(n.highlightedPeriods,function(a,n){var i,s,d,u,l,f,c;if(e.isArray(n))i=n[
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"object"==typeof exports?module.exports=e:e(jQuery)}(function(e){function t(t){var i=t||window.event,s=d.call(arguments,1),u=0,f=0,c=0,m=0,h=0,g=0;if(t=e.event.fix(i),t.type="mousewheel","detail"in i&&(c=-1*i.detail),"wheelDelta"in i&&(c=i.wheelDelta),"wheelDeltaY"in i&&(c=i.wheelDeltaY),"wheelDeltaX"in i&&(f=-1*i.wheelDeltaX),"axis"in i&&i.axis===i.HORIZONTAL_AXIS&&(f=-1*c,c=0),u=0===c?f:c,"deltaY"in i&&(c=-1*i.deltaY,u=c),"deltaX"in i&&(f=i.deltaX,0===c&&(u=-1*f)),0!==c||0!==f){if(1===i.deltaMode){var p=e.data(this,"mousewheel-line-height");u*=p,c*=p,f*=p}else if(2===i.deltaMode){var y=e.data(this,"mousewheel-page-height");u*=y,c*=y,f*=y}if(m=Math.max(Math.abs(c),Math.abs(f)),(!o||o>m)&&(o=m,r(i,m)&&(o/=40)),r(i,m)&&(u/=40,f/=40,c/=40),u=Math[u>=1?"floor":"ceil"](u/o),f=Math[f>=1?"floor":"ceil"](f/o),c=Math[c>=1?"floor":"ceil"](c/o),l.settings.normalizeOffset&&this.getBoundingClientRect){var v=this.getBoundingClientRect();h=t.clientX-v.left,g=t.clientY-v.top}return t.deltaX=f,t.deltaY=c,t.deltaFactor=o,t.offsetX=h,t.offsetY=g,t.deltaMode=0,s.unshift(t,u,f,c),n&&clearTimeout(n),n=setTimeout(a,200),(e.event.dispatch||e.event.handle).apply(this,s)}}function a(){o=null}function r(e,t){return l.settings.adjustOldDeltas&&"mousewheel"===e.type&&t%120===0}var n,o,i=["wheel","mousewheel","DOMMouseScroll","MozMousePixelScroll"],s="onwheel"in document||document.documentMode>=9?["wheel"]:["mousewheel","DomMouseScroll","MozMousePixelScroll"],d=Array.prototype.slice;if(e.event.fixHooks)for(var u=i.length;u;)e.event.fixHooks[i[--u]]=e.event.mouseHooks;var l=e.event.special.mousewheel={version:"3.1.12",setup:function(){if(this.addEventListener)for(var a=s.length;a;)this.addEventListener(s[--a],t,!1);else this.onmousewheel=t;e.data(this,"mousewheel-line-height",l.getLineHeight(this)),e.data(this,"mousewheel-page-height",l.getPageHeight(this))},teardown:function(){if(this.removeEventListener)for(var a=s.length;a;)this.removeEventListener(s[--a],t,!1);else this.onmousewheel=null;e.removeData(this,"mousewheel-line-height"),e.removeData(this,"mousewheel-page-height")},getLineHeight:function(t){var a=e(t),r=a["offsetParent"in e.fn?"offsetParent":"parent"]();return r.length||(r=e("body")),parseInt(r.css("fontSize"),10)||parseInt(a.css("fontSize"),10)||16},getPageHeight:function(t){return e(t).height()},settings:{adjustOldDeltas:!0,normalizeOffset:!0}};e.fn.extend({mousewheel:function(e){return e?this.bind("mousewheel",e):this.trigger("mousewheel")},unmousewheel:function(e){return this.unbind("mousewheel",e)}})});
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12221,7 +12445,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -12411,7 +12635,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports) {
 
 /*
@@ -12663,16 +12887,16 @@ function updateLink(linkElement, obj) {
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(14);
+var content = __webpack_require__(16);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(29)(content, {});
+var update = __webpack_require__(31)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -12689,14 +12913,14 @@ if(false) {
 }
 
 /***/ }),
-/* 31 */,
-/* 32 */
+/* 33 */,
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_style_loader_css_loader_jquery_datetimepicker_jquery_datetimepicker_css__ = __webpack_require__(30);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_style_loader_css_loader_jquery_datetimepicker_jquery_datetimepicker_css__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_style_loader_css_loader_jquery_datetimepicker_jquery_datetimepicker_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_style_loader_css_loader_jquery_datetimepicker_jquery_datetimepicker_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery_datetimepicker__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery_datetimepicker__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery_datetimepicker___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery_datetimepicker__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__article_directive__ = __webpack_require__(4);
 
@@ -12742,11 +12966,159 @@ class Created extends __WEBPACK_IMPORTED_MODULE_2__article_directive__["a" /* de
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__article_directive__ = __webpack_require__(4);
+/* WEBPACK VAR INJECTION */(function(_, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__service_bluimp_fileupload_service_js__ = __webpack_require__(9);
+
+
+class ImgCover {
+	
+	constructor($http, $rootScope, $timeout, $sce, $q, appFactory, appService) {
+		'ngInject';
+
+		this.restrict       = 'A';
+		this._$http         = $http;
+		this._$sce          = $sce;
+		this._$q            = $q;
+		this._$timeout      = $timeout;
+		this._appFactory    = appFactory;
+		this._appService    = appService;
+		this._$scope        = $rootScope;
+	}
+
+	get $inject() {
+		return ['$http', '$rootScope', '$timeout', '$sce', '$q', 'appFactory', 'appService'];
+	}
+ 	
+	static _imgCover(element, obj, options) {
+
+		return {
+			obj    : obj.data,
+			method : 'PUT',
+			params : '/set-img-cover'
+		};
+	}
+
+	link(scope, element, attrs) {
+		var mainClass  = ImgCover,
+			_base      = this._$scope,
+			self       = this;
+
+		scope.uploading = false;
+		scope.onProgress= false;
+		scope.data      = angular.copy(_base.allPosts.post);
+
+		// Save
+		scope.saveClick = (type) => {
+			if( scope.onProgress || scope.uploading ) { return false }
+
+			let options = { type : type };
+			let data    = {};
+			
+			try{
+				data = mainClass._imgCover(element, _.extend(scope, options));
+
+			    scope.onProgress = true;
+				
+				self._appFactory.postFeed( data ).then(
+					(res) => {
+						scope.onProgress = false;
+					
+						self._$timeout(() => scope.feedsAssignObject(res) ,10);
+					},
+					(err) => {
+						scope.onProgress = false;
+						if( err.data.error == 'bad_request' || _.contains([400, 404, 500, 502], err.status) ) {
+							self._$q.reject(data);
+
+							self._appService.modal(scope, {
+								type         : 'text',
+								text         : '<h3>Whoops... something went wrong !</h3><h5>' + err.data.error_description + '</h5>',
+								cancelText   : 'Ok',
+								singleButton : true
+							});
+						}
+						return err;
+					}
+				);
+			} catch(err) {
+				console.error( err );
+			} finally {
+			}
+			
+		};
+
+		// ------------------------------------------------------------------------
+
+		// Browse Cover Picture File
+		scope.browseFile =  (event) => {
+			var $el = $(event.currentTarget || event.srcElement);
+
+			$el.parent('.fileupload-pool').find('.file-upload').trigger('click');
+		};
+
+		// ------------------------------------------------------------------------
+
+		// Remove Preview
+		scope.removePreview = (event) => {
+			var $el = $(event.currentTarget || event.srcElement);
+			var id = $($el).closest('.on-preview').find("input[name='fid']").val();
+			if(!$($el).closest('.eb-listicle-item')[0]){
+				scope.data.image.id = void 0;
+			}
+			if(!scope.data.images){
+				scope.data.images = [];
+			}
+			scope.data.images.push({id: id, destroy: true});
+		};
+
+		// ------------------------------------------------------------------------
+
+		scope.feedsAssignObject = (newData) => {
+			var _data = [],
+				ids   = scope.$parent.ids;
+				console.log( ids, newData, _base.allPosts.data );
+				scope.$apply(() => {
+
+					if( _.has(newData, 'content') ) {
+						newData.content = JSON.stringify(newData.content);
+					}
+						
+					_.extend(_base.allPosts.data[ids], newData);
+				});
+				
+				$('body').find('.mdl.mdl-editor').remove();
+
+				scope.$on('mdl_data', (event, args) => {
+					console.info( args );
+				});
+		}
+
+		// ------------------------------------------------------------------------
+		this._$timeout(() => {
+			if (element.find('.fileupload-pool.cover-picture').length) {
+				__WEBPACK_IMPORTED_MODULE_0__service_bluimp_fileupload_service_js__["a" /* default */]._initFileUpload(
+						element.find('.fileupload-pool.cover-picture input[type=file]'), 
+						{
+							dropZone: element.find('.fileupload-pool.cover-picture'), 
+							uploadURL: __WEBPACK_IMPORTED_MODULE_0__service_bluimp_fileupload_service_js__["a" /* default */].uploadCoverUrl
+						},
+						scope);
+			}
+		}, 50);
+	}
+}
+/* harmony default export */ __webpack_exports__["a"] = (ImgCover);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(0)))
+
+/***/ }),
+/* 36 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(_, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__article_directive__ = __webpack_require__(4);
 
 
 class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["a" /* default */] {
@@ -12762,15 +13134,15 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 	}
 
 	link(scope, $element, $attrs) {
-		var	self    = this,
+		var	self          = this,
 		    dataListicle  = scope.data.content = angular.fromJson(JSON.parse(scope.data.content)) || {};
 
-		$.map(dataListicle.models, (item, key) => {
+		_.map(dataListicle.models, (item, key) => {
 			dataListicle.models[key].content = self._$sce.trustAsHtml(item.content);
 		});
 
 		// Set Listicle Order
-		scope.setOrder = function(event, order) {
+		scope.setOrder = (event, order) => {
 			var $el = $(event.currentTarget || event.srcElement)
 
 			if (!$el.length) { return false; }
@@ -12791,7 +13163,7 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 		// ------------------------------------------------------------------------
 
 		// Add Listicle Item
-		scope.addItem = function(event) {
+		scope.addItem = (event) => {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-separator'),
 				indexPos 	= 0;
 
@@ -12812,15 +13184,14 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 			this.rewriteNumber(indexPos);
 
 			// Init Listicle Editor
-			setTimeout(function() { scope.initListicleEditor(indexPos); }, 50);
-			console.log( scope );
+			setTimeout(() => { scope.initListicleEditor(indexPos); }, 50);
 
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Remove Listicle Item
-		scope.removeItem = function(event) {
+		scope.removeItem = (event) => {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-item'),
 				indexPos 	= $el.index('.eb-listicle-item');
 
@@ -12836,7 +13207,7 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 				scope.data.content.models.splice(indexPos, 0, {"order": (indexPos + 1), "title": "", "image_str": "", "content": ""});
 
 				// Init Listicle Editor
-				setTimeout(function() { scope.initListicleEditor(0); }, 50);
+				setTimeout(() => { scope.initListicleEditor(0); }, 50);
 			}
 
 			// ------------------------------------------------------------------------
@@ -12848,7 +13219,7 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 		// ------------------------------------------------------------------------
 
 		// Remove Listicle Item Image Preview
-		scope.removeItemPreview = function(event) {
+		scope.removeItemPreview = (event) => {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-item'),
 				indexPos 	= $el.index('.eb-listicle-item');
 
@@ -12864,7 +13235,7 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 		// ------------------------------------------------------------------------
 
 		// Initial Listicle Editor
-		scope.initListicleEditor = function(indexPos) {
+		scope.initListicleEditor = (indexPos) => {
 			var $el = $element.find('.eb-listicle-list .eb-listicle-item:eq(' + indexPos + ')'),
 				contentEditor;
 
@@ -12928,7 +13299,7 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 		// ------------------------------------------------------------------------
 
 		// Rewrite numbering
-		scope.rewriteNumber = function(indexPos) {
+		scope.rewriteNumber = (indexPos) => {
 			switch (scope.data.content.sort) {
 				case 'reverse':
 					for (var i = (scope.data.content.models.length - 1), j = 0; i >= 0; i--, j++) {
@@ -12948,8 +13319,8 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 		// /*=================================================
 		// 			SEPERATE FUNCTION
 		// ===================================================*/
-		setTimeout(function() {
-			$.each($('.eb-listicle-list .eb-listicle-item'), function() {
+		setTimeout(() => {
+			$.each($('.eb-listicle-list .eb-listicle-item'), () => {
 				var $self = $(this),
 					contentEditor;
 
@@ -13013,10 +13384,10 @@ class ListicleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["
 	}
 }
 /* harmony default export */ __webpack_exports__["a"] = (ListicleEditors);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(0)))
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13052,7 +13423,7 @@ class titleEditors extends __WEBPACK_IMPORTED_MODULE_0__article_directive__["a" 
 /* harmony default export */ __webpack_exports__["a"] = (titleEditors);
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function($) {function extend(b, a) {
@@ -13143,163 +13514,7 @@ module.exports = { titleEditorApp, extend };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function($) {const uploadCoverUrl = 'api/asset/cover-img';
-const uploadUrl      = 'api/asset/img';
-const baseURL   	 = window.baseURL;
-
-function _initFileUpload($element, options, $scope) {
-		var self 	= this,
-			fileUploadOptions;
-
-		if (! $element.length) { return false; }
-
-		// ------------------------------------------------------------------------
-
-		fileUploadOptions = {
-			url       : options.uploadURL ? options.uploadURL : this.uploadURL,
-			dropZone  : void 0,
-
-			add: function(e, data) {
-				var that 	= $(this).data('blueimpUIFileupload'),
-	                options = that.options,
-	                files 	= data.files;
-
-	            // Validation
-	            // ------------------------------------------------------------------------
-	            that._adjustMaxNumberOfFiles(-files.length);
-	            data.isAdjusted = true;
-	            data.files.valid = data.isValidated = that._validate(files);
-
-	            if (! data.files.valid){
-	                that._showError(data.files);
-	                return false;
-	            }
-
-	            // DOM manipulation
-	            // ------------------------------------------------------------------------
-
-	            that.options.dropZone.find('.option-url').hide();	
-	            that.options.dropZone.siblings('.remove').hide();
-
-	            data.context = that._renderTemplate(data.files).data('data', data);
-
-		        // ------------------------------------------------------------------------
-		        $scope.uploading = true;
-		        $scope.$apply();
-
-		        // ------------------------------------------------------------------------
-
-	            // Trigger
-	            // ------------------------------------------------------------------------
-
-	            if ((that._trigger('added', e, data) !== false) &&
-	                    (options.autoUpload || data.autoUpload) &&
-	                    data.autoUpload !== false && data.isValidated) {
-
-	                data.submit();
-	            }
-			},
-
-			done: function(e, data) {
-				var that        = $(this).data('blueimpUIFileupload'),
-	                $dropZone   = that.options.dropZone,
-	                context     = $(data.context),
-	                fid, fn, $input;
-
-		        // ------------------------------------------------------------------------
-	        	console.log( $scope );
-				if($(this).closest('.eb-listicle')[0]){
-				// 	// var $scope = angular.element('[ng-controller=listicleController]').scope();
-					var indexPos = $(this).closest('.eb-listicle-item').index('.eb-listicle-item');
-					$scope.listicleItems[indexPos].image_str = data.result.url;
-					$scope.listicleItems[indexPos].image_id  = data.result.id;
-					$scope.$apply();
-				}
-
-	   //      	// var $scope = angular.element($element).scope();
-				if(!$(this).closest('.eb-listicle')[0]){
-					$scope.data.image = {id: data.result.id, url: data.result.url, name: data.result.name};
-				}
-		        $scope.uploading = false;
-		        $scope.$apply();
-		        // ------------------------------------------------------------------------
-
-	            // DOM manipulation
-	            // ------------------------------------------------------------------------
-
-	            $dropZone.find('.option-url').show();
-	            $dropZone.siblings('.remove').show();
-
-	            // On result
-	            // ------------------------------------------------------------------------
-
-	            if (data.result.error) {
-	                data.errorThrown = data.result.error_description || data.result.error;
-	                that._trigger('fail', e, data);
-	            } else {
-	            	// DOM manipulation
-	            	// ------------------------------------------------------------------------
-
-					context.remove();
-
-					$dropZone.removeClass('on-progress').addClass('on-preview');
-	            }
-			},
-
-			fail: function(e, data) {
-				var that 		= $(this).data('blueimpUIFileupload'),
-					$progress 	= data.context.find('.progressbar'),
-					$parent 	= data.context,
-					$ancestor   = data.context.parent('.fileupload-pool'),
-					fid;
-
-		        // ------------------------------------------------------------------------
-		        console.log( $scope )
-		        $scope.uploading = false;
-		        // $scope.$apply();
-
-		        // ------------------------------------------------------------------------
-
-				// DOM manipulation
-				// ------------------------------------------------------------------------
-
-	    		$progress.removeClass('progress-info').addClass('progress-danger');
-	    		$parent.addClass('has-status')
-	    			   .append(
-	    			   		$('<div />', {'class': 'status'}).text(data.errorThrown)
-	    			   		.append($('<a />', {'class': 'error-close'}).append($('<i />', {'class': 'keepo-icon icon-cancel'})))
-	    			   	);
-
-	    		$parent.on('click', 'a.error-close', function(e) {
-	    			e.preventDefault();
-
-	    			$parent.remove();
-	    			$ancestor.removeClass('on-progress');
-	    			$ancestor.find('.helper').show();
-	    			$ancestor.find('.drop_target').show();
-	    		});
-
-	    		// Remove input hidden
-	    		// ------------------------------------------------------------------------
-
-	    		//fid = 'fid_' + $(this).data('id');
-	    		data.form.find('input[type=hidden][name=fid]').remove();
-	    		data.form.find('input[type=hidden][name=fn]').remove();
-			}
-		};
-
-		fileUploadOptions = $.extend(fileUploadOptions, options);
-		$element.fileupload(fileUploadOptions);
-}
-
-module.exports = {_initFileUpload, uploadCoverUrl, uploadUrl, baseURL};
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -13322,9 +13537,9 @@ module.exports = {_initFileUpload, uploadCoverUrl, uploadUrl, baseURL};
         // Register as an anonymous AMD module:
         !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
             __webpack_require__(0),
-            __webpack_require__(8),
-            __webpack_require__(39),
-            __webpack_require__(38)
+            __webpack_require__(10),
+            __webpack_require__(41),
+            __webpack_require__(40)
         ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -13664,7 +13879,7 @@ module.exports = {_initFileUpload, uploadCoverUrl, uploadUrl, baseURL};
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -13687,7 +13902,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // Register as an anonymous AMD module:
         !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
             __webpack_require__(0),
-            __webpack_require__(8)
+            __webpack_require__(10)
         ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
@@ -15151,7 +15366,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -15383,7 +15598,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 }));
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -16629,7 +16844,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {!function(d,B,m,f){function v(a,b){var c=Math.max(0,a[0]-b[0],b[0]-a[1]),e=Math.max(0,a[2]-b[1],b[1]-a[3]);return c+e}function w(a,b,c,e){var k=a.length;e=e?"offset":"position";for(c=c||0;k--;){var g=a[k].el?a[k].el:d(a[k]),l=g[e]();l.left+=parseInt(g.css("margin-left"),10);l.top+=parseInt(g.css("margin-top"),10);b[k]=[l.left-c,l.left+g.outerWidth()+c,l.top-c,l.top+g.outerHeight()+c]}}function p(a,b){var c=b.offset();return{left:a.left-c.left,top:a.top-c.top}}function x(a,b,c){b=[b.left,b.top];c=
@@ -16654,12 +16869,12 @@ e,b)},traverse:function(a){d.each(this.items||[],function(b){(b=d.data(this,"sub
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(2);
-module.exports = __webpack_require__(10);
+module.exports = __webpack_require__(12);
 
 
 /***/ })
-],[42]);
+],[44]);

@@ -13,15 +13,15 @@ class ListicleEditors extends ArticleEditors {
 	}
 
 	link(scope, $element, $attrs) {
-		var	self    = this,
+		var	self          = this,
 		    dataListicle  = scope.data.content = angular.fromJson(JSON.parse(scope.data.content)) || {};
 
-		$.map(dataListicle.models, (item, key) => {
+		_.map(dataListicle.models, (item, key) => {
 			dataListicle.models[key].content = self._$sce.trustAsHtml(item.content);
 		});
 
 		// Set Listicle Order
-		scope.setOrder = function(event, order) {
+		scope.setOrder = (event, order) => {
 			var $el = $(event.currentTarget || event.srcElement)
 
 			if (!$el.length) { return false; }
@@ -42,7 +42,7 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Add Listicle Item
-		scope.addItem = function(event) {
+		scope.addItem = (event) => {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-separator'),
 				indexPos 	= 0;
 
@@ -63,15 +63,14 @@ class ListicleEditors extends ArticleEditors {
 			this.rewriteNumber(indexPos);
 
 			// Init Listicle Editor
-			setTimeout(function() { scope.initListicleEditor(indexPos); }, 50);
-			console.log( scope );
+			setTimeout(() => { scope.initListicleEditor(indexPos); }, 50);
 
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Remove Listicle Item
-		scope.removeItem = function(event) {
+		scope.removeItem = (event) => {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-item'),
 				indexPos 	= $el.index('.eb-listicle-item');
 
@@ -87,7 +86,7 @@ class ListicleEditors extends ArticleEditors {
 				scope.data.content.models.splice(indexPos, 0, {"order": (indexPos + 1), "title": "", "image_str": "", "content": ""});
 
 				// Init Listicle Editor
-				setTimeout(function() { scope.initListicleEditor(0); }, 50);
+				setTimeout(() => { scope.initListicleEditor(0); }, 50);
 			}
 
 			// ------------------------------------------------------------------------
@@ -99,7 +98,7 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Remove Listicle Item Image Preview
-		scope.removeItemPreview = function(event) {
+		scope.removeItemPreview = (event) => {
 			var $el 		= $(event.currentTarget || event.srcElement).closest('.eb-listicle-item'),
 				indexPos 	= $el.index('.eb-listicle-item');
 
@@ -115,7 +114,7 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Initial Listicle Editor
-		scope.initListicleEditor = function(indexPos) {
+		scope.initListicleEditor = (indexPos) => {
 			var $el = $element.find('.eb-listicle-list .eb-listicle-item:eq(' + indexPos + ')'),
 				contentEditor;
 
@@ -179,7 +178,7 @@ class ListicleEditors extends ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Rewrite numbering
-		scope.rewriteNumber = function(indexPos) {
+		scope.rewriteNumber = (indexPos) => {
 			switch (scope.data.content.sort) {
 				case 'reverse':
 					for (var i = (scope.data.content.models.length - 1), j = 0; i >= 0; i--, j++) {
@@ -199,8 +198,8 @@ class ListicleEditors extends ArticleEditors {
 		// /*=================================================
 		// 			SEPERATE FUNCTION
 		// ===================================================*/
-		setTimeout(function() {
-			$.each($('.eb-listicle-list .eb-listicle-item'), function() {
+		setTimeout(() => {
+			$.each($('.eb-listicle-list .eb-listicle-item'), () => {
 				var $self = $(this),
 					contentEditor;
 

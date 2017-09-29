@@ -11,7 +11,7 @@
     "test"   : "karma start --config karma.config.js",
     "dev"    : "npm run start",
     "watch"  : "npm run start --watch",
-    "start"  : "webpack-dev-server --open --config webpack.dev.config.js",
+    "start"  : "webpack --progress --hide-modules --config webpack.dev.config.js",
     "build"  : "webpack --progress --hide-modules --config webpack.prod.config.js"
   },
   "devDependencies": {

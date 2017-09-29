@@ -2,24 +2,22 @@ const webpack           = require('webpack');
 const path              = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-const PATH = {
-	root 	  : path.join(__dirname, 'public'),
-	app       : path.join(__dirname, 'public'),
-	build     : path.join(__dirname, 'dist')
-}
-
+let ROOT_PATH = path.resolve(__dirname),
+	APP_PATH  = path.resolve(ROOT_PATH, 'public'),
+	BUILD_PATH= path.resolve(APP_PATH, 'build');
+	DIST_PATH = path.resolve(APP_PATH, 'dist');
 
 module.exports = {
-	context  : path.resolve(__dirname, 'public/'),
+	context  : APP_PATH,
 	entry: {
-		login: ["./src/js/app.js", "./src/js/login.js"],
-		content: ["./src/js/app.js", "./src/js/content.js"],
-		vendor: ["underscore", "angular", "angular-sanitize", "joii", "ng-tags-input"],
+		login    : ["./src/js/app.js", "./src/js/login.js"],
+		content  : ["./src/js/app.js", "./src/js/content.js"],
+		vendor   : ["underscore", "angular", "angular-sanitize", "joii", "ng-tags-input"],
 	},
 	output: {
-		path    : PATH.build,
-		filename: "js/[name].js",
-		chunkFilename: "js/[name].js"
+		path           : DIST_PATH,
+		filename       : "js/[name].js",
+		chunkFilename  : "js/[name].js"
 	},
 	module: {
 		rules: [

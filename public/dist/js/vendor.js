@@ -144,7 +144,7 @@
 /******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 44);
+/******/ 	return __webpack_require__(__webpack_require__.s = 46);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -11966,7 +11966,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 
 /***/ }),
 
-/***/ 12:
+/***/ 14:
 /***/ (function(module, exports) {
 
 /**
@@ -12779,7 +12779,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 /***/ }),
 
-/***/ 13:
+/***/ 15:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {/**
@@ -46659,6 +46659,7 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 			
 			this.appService();
 			this.appFactory();
+			this.appFilter();
 
 			// Search bar
 			if ($('.search').length) { this.evSearch(); }
@@ -46836,6 +46837,43 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 			}]);
 		},
 
+		appFilter : function() {
+			this.application.filter('appFilter', ['$http', function($http){
+				// return {
+				// 	// coverFilter : coverFilter,
+				// 	// viewFilter  : viewFilter,
+				// 	// editorFilter: editorFilter,
+				// 	makeUppercase: makeUppercase
+				// };
+
+				// function coverFilter(post, event) {
+				// 	console.log( post, event );
+				// 	if (_.contains(['article', 'listicle'], post.post_type))
+				// 	{
+
+				// 	}
+				// }
+
+				// function makeUppercase(item) {
+				// 	return item.toUppercase();
+				// }
+
+				// function viewFilter(post, event) {
+
+				// }
+
+				// function editorFilter(post, event) {
+
+				// }
+				// return {makeUppercase : makeUppercase};
+				
+				return function (item) {
+					console.log( item );
+			        return item.toUpperCase();
+			    };
+			}]);
+		},
+
 		evSearch: function() {
 			// Service
 			// ------------------------------------------------------------------------
@@ -46884,8 +46922,8 @@ Promise.resolve().then(function() { /* WEBPACK VAR INJECTION */(function($, _) {
 						// Change text and push to dropdown data
 						$attrs.$$element.find('.drop-component-text').text($el.text());
 						appService.localContext.dropdownAction($attrs.name, selected);
-						// console.log( appService.localContext.dropdownAction );
 
+						console.log( appService.localContext );
 						//_.mapObject($rootScope.dropdowns, function(value, key) {
 						//	console.log(key, value);
 						//});
@@ -49994,11 +50032,11 @@ JOII.Reflection.Method = JOII.ClassBuilder({ 'extends': JOII.Reflection.Property
     return root;
 }));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
 
 /***/ }),
 
-/***/ 31:
+/***/ 33:
 /***/ (function(module, exports) {
 
 var g;
@@ -50026,7 +50064,7 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 44:
+/***/ 46:
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
@@ -50041,7 +50079,7 @@ module.exports = __webpack_require__(7);
 /***/ 5:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(14);
 module.exports = 'ngSanitize';
 
 
@@ -50050,7 +50088,7 @@ module.exports = 'ngSanitize';
 /***/ 6:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(13);
+__webpack_require__(15);
 module.exports = angular;
 
 

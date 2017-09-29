@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Channel;
+use App\objectFile;
 use Carbon;
 
 class Post extends Model
@@ -73,11 +74,12 @@ class Post extends Model
 				'title'      => html_entity_decode($post['title'], ENT_QUOTES),
 				'lead'       => html_entity_decode($post['lead'], ENT_QUOTES),
 				'slug'       => str_slug($post['slug']),
-				'url'        => implode(['https://keepo.me', @$post['user']['username'], $post['slug']], '/'),
+				'url'        => implode([config('app.keepo_url'), @$post['user']['username'], $post['slug']], '/'),
+				// 'url'        => implode([config('app.url'), @$post['user']['username'], $post['slug']], '/'),
 				'image'      => array(
 								'id' 	=>  @$post['image']['id'],
 								'url' 	=>  preg_replace('/https?\:/', '', @$post['image']['full_path']),
-								'name' 	=>  @$post['image']['fill_name']
+								'name' 	=>  @$post['image']['file_name']
 							),
 				'channel'    => array(
 								'slug'	=> str_slug(@$post['channel']['slug']),
@@ -101,6 +103,7 @@ class Post extends Model
 					'id'			=> $post['user']['id'],
 					'display_name' 	=> @$post['user']['display_name'],
 					'url'   		=> $post['user'] ? url(implode(['users', $post['user']['username']], '/')) : null,
+					'slug'			=> @$post['user']['slug']
 				),	
 				'source' 	=> $post['source'],
 				// Tags
@@ -164,16 +167,48 @@ class Post extends Model
 	public static function updatePostChannel($postID = false, $postChannel = FALSE) {
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
 
-		$post = self::where(function($query) use ($postChannel, $postID) {
+		$post = self::with('channel')->where(function($query) use ($postChannel, $postID) {
 			$channelID = Channel::where([ 'slug' => $postChannel ]);
 
 			$query->where(['id' => $postID]);
 			$query->update([ 'channel_id' => $channelID->first()->id ]);
 
 			return $query;
-		})->with('channel')->first();	
+		})->first();	
 
-		return ['channel' => array( 'name' => html_entity_decode($post['channel']['title']), 'slug' => $post['channel']['title'] ) ];
+		return ['channel' => array( 'name' => html_entity_decode($post['channel']['title']), 'slug' => $post['channel']['slug'] ) ];
+	}
+
+	public static function updatePostImageCover($postID = false, $postImage = array()) {
+		$objectFile  = array();
+
+		if ( empty($postID) ) { return ['error' => 'Post not found']; }
+		
+
+		// Is image exist
+		$objectFile = objectFile::where(['id' => $postImage['id']])->first();
+
+		$post  = self::with('image')->where(function($query) use ($postID, $postImage, $objectFile) {
+
+			$query->where(['id' => $postID]);
+			$query->update(['object_file_id' => $objectFile->id]);
+
+			return $query;
+		})->first();
+
+		// Should s not empty
+		if ( !empty($post) AND !empty($objectFile) )
+			$response = ['image' => array(
+								'id' 	=> $objectFile['id'], 
+								'name' 	=> $objectFile['file_name'], 
+								'url'	=> preg_replace('/https?\:/', '', @$objectFile['full_path'])
+							)
+						];
+		else
+			return ['error' => 'Failed to post'];
+		
+		// Return data
+		return $response;		
 	}
 
 	public static function updatePostCreated($postID = FALSE, $postCreated = FALSE) {
@@ -184,17 +219,21 @@ class Post extends Model
 			$query->where(['id' => $postID])->update(['created_on' => $convDate]);
 			return $query;
 		})->first();
-		$post = date('d M Y H:i', strtotime($post->created_on));
+		
+		$post = date('d M Y H:i:s', strtotime($post->created_on));
+		
 		return ['created' => $post];
 	}
 
 	public static function updatePostFeeds($post = array(), $postID = FALSE, $response = array()) {
 		if ( empty($postID) ) { return ['error' => 'Post no found']; }
 
-		$post = self::where(function($query) use ($post, $postID) {
-			$query->where(['id' => $postID->id])->update($post);
-			return $query;
-		})->with('user', 'image', 'channel', 'tag', 'share', 'embed')->first()->toArray();
+		$post = self::with('user', 'image', 'channel', 'tag', 'share', 'embed')->where(function($query) use ($post, $postID) {
+					$query->where(['id' => $postID->id])->update($post);
+					return $query;
+				});
+
+		$post = $post->first()->toArray();
 
 		$response = collect($response)->push($post)->map(function($items) {
 			return [
@@ -243,7 +282,7 @@ class Post extends Model
 			];
 		});
 
-		return $response[0];
+		return $response->first();
 	}
 
 	// ------------------------------------------------------------------------

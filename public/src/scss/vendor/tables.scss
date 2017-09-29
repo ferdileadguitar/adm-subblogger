@@ -115,8 +115,42 @@
 		min-width: 100px;
 		margin-right: 10px;
 		overflow: hidden;
+		position: relative; 
 
 		img { width: 100px; }
+
+		&.can-change {
+			cursor     : pointer;
+			display    : inline-table;
+			transition : .8s all ease; 
+
+			&:hover {
+
+				&:before {
+					visibility  : visible;
+				}
+			}
+
+			&:before {
+				content     : "\e84f";
+				font-family : 'Fontello';
+				position    : absolute;
+				right       : 0;
+				left        : 0;
+				margin      : 0 auto;   
+				text-align  : center; 
+				font-size   : 22px; 
+				z-index     : 2; 
+				background-color: rgba(0, 0, 0, .5);
+				height      : 100%;
+				color       : $black-02;
+				visibility  : hidden;  
+				@include display-flex;
+				@include align-items(center);
+				@include justify-content(center);
+			}
+		}
+
 	}
 
 	.tbls-title {

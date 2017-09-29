@@ -37,6 +37,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 			
 			this.appService();
 			this.appFactory();
+			this.appFilter();
 
 			// Search bar
 			if ($('.search').length) { this.evSearch(); }
@@ -214,6 +215,43 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 			}]);
 		},
 
+		appFilter : function() {
+			this.application.filter('appFilter', ['$http', function($http){
+				// return {
+				// 	// coverFilter : coverFilter,
+				// 	// viewFilter  : viewFilter,
+				// 	// editorFilter: editorFilter,
+				// 	makeUppercase: makeUppercase
+				// };
+
+				// function coverFilter(post, event) {
+				// 	console.log( post, event );
+				// 	if (_.contains(['article', 'listicle'], post.post_type))
+				// 	{
+
+				// 	}
+				// }
+
+				// function makeUppercase(item) {
+				// 	return item.toUppercase();
+				// }
+
+				// function viewFilter(post, event) {
+
+				// }
+
+				// function editorFilter(post, event) {
+
+				// }
+				// return {makeUppercase : makeUppercase};
+				
+				return function (item) {
+					console.log( item );
+			        return item.toUpperCase();
+			    };
+			}]);
+		},
+
 		evSearch: function() {
 			// Service
 			// ------------------------------------------------------------------------
@@ -263,6 +301,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 						$attrs.$$element.find('.drop-component-text').text($el.text());
 						appService.localContext.dropdownAction($attrs.name, selected);
 
+						console.log( appService.localContext );
 						//_.mapObject($rootScope.dropdowns, function(value, key) {
 						//	console.log(key, value);
 						//});

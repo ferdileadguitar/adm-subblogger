@@ -1,0 +1,34 @@
+<div class="main-container">
+  <div class="editor-wrapper">
+    <header class="editor-top"><h2>Change Image Cover</h2></header>
+  	
+  	<article class="editor-image" editor-img-cover>
+      <div class="fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>" droppable>
+        <div class="helper">
+          <div class="helper_text">
+            <i class="keepo-icon icon-photo"></i>
+            <span><strong>CLICK</strong> to browse or <strong>DRAG &amp; DROP</strong> the cover picture (max 1MB)</span>
+            <div class="input-file"><input type="file" name="file" class="file-upload" data-id="cover_picture"></div>
+          </div>
+        </div>
+
+        <span class="drop_target" title="Click to browse or drag and drop the cover picture here" ng-click="browseFile($event)"></span>
+
+        <div class="preview" ng-if="data.image.id">
+          <img ng-src="<@ data.image.url @>" alt="">
+          <a class="remove-preview" ng-click="removePreview($event)"><i class="keepo-icon icon-cancel"></i></a>
+        </div>
+
+        <input type="hidden" name="fid" value="<@ data.image.id @>" ng-if="data.image.id">
+        <input type="hidden" name="fn" value="<@ data.image.name @>" ng-if="data.image.name">
+      </div>
+  	</article>
+
+  	<footer class="editor-bottom mdl-footer">
+	    <div class="wrap-footer_btn" ng-hide="uploading">
+	      <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+	      <a ng-if="!singleButton" class="ok" ng-click="saveClick('set-img-cover')"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
+	    </div>
+    </footer>
+  </div>
+</div>

@@ -116,7 +116,7 @@ class ContentController extends \App\Http\Controllers\ApiController
         if ( isset($result['error']))
         { return $this->response($result['error'], 404); }
 
-        return response()->json($result)->send();
+        return response()->json($result, 200)->send();
     }
 
     public function setPostChannel() {
@@ -125,12 +125,21 @@ class ContentController extends \App\Http\Controllers\ApiController
         if ( isset($result['error']))
         { return $this->response($result['error'], 404); }
 
-        return response()->json($result)->send();
+        return response()->json($result, 200)->send();
     }
 
     public function setPostCreated() {
         $result = Post::updatePostCreated( $this->request['id'], $this->request['created'] );
 
+        if ( isset($result['error']) )
+        { return $this->response($result['error'], 404); }
+
+        return response()->json($result)->send();
+    }
+
+    public function setPostImageCover() {
+        $result = Post::updatePostImageCover( $this->request['id'], $this->request['image'] );
+        
         if ( isset($result['error']) )
         { return $this->response($result['error'], 404); }
 
@@ -157,6 +166,9 @@ class ContentController extends \App\Http\Controllers\ApiController
                 break;
             case 'set-created':
                 $this->setPostCreated();
+                break;
+            case 'set-img-cover':
+                $this->setPostImageCover();
                 break;
             default:
                 $this->setPostFeeds();
@@ -257,12 +269,8 @@ class ContentController extends \App\Http\Controllers\ApiController
             // Now update the feeds
             $post = (new Post)->updatePostFeeds($data, $postID);
 
-            // if( !empty($post) ) {
-                // $post = $post;
-            // }
-
         	// Let's give the response
-        	return response()->json($post)->send(); 
+        	return response()->json($post, 200)->send(); 
         }
     }
 

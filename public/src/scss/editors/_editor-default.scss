@@ -357,6 +357,39 @@ $defaultColor: #c2c1c6;
 				}
 			}
 
+			&.image {
+				height   : 80%;
+				 
+				.mdl-body {
+
+					.main-container {
+
+						.editor-wrapper {
+							/*width: 100%;
+							display: block!important;
+							margin: 0 auto!important;*/
+
+							@include mdl_header;
+
+							article {
+
+								.fileupload-pool {
+
+									&.drop {
+										min-height : 180px;
+										height     : 400px;
+
+										.helper_text {
+											padding-top: 120px;
+										} 
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			.mdl-footer {
 				position: fixed;
 

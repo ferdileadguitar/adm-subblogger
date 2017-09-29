@@ -4373,7 +4373,6 @@ button.close {
   transform: translate(0, -25%);
   transition: -webkit-transform .3s ease-out;
   transition: transform .3s ease-out;
-  transition: transform .3s ease-out, -webkit-transform .3s ease-out;
   transition: transform .3s ease-out,-webkit-transform .3s ease-out; }
 
 .modal.in .modal-dialog {
@@ -4696,7 +4695,6 @@ button.close {
   .carousel-inner > .item {
     transition: -webkit-transform .6s ease-in-out;
     transition: transform .6s ease-in-out;
-    transition: transform .6s ease-in-out, -webkit-transform .6s ease-in-out;
     transition: transform .6s ease-in-out,-webkit-transform .6s ease-in-out;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
@@ -5043,11 +5041,8 @@ a {
     position: absolute;
     top: 50%;
     left: 50%;
-    -webkit-transform: translate(-50%, -70%);
-            transform: translate(-50%, -70%);
-    transition: -webkit-transform .3s ease-in;
+    transform: translate(-50%, -70%);
     transition: transform .3s ease-in;
-    transition: transform .3s ease-in, -webkit-transform .3s ease-in;
     max-width: 500px; }
   .mdl .mdl-body {
     text-align: center;
@@ -5055,8 +5050,6 @@ a {
     .mdl .mdl-body strong {
       color: #666; }
   .mdl .mdl-footer {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex; }
     .mdl .mdl-footer a {
       background-color: #b6bece;
@@ -5068,9 +5061,7 @@ a {
       height: 60px;
       line-height: 60px;
       text-transform: uppercase;
-      -webkit-box-flex: 1;
-          -ms-flex-positive: 1;
-              flex-grow: 1; }
+      flex-grow: 1; }
       .mdl .mdl-footer a.remove {
         background-color: #fc7169; }
       .mdl .mdl-footer a.ok {
@@ -5094,8 +5085,7 @@ a {
     visibility: visible;
     transition: opacity 0.3s 0s, visibility 0s 0s; }
     .mdl.mdl-open .mdl-component {
-      -webkit-transform: translate(-50%, -50%);
-              transform: translate(-50%, -50%); }
+      transform: translate(-50%, -50%); }
 
 .main-body .error {
   padding: 1em;
@@ -5108,8 +5098,7 @@ a {
   position: relative;
   top: 1px;
   margin-right: 5px;
-  -webkit-animation: spin 1s infinite linear;
-          animation: spin 1s infinite linear; }
+  animation: spin 1s infinite linear; }
 
 .main-body .mdl-body {
   padding: 2em; }
@@ -5139,18 +5128,8 @@ a {
 .main-body .processing .mdl-overlay {
   display: block; }
 
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg); }
-  100% {
-    -webkit-transform: rotate(359deg);
-            transform: rotate(359deg); } }
-
 @keyframes spin {
   0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg); }
+    transform: rotate(0deg); }
   100% {
-    -webkit-transform: rotate(359deg);
-            transform: rotate(359deg); } }
+    transform: rotate(359deg); } }

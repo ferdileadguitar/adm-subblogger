@@ -35,7 +35,6 @@ class ArticleEditors {
 	}
 
 	static _listicleFormat(element, obj) {
-		console.log( obj );
 		let data = obj.data, listicleItems = [], contentStringify;
 		
 		$.each(data.content.models, (index, value) => {
@@ -56,6 +55,7 @@ class ArticleEditors {
 		_.each(obj.tags, (items, key) => {
 			tags.push(items.text);
 		});
+		
 		data.tags    = tags.join(';');
 		data.content = JSON.stringify({ content : (data.content.content), sort : (data.content.sort), models : (listicleItems) });
 
@@ -78,6 +78,9 @@ class ArticleEditors {
 			_.each(obj.tags, (items, key) => {
 				tags.push(items.text);
 			});
+
+			console.log( obj );
+
 			content = obj.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
 			
 			data.content = content;
@@ -188,10 +191,11 @@ class ArticleEditors {
 		if( scope.data.post_type == 'article' ) {
 			scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
 		}
+		
 		// Tags Autocomplete
 		scope.tags     = mainClass._tags(_content.tags);
 
-		scope.loadTags = function(query) {
+		scope.loadTags = (query) => {
 			var config, temp;
 			return self._$http.get(window.baseURL + 'api/tags?q=' + query);
 		};
@@ -199,14 +203,14 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Temporary Save
-		scope.saveTemp = function() {
+		scope.saveTemp = () => {
 
 		}
 
 		// ------------------------------------------------------------------------
 
 		// Save
-		scope.saveClick = function(type) {
+		scope.saveClick = (type) => {
 			if( scope.onProgress ) { return false }
 
 			let options = { editors : editors, type : type };
@@ -247,7 +251,7 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Browse Cover Picture File
-		scope.browseFile = function (event) {
+		scope.browseFile =  (event) => {
 			var $el = $(event.currentTarget || event.srcElement);
 
 			$el.parent('.fileupload-pool').find('.file-upload').trigger('click');
@@ -256,7 +260,7 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Remove Preview
-		scope.removePreview = function(event) {
+		scope.removePreview = (event) => {
 			var $el = $(event.currentTarget || event.srcElement);
 			var id = $($el).closest('.on-preview').find("input[name='fid']").val();
 			if(!$($el).closest('.eb-listicle-item')[0]){
@@ -271,14 +275,14 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Get Image from URL
-		scope.getImage = function(event) {
+		scope.getImage = (event) => {
 			var $el = $(event.currentTarget || event.srcElement);
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Set Channel
-		scope.setChannel = function($event, slug) {
+		scope.setChannel = ($event, slug) => {
 			var $el = $($event.currentTarget || $event.srcElement);
 
 			scope.data.channel = {
@@ -288,20 +292,20 @@ class ArticleEditors {
 
 			scope.channel = scope.data.channel;
 
-			if(typeof toggleSelectCategory == 'function'){
+			if(typeof toggleSelectCategory == ''){
 				toggleSelectCategory();
 			}
 		};
 
 		// ------------------------------------------------------------------------
 
-		scope.openCategory = function($event) {
+		scope.openCategory = ($event) => {
 			var $el = $($event.currentTarget || $event.srcElement);
 
 			$el.find('.eb-category-list').toggleClass('open');
 		}
 
-		scope.feedsAssignObject = function(newData) {
+		scope.feedsAssignObject = (newData) => {
 			var _data = [],
 				ids   = scope.$parent.ids;
 
@@ -312,18 +316,17 @@ class ArticleEditors {
 					}
 						
 					_.extend(_base.allPosts.data[ids], newData);
-					console.log( _base.allPosts.data[ids] )
 				});
 				
 				$('body').find('.mdl.mdl-editor').remove();
 
 				scope.$on('mdl_data', (event, args) => {
-					console.log( args );
+					console.info( args );
 				});
 		}
 
 		// ------------------------------------------------------------------------
-		this._$timeout(function() {
+		this._$timeout(() => {
 			// Title
 			if (element.find('.eb-title').length) {
 				var titleEditor = new app_helper.titleEditorApp(element.find('.eb-title'), {
@@ -375,10 +378,10 @@ class ArticleEditors {
 			        		    right: { label: '<span class="icon-align-right"></span>' },
 			        		    grid: null
 			        		},
-			        		uploadCompleted : function($el, data) {
+			        		uploadCompleted : ($el, data) => {
 
 			        		},
-			        		uploadFailed : function(uploadErrors, data) {
+			        		uploadFailed : (uploadErrors, data) => {
 			        			console.error( uploadErrors );
 			        		}
 
@@ -403,6 +406,7 @@ class ArticleEditors {
 			        	},
 			        }
 			    });
+
 				editors.content = contentEditor;
 				if (element.find('.fileupload-pool.cover-picture').length) {
 					thisFileUpload._initFileUpload(
@@ -417,7 +421,7 @@ class ArticleEditors {
 			// ------------------------------------------------------------------------
 
 			// Set window.onbeforeunload (Simple, too lazy to check whether the content has been changed :P)
-			window.onbeforeunload = function() {
+			window.onbeforeunload = () => {
 				return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
 			};
 		}, 50);
