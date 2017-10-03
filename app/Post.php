@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Channel;
 use App\objectFile;
-use Carbon;
+use Carbon\Carbon;
 
 class Post extends Model
 {
@@ -159,9 +159,15 @@ class Post extends Model
 	public static function updatePostTitle($postID = FALSE, $postTitle = FALSE) {
 		if( empty($postTitle) ) { return ['error' => 'Post not found']; }
 
-		$post = self::where(['id' => $postID]);
-		$post = $post->update(['title' => $postTitle]);
-		return ['title' => $postTitle];
+
+		$post = self::where(function($query) use ($postID, $postTitle) {
+			$query->where(['id' => $postID]);
+			$query->update(['title' => $postTitle, 'slug' => str_slug($postTitle, '-')]);
+			
+			return $query;
+		})->first();
+
+		return ['title' => $post->title, 'slug' => $post->slug, 'url' => implode([config('app.keepo_url'), $post->user->display_name, $post->slug], '/')];
 	} 
 
 	public static function updatePostChannel($postID = false, $postChannel = FALSE) {
@@ -183,15 +189,18 @@ class Post extends Model
 		$objectFile  = array();
 
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
-		
 
 		// Is image exist
 		$objectFile = objectFile::where(['id' => $postImage['id']])->first();
 
+		if(is_null($objectFile)) {
+			$objectFile = array('id' => 1, 'file_name' => null, 'full_path' => null);
+		}
+
 		$post  = self::with('image')->where(function($query) use ($postID, $postImage, $objectFile) {
 
 			$query->where(['id' => $postID]);
-			$query->update(['object_file_id' => $objectFile->id]);
+			$query->update(['object_file_id' => $objectFile['id']]);
 
 			return $query;
 		})->first();
@@ -241,7 +250,8 @@ class Post extends Model
 				'title'      => html_entity_decode($items['title'], ENT_QUOTES),
 				'lead'       => html_entity_decode($items['lead'], ENT_QUOTES),
 				'slug'       => str_slug($items['slug']),
-				'url'        => implode(['https://keepo.me', @$items['user']['username'], $items['slug']], '/'),
+				// 'url'        => implode(['https://keepo.me', @$items['user']['username'], $items['slug']], '/'),
+				'url'        => implode([config('app.keepo_url'), @$items['user']['username'], $items['slug']], '/'),
 				'image'      => array(
 								'id' 	=>  @$items['image']['id'],
 								'url' 	=>  preg_replace('/https?\:/', '', @$items['image']['full_path']),
@@ -291,7 +301,7 @@ class Post extends Model
 	
 	private static function setContributorOnly()
 	{
-		$contributorList = [5];
+		$contributorList = [5, 22015];
 
 		self::$postData->where(function($query) use($contributorList) {
 			$query->whereIn('user_id', $contributorList);
@@ -327,13 +337,13 @@ class Post extends Model
 				self::$postData->whereRaw("DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
 				break;
 			case 'last-7-days':
-				self::$postData->whereRaw('DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
+				self::$postData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
 				break;
 			case 'last-30-days':
-				self::$postData->whereRaw('DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
+				self::$postData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
 				break;
 			case 'last-90-days':
-				self::$postData->whereRaw('DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
+				self::$postData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
 				break;
 			case 'this-month':
 				self::$postData->whereRaw('DATE_FORMAT(posts.created_on, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
@@ -386,7 +396,7 @@ class Post extends Model
 		switch ($sortBy)
 		{
 			case 'channel':
-				self::$postData->orderBy('channel_id', $reverse);
+				self::$postData->orderBy('channel_id', $reverse); 
 				break;
 			case 'format':
 				self::$postData->orderBy('post_type', $reverse);

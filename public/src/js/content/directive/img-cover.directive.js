@@ -21,6 +21,10 @@ class ImgCover {
  	
 	static _imgCover(element, obj, options) {
 
+		// Set default img cover
+		if( _.isUndefined(obj.data.image.id) )
+			obj.data.image.id = 0;
+		
 		return {
 			obj    : obj.data,
 			method : 'PUT',
@@ -93,7 +97,11 @@ class ImgCover {
 			var $el = $(event.currentTarget || event.srcElement);
 			var id = $($el).closest('.on-preview').find("input[name='fid']").val();
 			if(!$($el).closest('.eb-listicle-item')[0]){
-				scope.data.image.id = void 0;
+				scope.data.image = {
+					id    : void 0,
+					name  : void 0,
+					url   : void 0
+				};
 			}
 			if(!scope.data.images){
 				scope.data.images = [];
@@ -106,21 +114,21 @@ class ImgCover {
 		scope.feedsAssignObject = (newData) => {
 			var _data = [],
 				ids   = scope.$parent.ids;
-				console.log( ids, newData, _base.allPosts.data );
+
 				scope.$apply(() => {
 
+					// Is object has content(keys)?
 					if( _.has(newData, 'content') ) {
 						newData.content = JSON.stringify(newData.content);
 					}
-						
+					
+					// Let's do mereg
 					_.extend(_base.allPosts.data[ids], newData);
 				});
 				
 				$('body').find('.mdl.mdl-editor').remove();
 
-				scope.$on('mdl_data', (event, args) => {
-					console.info( args );
-				});
+				scope.$on('mdl_data', (event, args) => { console.info( args ) });
 		}
 
 		// ------------------------------------------------------------------------

@@ -13,9 +13,9 @@
     <link rel="dns-prefetch" href="//keepo.me/">
 
     <!-- FavIcon -->
-    <link rel="Shortcut Icon" href="[[ url('favicon.ico') ]]">
-    <link rel="icon" type="image/ico" href="[[ url('favicon.ico') ]]">
-    <link rel="icon" type="image/x-icon" href="[[ url('favicon.ico') ]]">
+    <link rel="Shortcut Icon" href="{{ url('favicon.ico') }}">
+    <link rel="icon" type="image/ico" href="{{ url('favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url('favicon.ico') }}">
 
     <!-- Style -->
     @stack('css')

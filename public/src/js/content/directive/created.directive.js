@@ -25,6 +25,7 @@ class Created extends ArticleEditors{
 			inline 		  : true,
 			startDate     : data.created,//or 1986/12/08
 			formatDate    : 'd M y',
+			regional      : 'fr',
 			onChangeDateTime : function(current_time, $input) {
 				// We handle at PHP sorry, .. about this
 				scope.created = current_time.toLocaleDateString();

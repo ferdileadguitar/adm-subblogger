@@ -44,7 +44,13 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+
+        // if ($request->expectsJson()) {
+        //     return response()->json(["message" => $exception->getMessage()]);
+        // }
         return parent::render($request, $exception);
+
+        // return parent::render($request, $exception);
     }
 
     /**
@@ -62,4 +68,18 @@ class Handler extends ExceptionHandler
 
         return redirect()->guest(route('login'));
     }
+
+    // *
+    //  * Render the given HttpException.
+    //  *
+    //  * @param  \Symfony\Component\HttpKernel\Exception\HttpException  $e
+    //  * @return \Symfony\Component\HttpFoundation\Response
+     
+    // protected function renderHttpException(HttpException $e)
+    // {
+    //     $status = $e->getStatusCode();
+
+    //     return $this->convertExceptionToResponse($e);
+    // }
+       
 }

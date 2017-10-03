@@ -143,12 +143,12 @@
                 <div class="tbls-col-3"><a href="<@ post.user.url @>"><@ post.user.display_name @></a></div>
                 <div class="tbls-col-xl">
                     <div class="tbls-title-box">
-                        <figure class="tbls-thumbnail" ng-click="setEditor(post, 'image', $index)" ng-class="{ 'can-change' : showFeature.imgCover(post) }" ng-attr-title="<@ showFeature.title(post) @>"><img ng-src="<@ (post.image.url) ? post.image.url : '' @>"></figure>
+                        <figure class="tbls-thumbnail" ng-click="changeCover(post, 'image', $index)" ng-class="{ 'can-change' : showFeature.imgCover(post) }" ng-attr-title="<@ showFeature.title(post) @>"><img ng-src="<@ (post.image.url) ? post.image.url : 'img/tile-no-image.jpg' @>"></figure>
                         <div class="tbls-title">
                             <div>
                                 <article ng-bind-html="post.title"></article>
                                 <footer>
-                                    <a ng-click="setEditor(post, 'title', $index)"><@ 'Change Title' @></a>
+                                    <a ng-click="setEditor(post, 'title', $index)">Change Title</a>
                                     <a ng-click="parseFeedsLink(post)" ng-if="showFeature.viewLink(post)">View</a>
                                     <a ng-click="setEditor(post, post.post_type, $index)" ng-if="showFeature.editorLink(post)">Edit Detail</a>
                                 </footer>
@@ -167,7 +167,7 @@
                     <div><a ng-click="setEditor(post, 'channel', $index)" ng-if="showFeature.editorChannel(post)">Edit</a></div>
                 </div>
                 <div class="tbls-col-3"><@ post.post_type @></div>
-                <div class="tbls-col-3"><@ post.views @></div>
+                <div class="tbls-col-3"><@ (post.views | number) @></div>
                 <div class="tbls-col-3"><@ post.shares || 0 @></div>
                 <div class="tbls-col-3"><@ post.embeds || 0 @></div>
                 <div class="tbls-col-3">
@@ -255,6 +255,7 @@
             <!-- Table Flex -->
             <div class="tbls-houder" ng-hide="onLoad">
                 <div class="tbls tbls-content">
+                    <div class=""><h4>Total : <@ (pageTotal | number) @> Posts</h4></div>
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
                         <div class="tbls-col-3">Author</div>

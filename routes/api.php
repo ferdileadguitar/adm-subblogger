@@ -18,7 +18,7 @@ Route::group(['middleware' => array('api')], function() {
 	Route::delete('contents', 'Api\ContentController@deleteContent');
 
 	// Post or put feeds data from editor
-	Route::match(['put', 'get'], 'feeds/{type?}', 'Api\ContentController@putFeed');
+	Route::match(['put', 'get'], 'feeds/{type?}', 'Api\ContentController@feedState');
 
 	// Image asset 
 	Route::post('asset/cover-img', 'Api\AssetController@postImageCover');

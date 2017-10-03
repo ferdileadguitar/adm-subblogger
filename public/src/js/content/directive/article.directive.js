@@ -1,11 +1,11 @@
-import app_helper     from './../helper/common.js';
+import app_helper     from './../../common/title-helper.js';
 import MediumEditor   from './../../vendor/medium/medium-editor.js';
-import thisFileUpload from './../service/bluimp-fileupload.service.js';
+import thisFileUpload from './../../common/bluimp-fileupload.service.js';
 import mediumInsert   from 'imports-loader?$=jquery,define=>false,this=>window!./../../vendor/medium/medium-editor-insert-plugin.js';
 
-const editors        = { title: void 0, lead: void 0, content: void 0 };
-const titleEditorApp = app_helper.titleEditorApp;
-const allData        = {};
+let editors        = { title: void 0, lead: void 0, content: void 0 };
+let titleEditorApp = app_helper.titleEditorApp;
+let allData        = {};
 
 class ArticleEditors {
 	
@@ -17,6 +17,7 @@ class ArticleEditors {
 		this.titleEditorApp = titleEditorApp;
 		this.MediumEditor   = MediumEditor;
 		this.mediumInsert   = mediumInsert;
+		this.fileUpload     = thisFileUpload;
 		
 		this._$http         = $http;
 		this._$sce          = $sce;
@@ -37,8 +38,9 @@ class ArticleEditors {
 	static _listicleFormat(element, obj) {
 		let data = obj.data, listicleItems = [], contentStringify;
 		
-		$.each(data.content.models, (index, value) => {
-			var $element 		= $(element).find('.eb-listicle-list'),
+		data.content = _.extend({}, obj.dataListicle);
+		_.each(data.content.models, (value, index) => {
+			let $element 		= $(element).find('.eb-listicle-list'),
 				$listicleEl 	= $element.find('.eb-listicle-item:eq(' + index + ')'),
 				contentEditor 	= $listicleEl.find('.listicle-item-content').data('editor');
 
@@ -58,7 +60,7 @@ class ArticleEditors {
 		
 		data.tags    = tags.join(';');
 		data.content = JSON.stringify({ content : (data.content.content), sort : (data.content.sort), models : (listicleItems) });
-
+		
 		return {
 			obj    : data,
 			method : 'PUT' 
@@ -78,8 +80,6 @@ class ArticleEditors {
 			_.each(obj.tags, (items, key) => {
 				tags.push(items.text);
 			});
-
-			console.log( obj );
 
 			content = obj.editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, ''); //revert this commit 1f38d8598b7cdb99e3dba420b6fe06b59a3101ac
 			
@@ -119,7 +119,7 @@ class ArticleEditors {
 
 	static _channelFormat(element, obj, option) {
 		let data = obj.data;
-		console.log( data );
+
 		return {
 			obj     : data,
 			method  : 'PUT',
@@ -167,7 +167,7 @@ class ArticleEditors {
 	}
 
 	static _tags(obj) {
-		var data = [];
+		let data = [];
 		_.map( obj ,(items, index) => 
 			data.push({text : items.title })
 		);
@@ -175,7 +175,7 @@ class ArticleEditors {
 	}
 
 	link(scope, element, attrs) {
-		var mainClass  = ArticleEditors,
+		let mainClass  = ArticleEditors,
 			_base      = this._$scope,
 			_content   = _base.allPosts.post,
 			self       = this;
@@ -188,15 +188,15 @@ class ArticleEditors {
 		scope.data      = angular.copy(_base.allPosts.post);
 
 		// really stuck for this one
-		if( scope.data.post_type == 'article' ) {
-			scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
-		}
-		
+		// if( scope.data.post_type == 'article' ) {
+		scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
+		// }
+
 		// Tags Autocomplete
 		scope.tags     = mainClass._tags(_content.tags);
 
 		scope.loadTags = (query) => {
-			var config, temp;
+			let config, temp;
 			return self._$http.get(window.baseURL + 'api/tags?q=' + query);
 		};
 
@@ -243,16 +243,20 @@ class ArticleEditors {
 				);
 			} catch(err) {
 				console.error( err );
-			} finally {
-			}
-			
+				self._appService.modal(scope, {
+					type         : 'text',
+					text         : '<h3>Whoops... something went wrong !</h3><h5>' + err + '</h5>',
+					cancelText   : 'Ok',
+					singleButton : true
+				});
+			} finally { /* close connections */ }
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Browse Cover Picture File
 		scope.browseFile =  (event) => {
-			var $el = $(event.currentTarget || event.srcElement);
+			let $el = $(event.currentTarget || event.srcElement);
 
 			$el.parent('.fileupload-pool').find('.file-upload').trigger('click');
 		};
@@ -260,9 +264,17 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		// Remove Preview
-		scope.removePreview = (event) => {
-			var $el = $(event.currentTarget || event.srcElement);
-			var id = $($el).closest('.on-preview').find("input[name='fid']").val();
+		scope.removePreview = (event, cover) => {
+			let $el = $(event.currentTarget || event.srcElement);
+			let id = $($el).closest('.on-preview').find("input[name='fid']").val();
+
+			if(!_.isUndefined(cover))
+				scope.data.image = {
+					id   : void 0,
+					name : void 0,
+					url  : void 0
+				}
+
 			if(!$($el).closest('.eb-listicle-item')[0]){
 				scope.data.image.id = void 0;
 			}
@@ -276,14 +288,14 @@ class ArticleEditors {
 
 		// Get Image from URL
 		scope.getImage = (event) => {
-			var $el = $(event.currentTarget || event.srcElement);
+			let $el = $(event.currentTarget || event.srcElement);
 		};
 
 		// ------------------------------------------------------------------------
 
 		// Set Channel
 		scope.setChannel = ($event, slug) => {
-			var $el = $($event.currentTarget || $event.srcElement);
+			let $el = $($event.currentTarget || $event.srcElement);
 
 			scope.data.channel = {
 				slug : slug,
@@ -300,13 +312,13 @@ class ArticleEditors {
 		// ------------------------------------------------------------------------
 
 		scope.openCategory = ($event) => {
-			var $el = $($event.currentTarget || $event.srcElement);
+			let $el = $($event.currentTarget || $event.srcElement);
 
 			$el.find('.eb-category-list').toggleClass('open');
 		}
 
 		scope.feedsAssignObject = (newData) => {
-			var _data = [],
+			let _data = [],
 				ids   = scope.$parent.ids;
 
 				scope.$apply(() => {
@@ -316,38 +328,42 @@ class ArticleEditors {
 					}
 						
 					_.extend(_base.allPosts.data[ids], newData);
+
+					scope.$destroy();
+
+					$('body').find('.mdl.mdl-editor').remove();
 				});
 				
-				$('body').find('.mdl.mdl-editor').remove();
+				// scope.$new(true);
 
 				scope.$on('mdl_data', (event, args) => {
-					console.info( args );
+					// console.info( args );
 				});
 		}
 
 		// ------------------------------------------------------------------------
-		this._$timeout(() => {
+		self._$timeout(() => {
 			// Title
 			if (element.find('.eb-title').length) {
-				var titleEditor = new app_helper.titleEditorApp(element.find('.eb-title'), {
+				let titleEditor = new app_helper.titleEditorApp(element.find('.eb-title'), {
 					placeholder: 'Title'
 				});
 
-				editors.title = titleEditor;
+				self.editors.title = titleEditor;
 			}
 
 			// Lead
 			if (element.find('.eb-lead').length) {
-				var titleEditor = new app_helper.titleEditorApp(element.find('.eb-lead'), {
+				let titleEditor = new app_helper.titleEditorApp(element.find('.eb-lead'), {
 					placeholder: 'Subtitle: it will be shown in feed'
 				});
 
-				editors.lead = titleEditor;
+				self.editors.lead = titleEditor;
 			}
 
 			// Content
 			if (element.find('.eb-article').length) {
-				var contentEditor = new MediumEditor('#editor-content', {
+				let contentEditor = new MediumEditor('#editor-content', {
 					toolbar: {
 						buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'quote', "orderedlist", "unorderedlist"],
 					},
@@ -361,7 +377,7 @@ class ArticleEditors {
 					// elementsContainer : document.querySelector('.editor-body'),
 				});
 
-				mediumInsert($);
+				self.mediumInsert($);
 				$('#editor-content').mediumInsert(
 				{
 			        editor: contentEditor,
@@ -370,7 +386,7 @@ class ArticleEditors {
 			        		deleteScript: null,
 			        		autoGrid: 0,
 			        		fileUploadOptions: {
-			        			url: thisFileUpload.uploadCoverUrl+"?type=body",
+			        			url: self.thisFileUpload.uploadCoverUrl+"?type=body",
 			        		},
 			        		styles: {
 			        		    wide: { label: '<span class="icon-align-justify"></span>' },
@@ -407,24 +423,19 @@ class ArticleEditors {
 			        }
 			    });
 
-				editors.content = contentEditor;
+				self.editors.content = contentEditor;
+
 				if (element.find('.fileupload-pool.cover-picture').length) {
-					thisFileUpload._initFileUpload(
+					self.fileUpload._initFileUpload(
 							element.find('.fileupload-pool.cover-picture input[type=file]'), 
 							{
 								dropZone: element.find('.fileupload-pool.cover-picture'), 
-								uploadURL: thisFileUpload.uploadCoverUrl
+								uploadURL: self.fileUpload.uploadCoverUrl
 							},
 							scope);
 				}
 			}
-			// ------------------------------------------------------------------------
-
-			// Set window.onbeforeunload (Simple, too lazy to check whether the content has been changed :P)
-			window.onbeforeunload = () => {
-				return 'Apa kamu yakin mau menutup post editor? Semua perubahan akan hilang! :(';
-			};
-		}, 50);
+		}, 500);
 	}
 
 	thisFileUpload() {

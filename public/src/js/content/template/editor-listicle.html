@@ -2,9 +2,9 @@
   <div class="editor-wrapper">
     <header class="editor-top"><h2>Post Listicle</h2></header>
 
-    <div class="editor-container" data-editor="editorListicle">
+    <div class="editor-container">
       <header class="editor-image">
-        <div class="fileupload-pool cover-picture drop <@ data.image.id ? 'on-preview' : '' @>" droppable>
+        <div class="fileupload-pool cover-picture drop <@ data.image.url ? 'on-preview' : '' @>" droppable>
           <div class="helper">
             <div class="helper_text">
               <i class="keepo-icon icon-photo"></i>
@@ -18,9 +18,9 @@
 
           <span class="drop_target" title="Click to browse or drag and drop the cover picture here" ng-click="browseFile($event)"></span>
 
-          <div class="preview" ng-show="data.image.id">
+          <div class="preview" ng-if="data.image.url">
             <img ng-src="<@ data.image.url @>" alt="<@ data.image.name @>">
-            <a class="remove-preview" ng-click="removePreview($event)"><i class="keepo-icon icon-cancel"></i></a>
+            <a class="remove-preview" ng-click="removePreview($event, 'cover')"><i class="keepo-icon icon-cancel"></i></a>
           </div>
 
           <input type="hidden" name="fid" value="<@ data.image.id @>" ng-if="data.image.id">
@@ -36,22 +36,22 @@
         </header>
         <!-- end of .eb-header -->
 
-        <div id="editor-content" class="eb-article text" ondrop="return false;" ng-bind-html="data.content"></div>
+        <div id="editor-content" class="eb-article text" ondrop="return false;" ng-bind-html="dataListicle"></div>
         <!-- end of .eb-article -->
 
         <div class="eb-listicle">
           <header class="eb-listicle-options options">
-            <span class="option" ng-class="{'active' : (data.content.sort == 'ordinal')}" ng-click="setOrder($event, 'ordinal')">Ordinal (1,2,3)</span>
-            <span class="option" ng-class="{'active' : (data.content.sort == 'reverse')}" ng-click="setOrder($event, 'reverse')">Reverse (3,2,1)</span>
-            <span class="option" ng-class="{'active' : (data.content.sort == 'points')}" ng-click="setOrder($event, 'points')">Point</span>
+            <span class="option" ng-class="{'active' : (dataListicle.sort == 'ordinal')}" ng-click="setOrder($event, 'ordinal')">Ordinal (1,2,3)</span>
+            <span class="option" ng-class="{'active' : (dataListicle.sort == 'reverse')}" ng-click="setOrder($event, 'reverse')">Reverse (3,2,1)</span>
+            <span class="option" ng-class="{'active' : (dataListicle.sort == 'points')}" ng-click="setOrder($event, 'points')">Point</span>
           </header>
 
           <div class="eb-listicle-list">
             <div class="eb-listicle-separator"><div></div><span class="eb-listicle-separator-trigger" ng-click="addItem($event)"><i class="icon-cancel"></i></span></div>
             <!-- end of .eb-listicle-separator -->
 
-            <div class="eb-listicle-item <@ item.class @>" ng-repeat-start="item in data.content.models" ng-init="sortType = (data.content.sort)">
-              <span class="listicle-item-numbers lin-<@ sortType @>"><@ item.order @>.</span>
+            <div class="eb-listicle-item <@ item.class @>" ng-repeat-start="item in dataListicle.models" ng-init="sortType = (dataListicle.sort)">
+              <span class="listicle-item-numbers lin-<@ dataListicle.sort @>"><@ item.order @>.</span>
 
               <header class="listicle-item-header">
                 <header class="listicle-item-title-holder">

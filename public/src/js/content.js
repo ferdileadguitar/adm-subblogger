@@ -23,7 +23,7 @@ import imgCoverDirective  from './content/directive/img-cover.directive.js';
 // ------------------------------------------------------------------------
 require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 	'use strict';
-	// console.log( angularSanitize );
+
 	var App = joii.Class({ extends: MainApp }, {
 		init: function() {
 			var self = this;
@@ -35,7 +35,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', 'appService', 'tabService', function($scope, $attrs, $filter, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
-				// console.log( $filter('appFilter') );
 
 				$scope.mainApp         = self;
 				$scope.moderationCount = 0;
@@ -88,10 +87,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.onTabChange = function() {
 					$scope.$broadcast(tabService.getTabActive().name + 'OnTabChange');
 				};
-
-				$scope.changeTitle = function(data) {
-					console.log(  )
-				};		
 
 				$scope.bulkAction = bulkAction;
 				$scope.setStatus  = setStatus;
@@ -299,7 +294,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 		},
 
 		directive: function() {
-			this.application.directive('feeds', ['$compile', '$rootScope', '$window', '$filter', 'appService', function($compile, $rootScope, $window, $filter, appService) {
+			this.application.directive('feeds', ['$compile', '$rootScope', '$window', '$filter', '$timeout', 'appService', function($compile, $rootScope, $window, $filter, $timeout, appService) {
 				return {
 					restrict: 'E',
 					replace: true,
@@ -307,11 +302,15 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
                     controller: function ($scope, appService) {
                     	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo'];
                     	
-                    	$scope.changeCover = function(post, index, type = 'img-cover') {
-
+                    	$scope.changeCover = function(post, type, index) {
+                    		console.log( post.post_type )
 							// This is only listicle and article type
 							if (_.contains(postList, post.post_type)) {
-								appService.modalEditor($scope, {});
+								appService.modalEditor($scope, {
+									ids  : index,
+									data : post,
+									type : type
+								});
 
 								$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
 								
@@ -336,7 +335,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 							// Who's couldn't get link view
 							viewLink : function(post) {
-								if(!_.contains(['quickpersonality', 'quicktrivia', 'quickpolling'], post.post_type))
+								if(!_.contains(['quickpersonality', 'quicktrivia', 'quickpolling', 'quiz'], post.post_type))
 								{ return true }
 							},
  							
@@ -354,9 +353,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						}
                     },
                     link: function($scope, $elements, $attrs) {
-                    	$scope.post = {};
 
-                    	// $scope.$watch()
                     	$scope.convertTags = function(tags) {
                     		return (tags && tags.length) ? _.map(tags, function(tag) { return tag.title; }).join(', ') : '<em>No tag available</em>';
                     	};
@@ -396,10 +393,13 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 								data : post,
 								type : type
 							});
+
 							$scope.$broadcast('mdl_data', { allPosts : $scope.data, posts : post, type });
 							
 							// This use for all directives
-							$rootScope.allPosts = _.extend($scope, { post : post });
+							$rootScope.allPosts = _.extend($scope, { post : post, all : $scope.data });
+
+							console.log( $rootScope.allPosts )
 						};
 
 						$scope.parseFeedsLink = function(post) {
@@ -461,12 +461,10 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					controller  : function($scope, $element, $rootScope) {
 						var datas = {};
 
-						$scope.$on('mdl_data', function(item, args){ 
-
-							$scope.allPost = args.allPosts; 
+							$scope.allPost = $scope.allPosts; 
 							$scope.layout  = {
-								type : args.type,
-								url  : args.type + '.html'
+								type : $scope.type,
+								url  : $scope.type + '.html'
 							};
 							
 							// $scope.$broadcast('data_context', 'send fronm editors');
@@ -478,8 +476,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							$scope.$on('$destroy', function() {  
 								$element.remove();
 							});
-						});
-						
 					}	
 
 				}
@@ -565,6 +561,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 			}]);
 
+			// Editors Directive
 			this.application.directive('editorArticle',  articleDirective);
 			this.application.directive('editorListicle', listicleDirective);
 			this.application.directive('editorCreated', createdDirective);
@@ -575,7 +572,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 		allController: function($scope, $attrs, appService) {
 			return (function() {
 				Object.assign($scope, angular.copy(appService.initData));
-
 				// Init
 				// ------------------------------------------------------------------------
 				
@@ -642,6 +638,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function handleResponse(data) {
 					$scope.pageCurrent             = data.current_page;
 					$scope.pageCount               = data.last_page;
+					$scope.pageTotal               = data.total;
 					$scope.data                    = data.data;
 					
 					$scope.onLoad                  = false;
@@ -732,6 +729,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function handleResponse(data) {
 					$scope.pageCurrent             = data.current_page;
 					$scope.pageCount               = data.last_page;
+					$scope.pageTotal               = data.total;
 					$scope.data                    = data.data;
 					
 					$scope.onLoad                  = false;

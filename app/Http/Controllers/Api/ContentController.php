@@ -100,8 +100,10 @@ class ContentController extends \App\Http\Controllers\ApiController
 
         $result = (new PostTag)->addPostTags($tags, $post_id);
 
-        if( empty($result) )
-        { return $this->abortRequest(400, 'bad_request', 'We\'ve failed to store your tags :()'); }
+        // if( empty($result) )
+        // // { return $this->abortRequest(400, 'bad_request', 'We\'ve failed to store your tags :()'); }
+        // // { return response()->json(array('error' => 'bad_request'), 404); }
+        //     return response()->json(array('error' => 'bad_request'), 404);
 
         // Sorry, it's look not advanced
         $result = (!$response) ? $result : array('tags' => $result);
@@ -146,7 +148,7 @@ class ContentController extends \App\Http\Controllers\ApiController
         return response()->json($result)->send();
     }
 
-    public function putFeed($type = null) {
+    public function feedState($type = null) {
         switch ($type) {
             case 'set-title':
                 $this->setPostTitle();
@@ -183,7 +185,7 @@ class ContentController extends \App\Http\Controllers\ApiController
         // Get Post ID
         $postID = @Post::where('slug', '=', $this->request->input('slug'))->first();
 
-        $tags = explode(config('feeds.tag_separator'), $this->request->input('tags'));
+        $tags   = explode(config('feeds.tag_separator'), $this->request->input('tags'));
 
         // Lets search which is exists or not and also append
 
@@ -193,7 +195,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 
         $data = array(
             'object_file_id' => @ObjectFile::find($this->request->input('image.id'))->id, // Is Image/Object ID exists?
-            // 'slug'           => str_slug($this->request->input('title'), '-'),
+            'slug'           => str_slug($this->request->input('title'), '-'),
             'title'          => $this->request->input('title'),
             'lead'           => $this->request->input('lead'),
             'excerpt'        => strip_tags($this->request->input('lead')),
@@ -247,7 +249,6 @@ class ContentController extends \App\Http\Controllers\ApiController
         if( in_array($data['post_type'], ['listicle']) )
             $data['content']   = json_encode($JSONContent);
     
-
         // Validation some options
         if( is_null($data['channel_id']) )
         	$this->abortRequest(404, 'bad_request', 'Please choose the category')->send();
@@ -258,7 +259,7 @@ class ContentController extends \App\Http\Controllers\ApiController
         	else
         	{
         		$tmpSlug = $postID->slug;
-        		// unset($data['slug']);
+        		unset($data['slug']);
         	}
         	$tmpSlug = $postID->slug;
         	$data = array_merge(['updated_on' => date('Y-m-d H:i:s')], $data);
@@ -267,7 +268,7 @@ class ContentController extends \App\Http\Controllers\ApiController
             $tags = $this->setPostTags($tags, $postID->id);
 
             // Now update the feeds
-            $post = (new Post)->updatePostFeeds($data, $postID);
+            $post = Post::updatePostFeeds($data, $postID);
 
         	// Let's give the response
         	return response()->json($post, 200)->send(); 

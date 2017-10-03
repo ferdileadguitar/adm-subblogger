@@ -164,7 +164,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 					var deferred = $q.defer(), request,
 						url      = window.baseURL + 'api/feeds' + (params.length) ? '?=' + params : '',
 						data     = data;
-					console.log( url );
+
 					return $http({
 						method 	     : type,
 						url    		 : window.baseURL + 'api/feeds',
@@ -202,7 +202,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 						params   = (!_.isUndefined(data.params)) ? data.params : '',
 						url      = window.baseURL + 'api/feeds' + params,
 						datas    = data.obj;
-					console.log( url );
+
 					return $http({
 						method 	     : data.method,
 						url    		 : url,
@@ -301,7 +301,6 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 						$attrs.$$element.find('.drop-component-text').text($el.text());
 						appService.localContext.dropdownAction($attrs.name, selected);
 
-						console.log( appService.localContext );
 						//_.mapObject($rootScope.dropdowns, function(value, key) {
 						//	console.log(key, value);
 						//});
