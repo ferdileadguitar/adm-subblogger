@@ -357,6 +357,57 @@ $defaultColor: #c2c1c6;
 				}
 			}
 
+			&.up-content {
+				width: 40%;
+				height: auto;
+
+				.mdl-body {
+
+					.main-container {
+
+						.editor-wrapper {
+							width: 100%;
+							display: block!important;
+							margin: 0 auto!important;
+
+							@include mdl_header;
+
+							article {
+								text-align: center;
+							}
+
+							.mdl-footer {
+								position: relative;
+
+								&.editor-bottom {
+									padding: 15px 0;
+									@include box-shadow(none);
+
+									.wrap-footer_btn {
+										width: 100%;
+										height: 50px;
+										@include display-flex;
+										margin: 0 auto;
+
+										a {
+											width: 150px;
+											height: 50px;
+											min-width: auto!important;
+											margin-right: 10px;
+											line-height: 50px;
+
+											&:nth-child(2) {
+												margin-right: 0!important;
+											}
+										}
+									}
+								}
+							}	
+						}
+					}
+				}
+			}
+
 			&.image {
 				height   : 80%;
 				 

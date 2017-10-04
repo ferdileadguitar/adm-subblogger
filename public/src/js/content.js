@@ -9,6 +9,7 @@ import title      from './content/template/editor-title.html';
 import tags       from './content/template/editor-tags.html';
 import channel    from './content/template/editor-channel.html';
 import image      from './content/template/editor-img-cover.html'; // Image cover
+import up_content from './content/template/editor-up-content.html';
 import mdl_editor from './content/template/mdl-editor.html';
 import created    from './content/template/mdl-editor-created.html';
 
@@ -18,6 +19,7 @@ import listicleDirective  from './content/directive/listicle.directive.js';
 import createdDirective   from './content/directive/created.directive.js';
 import titleDirective     from './content/directive/title.directive.js';
 import imgCoverDirective  from './content/directive/img-cover.directive.js';
+import upContentDirective from './content/directive/up-content.directive.js';
 
 // APP
 // ------------------------------------------------------------------------
@@ -289,6 +291,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 		        $templateCache.put('channel.html', channel);
 		        $templateCache.put('created.html', created);
 		        $templateCache.put('image.html', image);
+		        $templateCache.put('up-content.html', up_content);
 			});
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
@@ -567,6 +570,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			this.application.directive('editorCreated', createdDirective);
 			this.application.directive('editorTitle', titleDirective);
 			this.application.directive('editorImgCover', imgCoverDirective);
+			this.application.directive('editorUpContent', upContentDirective);
 		},
 
 		allController: function($scope, $attrs, appService) {

@@ -97,6 +97,7 @@ class Post extends Model
 
 				'is_sticky'  => $post['sticky'],
 				'is_premium' => $post['premium'],
+				'is_up_contents' => $post['is_up_contents'],
 				
 				// User
 				'user'       => array(
@@ -229,9 +230,24 @@ class Post extends Model
 			return $query;
 		})->first();
 		
-		$post = date('d M Y H:i:s', strtotime($post->created_on));
+		$newDate = date('d M Y H:i:s', strtotime($post->created_on));
 		
-		return ['created' => $post];
+		return ['created' => $newDate];
+	}
+
+	public static function updatePostUpContent($postID = FALSE, $postCreated) {
+		if ( empty($postID) ) { return ['error' => 'Post not found']; }
+		
+		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');
+
+		$post  = self::where(function($query) use ($postID, $convDate) {
+			$query->where(['id' => $postID])->update(['is_up_contents' => 1,'created_on' => $convDate]);
+			return $query;
+		})->first();
+
+		$newDate  = date('d M Y H:i:s', strtotime($post->created_on));
+
+		return ['created' => $newDate, 'is_up_contents' => $post->is_up_contents];
 	}
 
 	public static function updatePostFeeds($post = array(), $postID = FALSE, $response = array()) {

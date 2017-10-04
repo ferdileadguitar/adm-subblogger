@@ -139,6 +139,15 @@ class ContentController extends \App\Http\Controllers\ApiController
         return response()->json($result)->send();
     }
 
+    public function setUpContent() {
+        $result = Post::updatePostUpContent( $this->request['id'], $this->request['created'] );
+
+        if ( isset($result['error']) )
+        { return $this->response($result['error'], 404); }
+
+        return response()->json($result)->send();
+    }
+
     public function setPostImageCover() {
         $result = Post::updatePostImageCover( $this->request['id'], $this->request['image'] );
         
@@ -171,6 +180,9 @@ class ContentController extends \App\Http\Controllers\ApiController
                 break;
             case 'set-img-cover':
                 $this->setPostImageCover();
+                break;
+            case 'set-up-content':
+                $this->setUpContent();
                 break;
             default:
                 $this->setPostFeeds();

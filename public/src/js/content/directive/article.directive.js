@@ -137,6 +137,16 @@ class ArticleEditors {
 		}
 	} 
 
+	static _upContentFormat(element, obj, option) {
+		let data = obj = _.extend(obj.data, {created : obj.created});
+
+		return {
+			obj     : data,
+			method  : 'PUT',
+			params  : '/set-up-content'
+		}
+	}
+
 	static _prepSave(element, obj, options) {
 		// Firts of all , let's define what is in obj data post_type, so i mean is in list below
 		let type = (_.isUndefined(obj.type)) ? obj.data.post_type : obj.type;
@@ -159,6 +169,9 @@ class ArticleEditors {
 				break;
 			case 'set-created':
 				return this._createdFormat(element, obj);
+				break;
+			case 'set-up-content':
+				return this._upContentFormat(element, obj);
 				break;
 			default:
 				throw new Error('Sorry we can\'t process your request');

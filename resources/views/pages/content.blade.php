@@ -179,6 +179,7 @@
                         <div ng-if="post.status != 1"><a title="Approve" class="btn-round btn-ok" ng-click="setStatus(post, 1)"><span class="glyphicon glyphicon-ok"></span></a></div>
                         <div ng-if="post.status != -2"><a title="Moderate" class="btn-round btn-exclamation" ng-click="setStatus(post, -2)"><span></span></a></div>
                         <div ng-if="post.status != 0"><a title="Reject" class="btn-round btn-remove" ng-click="setStatus(post, 0)"><span class="glyphicon glyphicon-remove"></span></a></div>
+                        <div ng-if="!post.is_up_contents"><a title="Up Content" class="btn-round btn-up-content" ng-click="setEditor(post, 'up-content', $index)"><span class="glyphicon glyphicon-chevron-up"></span></a></div>
                     </div>
                 </div>
                 <div class="tbls-col-3 tbls-btn-group">

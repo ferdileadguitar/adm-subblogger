@@ -1,0 +1,22 @@
+<div class="main-container" editor-article>
+  <div class="editor-wrapper" editor-up-content>
+    <header class="editor-top">
+      <h2>Change Created Date(to up content)</h2>
+      <div class="alert alert-danger" role="alert">
+          <h4><b>*Warning,</b> this feature can only be executed once
+          </h4>
+      </div>
+    </header>
+  	
+  	<article>
+      <input type="text" datetime-picker>
+  	</article>
+
+  	<footer class="editor-bottom mdl-footer">
+      <div class="wrap-footer_btn">
+        <a ng-click="closeCallback ? callback(closeCallback) : close()" ng-hide="onProgress">Cancel</a>
+        <a ng-if="!singleButton" class="ok" ng-click="saveClick('set-up-content')"><@ (onProgress) ? 'Please wait ...' :  'Save' @> </a>
+      </div>
+    </footer>
+  </div>
+</div>

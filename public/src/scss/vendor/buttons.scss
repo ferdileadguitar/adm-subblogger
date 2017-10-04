@@ -65,4 +65,16 @@
 			color: #ffd0c2;
 		}
 	}
+
+	&.btn-up-content {
+		background-color: #80adf7;
+		border-color: #2776f7;
+		color: #3681f9;
+
+		&:hover {
+			background-color: #4286f4;
+			border-color: #4286f4;
+			color: #c0d5f7;
+		}
+	}
 }
