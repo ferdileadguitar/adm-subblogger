@@ -28,35 +28,32 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	public function deleteContent()
 	{
-		$result = Post::updateStatus(explode(',', $this->request->input('id')), -99);
+		$result = Post::getFiltered($this->request)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }
 
-		return $this->response([
-			'moderationCount' => $result['moderationCount']
-		], 200);
+		return $this->response($result, 200);
 	}
 
 	// ------------------------------------------------------------------------
 	
-	public function getCountModerated()
-	{
-		return $this->response(['counted' => Post::countModerated()]);
-	}
+	// public function getCountModerated()
+	// {
+	// 	return $this->response(['counted' => Post::countModerated()]);
+	// }
 
 	// ------------------------------------------------------------------------
 	
 	public function setStatus()
 	{
-		$result = Post::updateStatus(explode(',', $this->request->input('id')), $this->request->input('status'));
+        // dd( $this->request->input() );
+		$result = Post::getFiltered($this->request)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }
 
-		return $this->response([
-			'moderationCount' => $result['moderationCount']
-		], 200);
+		return $this->response($result, 200);
 	}
 
 	// ------------------------------------------------------------------------

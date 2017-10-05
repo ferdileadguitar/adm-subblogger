@@ -3,17 +3,21 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use App\Channel;
 use App\objectFile;
 use Carbon\Carbon;
+use DB;
 
 class Post extends Model
 {
-	public $timestamps = false;
-	protected $guarded = [];
+	public $timestamps  = false;
+	protected $guarded  = [];
+	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
+	private static $__instance  = null;
+	private static $postData    = false;
 
-	private static $__instance = null;
-	private static $postData = false;
+	private static $request     = false;
 
 	// ------------------------------------------------------------------------
 	// Public Methods
@@ -23,6 +27,8 @@ class Post extends Model
 	{
 		if (self::$__instance === null)
 		{ self::$__instance = new self; }
+
+		self::$request = Request();
 
 		return self::$__instance;
 	}
@@ -34,6 +40,9 @@ class Post extends Model
 		// Init
 		self::getInstance();
 		self::$postData = self::with('user', 'image', 'channel', 'tag', 'share', 'embed');
+
+		// Group By with current post_type list
+		self::$postData = self::$postData->whereIn('post_type', self::$postList);
 
 		// ------------------------------------------------------------------------
 		
@@ -67,6 +76,7 @@ class Post extends Model
 	public static function cleanPaginate($take = 50)
 	{
 		$paginate         = self::$postData->paginate($take)->toArray();
+		
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 			return [
 				// Post
@@ -115,17 +125,56 @@ class Post extends Model
 					];
 				})
 			];
+
 		});
 
-		return $paginate;
+		$paginate = collect([
+						'all_post'       => self::getFiltered(self::$request)->countAllPost(), 
+                        'rejected_post'  => self::getFiltered(self::$request)->countRejected(), 
+                        'public_post'    => self::getFiltered(self::$request)->countPublic(), 
+                        'moderated_post' => self::getFiltered(self::$request)->countAllModerated(),
+                        'private_post'   => self::getFiltered(self::$request)->countPrivate()
+			        ])->merge($paginate);
+		
+		return $paginate;	
 	}
 
 	// ------------------------------------------------------------------------
 	
+
 	public static function countModerated()
 	{
-		return self::where('status', '-2')->count();
+		return self::where('status', -2)->count();
 	}
+	
+	public static function countAllPost() {
+		return self::$postData->whereIn('status', [-2, 0, 1, 2])->count(); // Discard draft status (-1)
+	}	
+
+	public static function countAllModerated() 
+	{	
+		return self::$postData->where('status', -2)->count();
+	}
+
+
+	public static function countPublic() 
+	{	
+
+		if(self::$request->input('status'))
+
+		return self::$postData->whereIn('status', [-2, 0, 1])->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+	}
+
+	public static function countRejected() 
+	{	
+		return self::$postData->where('status', 0)->count();
+	}
+
+	public static function countPrivate() 
+	{	
+		return self::$postData->where('status', 2)->count();
+	}
+
 
 	// ------------------------------------------------------------------------
 	
@@ -140,7 +189,13 @@ class Post extends Model
 
 		$post->update(['status' => $status]);
 
-		return ['moderationCount' => self::countModerated()];
+		return [
+				'all_post'        => self::getFiltered(self::$request)->countAllPost(), 
+				'public_post'     => self::getFiltered(self::$request)->countPublic(), 
+				'moderated_post'  => self::getFiltered(self::$request)->countAllModerated(), 
+				'rejected_post'   => self::getFiltered(self::$request)->countRejected(),
+				'privated_post'   => self::getFiltered(self::$request)->countPrivate(),
+			];
 	}
 
 	// ------------------------------------------------------------------------
@@ -397,7 +452,8 @@ class Post extends Model
 			case 'all-status':
 			default;
 				self::$postData->where(function($query) {
-					$query->whereNotIn('status', [-1, -99]);
+					// $query->whereNotIn('status', [-1, -99]);
+					$query->whereNotIn('status', [-99]); // -1 is unpublish right
 				});
 				break;
 		}

@@ -10,7 +10,7 @@
 
 @section('content')
 <!-- Tabs -->
-<div class="tabs" ng-controller="tabs" ng-init="init({moderationCount: {{ $moderationCount }}})">
+<div class="tabs" ng-controller="tabs">
     <header class="tabs-header">
         <nav class="tabs-nav">
             <a ng-click="openTab($event, 'all');" class="box active">All Contents</a>
@@ -254,9 +254,24 @@
             </div>
 
             <!-- Table Flex -->
-            <div class="tbls-houder" ng-hide="onLoad">
+            <div class="tbls-houder" ng-hide="onLoad" ng-style="{'margin-top' : '30px'}">
                 <div class="tbls tbls-content">
-                    <div class=""><h4>Total : <@ (pageTotal | number) @> Posts</h4></div>
+                    <div ng-if="controller == 'all'">
+                        <h4 ng-bind-html="countPost"></h4>
+                    </div>
+
+                    <div ng-if="controller == 'moderated'">
+                        <h4>
+                            <b><@ moderationCount | number @> Post Need Moderation</b>
+                        </h4>
+                    </div>
+
+                    <div ng-if="byFilter">
+                        <h4>
+                            <b><@ filterCount | number, filterStatus @> </b>
+                        </h4>
+                    </div>
+
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
                         <div class="tbls-col-3">Author</div>

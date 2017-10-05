@@ -34,13 +34,19 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			// this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput']);
 			// ------------------------------------------------------------------------
 			
-			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', 'appService', 'tabService', function($scope, $attrs, $filter, appService, tabService) {
+			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', '$rootScope', 'appService', 'tabService', function($scope, $attrs, $filter, $rootScope, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
 
-				$scope.mainApp         = self;
-				$scope.moderationCount = 0;
-				$scope.onRequest       = void 0;
+				$scope.mainApp             = self;
+				$scope.onRequest           = void 0;
+				
+				// All controller that's why i'm use rootScope
+				$rootScope.moderationCount = 0;
+				$rootScope.publicCount     = 0;
+				$rootScope.rejectedCoun    = 0;
+
+				$rootScope.countPost       = void 0; 
 
 				// Local init
 				// ------------------------------------------------------------------------
@@ -81,7 +87,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				tabService.setTabActive({$$el: $('all'), name: 'all'});
 
 				// ------------------------------------------------------------------------
-				
 				$scope.init = function(data) {
 					Object.assign(appService.appContext, data);
 				};
@@ -136,7 +141,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 						method = 'put';
 						url    = {'url': 'set-status'};
-						params = {'status': status};
+						params = {'post-status': status};
 						set    = {status: status};
 					}
 					else if (['sticky', 'premium'].includes(selected)) {
@@ -153,8 +158,12 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					appService[method](url, Object.assign(params, {'id': id.join(',')}))
 						.then(function(response) {
-						  	$scope.moderationCount = response.moderationCount || $scope.moderationCount;
+						  	$scope.publicCount     = response.public_post     || $scope.public_post;
+						  	$scope.moderationCount = response.moderated_post  || $scope.moderated_post;
+						  	$scope.rejectedCount   = response.rejected_post   || $scope.rejected_post;
 
+						  	$ctrlScope.createLabelCount(response);
+						  	
 						  	data.forEach(function(post) {
 						  		setOtherCtrlData(post, 'every', {loading: false});
 
@@ -174,9 +183,11 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function setStatus(post, status, $ctrlScope) {
 					setOtherCtrlData(post, $ctrlScope.controller, {loading: true});
 
-					appService.put({'url': 'set-status'}, {'id': post.id, 'status': status})
+					appService.put({'url': 'set-status'}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': status}) )
 					  .then(function(data) {
-					  	$scope.moderationCount = data.moderationCount || $scope.moderationCount;
+					  	// $root
+					  	console.log( data );
+					  	$ctrlScope.createLabelCount(data);
 
 					  	setOtherCtrlData(post, $ctrlScope.controller, {loading: false});
 					  	setOtherCtrlData(post, $ctrlScope.controller, {status: status});
@@ -218,9 +229,13 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function remove(post, $ctrlScope) {
 					setOtherCtrlData(post, $ctrlScope.controller, {loading: true});
 
-					appService.delete({'id': post.id})
+					appService.delete({}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': -99}) )
 					  .then(function(data) {
-					  	$scope.moderationCount = data.moderationCount || $scope.moderationCount;
+					  	// $scope.publicCount     = data.publicCount || $scope.publicCount;
+					  	// $scope.moderationCount = data.moderationCount || $scope.moderationCount;
+					  	// $scope.rejectedCount   = data.rejectedCount || $scope.rejectedCount;
+
+					  	$ctrlScope.createLabelCount(data);
 
 					  	setOtherCtrlData(post, $ctrlScope.controller, {}, true);
 					  }, function(error) {
@@ -263,13 +278,12 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						var otherCtrlData = _.findWhere(appService.controllerData[ctrl].data, {'id': post.id});
 						if (otherCtrlData) { Object.assign(otherCtrlData, data); }
 					});
-
 					Object.assign(post, data);
 				};
 
 			}]).
-			controller('allController', ['$scope', '$attrs', 'appService', self.allController]).
-			controller('moderationController', ['$scope', '$attrs', 'appService', self.moderationController]);
+			controller('allController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.allController]).
+			controller('moderationController', ['$scope', '$attrs', '$rootScope', 'appService', self.moderationController]);
 
 			// Directive
 			// ------------------------------------------------------------------------
@@ -296,17 +310,19 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			angular.bootstrap(document.querySelector("html"), ["keepoApp"]);
 		},
 
+		// Test directives
 		directive: function() {
 			this.application.directive('feeds', ['$compile', '$rootScope', '$window', '$filter', '$timeout', 'appService', function($compile, $rootScope, $window, $filter, $timeout, appService) {
 				return {
 					restrict: 'E',
 					replace: true,
                     templateUrl: 'feedListTemplate',
-                    controller: function ($scope, appService) {
+                    link: function($scope, $elements, $attrs) {
+
                     	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo'];
                     	
                     	$scope.changeCover = function(post, type, index) {
-                    		console.log( post.post_type )
+                    		// console.log( $scope )
 							// This is only listicle and article type
 							if (_.contains(postList, post.post_type)) {
 								appService.modalEditor($scope, {
@@ -354,8 +370,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 								{ return true }	
 							}
 						}
-                    },
-                    link: function($scope, $elements, $attrs) {
 
                     	$scope.convertTags = function(tags) {
                     		return (tags && tags.length) ? _.map(tags, function(tag) { return tag.title; }).join(', ') : '<em>No tag available</em>';
@@ -573,18 +587,19 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			this.application.directive('editorUpContent', upContentDirective);
 		},
 
-		allController: function($scope, $attrs, appService) {
+		allController: function($scope, $attrs, $rootScope, $filter, appService) {
+
 			return (function() {
 				Object.assign($scope, angular.copy(appService.initData));
 				// Init
 				// ------------------------------------------------------------------------
 				
 				appService.controllerData['all'] = $scope;
-				$scope.controller = 'all';
-				$scope.onRequest  = void 0;
+				$scope.controller       = 'all';
+				$scope.onRequest        = void 0;
+				$scope.createLabelCount = createLabelCount;
 				request();
 				
-
 				// Methods
 				// ------------------------------------------------------------------------
 				
@@ -634,6 +649,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function request() {
 					appService.cancel($scope.onRequest);
 
+					console.log( $scope.filters )
+
 					$scope.onLoad 	 = true;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
@@ -642,16 +659,60 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function handleResponse(data) {
 					$scope.pageCurrent             = data.current_page;
 					$scope.pageCount               = data.last_page;
-					$scope.pageTotal               = data.total;
+					$scope.pageTotal               = data.all_post;
 					$scope.data                    = data.data;
 					
 					$scope.onLoad                  = false;
 					$scope.checkAll                = false;
+					
+					// rootScope
+					$rootScope.moderationCount     = data.moderated_post;
+
+					createLabelCount(data);
 				};
 
 				function handleError(error) {
 					console.log(error);
 				};
+
+				function createLabelCount(data) {
+					var allPost      = data.all_post,
+						publicPost   = data.public_post,
+						rejectedPost = data.rejected_post,
+						moderatePost = data.moderated_post,
+						privatePost  = data.private_post,
+						status       = $scope.filters.status,
+						label = '';
+
+					console.log(data.moderated_post)
+					
+					// Total all post
+					if(_.contains(['all-status'], status))
+						label  = '<b>'+$filter('number')(allPost)+' Total Post</b> | ';  
+					
+					// Public Post
+					if(_.contains(['all-status', 'public'], status))
+						label += $filter('number')(publicPost)+' Public Post | ';
+					
+					// Rejected
+					if(_.contains(['all-status', 'rejected'], status))
+						label += $filter('number')(rejectedPost)+' Rejected | ';
+					
+					// ModerateModeration
+					if(_.contains(['all-status', 'moderated'], status) )
+						label += $filter('number')(moderatePost)+' Need Moderation';
+
+					// Need Moderation
+					if(_.contains(['private'], status) )
+						label += $filter('number')(privatePost)+' Private Post';
+
+					// Need Moderation
+					if(_.contains(['approved'], status) )
+						label += $filter('number')(publicPost)+' Approved Post';
+
+
+					$rootScope.countPost = label;  
+				}
 
 				// On
 				// ------------------------------------------------------------------------
@@ -667,7 +728,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			})();
 		},
 
-		moderationController: function($scope, $attrs, appService) {
+		moderationController: function($scope, $attrs, $rootScope, appService) {
 			return (function() {
 				_.map(appService.initData, function(val, key) {
 					$scope[key] = val;
@@ -733,9 +794,13 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function handleResponse(data) {
 					$scope.pageCurrent             = data.current_page;
 					$scope.pageCount               = data.last_page;
-					$scope.pageTotal               = data.total;
+					$scope.pageTotal               = data.all_post;
 					$scope.data                    = data.data;
 					
+					// $rootScope.publicCount         = data.public_post;
+					// $rootScope.rejectedCount       = data.rejected_post;
+					$rootScope.moderationCount     = data.moderated_post;
+
 					$scope.onLoad                  = false;
 					$scope.checkAll                = false;
 				};

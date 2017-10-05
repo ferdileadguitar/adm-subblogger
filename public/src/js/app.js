@@ -260,6 +260,7 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 				return {
 					submit: function($scope, $attrs, $event) {
 						appService.localContext['search']($scope.searchInput);
+
 					}
 				};
 			}]);
