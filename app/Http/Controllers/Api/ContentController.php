@@ -204,7 +204,8 @@ class ContentController extends \App\Http\Controllers\ApiController
 
         $data = array(
             'object_file_id' => @ObjectFile::find($this->request->input('image.id'))->id, // Is Image/Object ID exists?
-            'slug'           => str_slug($this->request->input('title'), '-'),
+            // 'slug'           => str_slug($this->request->input('title'), '-'),
+            'slug'           => $postID->slug,
             'title'          => $this->request->input('title'),
             'lead'           => $this->request->input('lead'),
             'excerpt'        => strip_tags($this->request->input('lead')),

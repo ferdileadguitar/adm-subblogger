@@ -218,7 +218,8 @@ class Post extends Model
 
 		$post = self::where(function($query) use ($postID, $postTitle) {
 			$query->where(['id' => $postID]);
-			$query->update(['title' => $postTitle, 'slug' => str_slug($postTitle, '-')]);
+			// $query->update(['title' => $postTitle, 'slug' => str_slug($postTitle, '-')]);
+			$query->update(['title' => $postTitle]);
 			
 			return $query;
 		})->first();
