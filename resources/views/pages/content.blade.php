@@ -14,7 +14,7 @@
     <header class="tabs-header">
         <nav class="tabs-nav">
             <a ng-click="openTab($event, 'all');" class="box active">All Contents</a>
-            <a ng-click="openTab($event, 'moderation');" class="box">Need Moderation <span class="label label-danger" ng-bind="moderationCount"></span></a>
+            <a ng-click="openTab($event, 'moderation');" class="box">Need Moderation <span class="label label-danger" ng-bind="moderatedTop"></span></a>
             <a ng-click="openTab($event, 'contributor');" class="box">Contributor Only</a>
         </nav>
 
@@ -46,8 +46,9 @@
             <tab></tab>
         </div>
 
-        <div id="contributor" class="tab-component">
+        <div id="contributor" class="tab-component" ng-controller="contributorController">
             <!-- Filters -->
+            <!-- <tab></tab> -->
             <div class="filters">
                 <div class="filter-component">
                     <div class="box drop drop-large" name="filter-dateRange" ng-controller="dropdown">
@@ -94,7 +95,7 @@
 
                 <div class="filter-component filter-full search" ng-controller="search">
                     <form action="javascript:;" class="box" ng-submit="submit($event)">
-                        <input type="text" placeholder="Search Post">
+                        <input type="text" ng-model="searchInput" placeholder="Search Post">
                         <input type="submit" value="Search" class="btn btn-success">
                     </form>
                 </div>
@@ -103,6 +104,8 @@
             <!-- Table Flex -->
             <div class="tbls-houder">
                <div class="tbls tbls-content">
+                    <div><h4 ng-bind-html="countPost"></h4></div>
+
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
                         <div class="tbls-col-3">Author</div>
@@ -228,7 +231,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="filter-component" ng-if="controller != 'moderated'">
+                <div class="filter-component" ng-if=" _.contains(['all', 'contributor'], controller)">
                     <div class="box drop" name="filter-status" ng-controller="dropdown">
                         <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                             <span class="drop-component-text">All Status</span>
@@ -256,21 +259,7 @@
             <!-- Table Flex -->
             <div class="tbls-houder" ng-hide="onLoad" ng-style="{'margin-top' : '30px'}">
                 <div class="tbls tbls-content">
-                    <div ng-if="controller == 'all'">
-                        <h4 ng-bind-html="countPost"></h4>
-                    </div>
-
-                    <div ng-if="controller == 'moderated'">
-                        <h4>
-                            <b><@ moderationCount | number @> Post Need Moderation</b>
-                        </h4>
-                    </div>
-
-                    <div ng-if="byFilter">
-                        <h4>
-                            <b><@ filterCount | number, filterStatus @> </b>
-                        </h4>
-                    </div>
+                    <div><h4 ng-bind-html="countPost"></h4></div>
 
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
@@ -337,6 +326,4 @@
         </div>
     </div>
 </script>
-
-
 @endsection

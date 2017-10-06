@@ -372,7 +372,7 @@ class Post extends Model
 	
 	private static function setContributorOnly()
 	{
-		$contributorList = [5, 22015];
+		$contributorList = [5];
 
 		self::$postData->where(function($query) use($contributorList) {
 			$query->whereIn('user_id', $contributorList);

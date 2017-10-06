@@ -33,20 +33,20 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			// Application controller
 			// this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput']);
 			// ------------------------------------------------------------------------
-			
 			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', '$rootScope', 'appService', 'tabService', function($scope, $attrs, $filter, $rootScope, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
 
 				$scope.mainApp             = self;
 				$scope.onRequest           = void 0;
+				// $scope.searchInput         = void 0;
 				
 				// All controller that's why i'm use rootScope
 				$rootScope.moderationCount = 0;
 				$rootScope.publicCount     = 0;
-				$rootScope.rejectedCoun    = 0;
+				$rootScope.rejectedCount   = 0;
 
-				$rootScope.countPost       = void 0; 
+				// $rootScope.countPost       = void 0; 
 
 				// Local init
 				// ------------------------------------------------------------------------
@@ -186,7 +186,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					appService.put({'url': 'set-status'}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': status}) )
 					  .then(function(data) {
 					  	// $root
-					  	console.log( data );
 					  	$ctrlScope.createLabelCount(data);
 
 					  	setOtherCtrlData(post, $ctrlScope.controller, {loading: false});
@@ -283,7 +282,9 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 			}]).
 			controller('allController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.allController]).
-			controller('moderationController', ['$scope', '$attrs', '$rootScope', 'appService', self.moderationController]);
+			controller('moderationController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.moderationController]).
+			// controller('search', ['$scope', '$attrs', '$rootScope', self.searchController]).
+			controller('contributorController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.contributorController]);
 
 			// Directive
 			// ------------------------------------------------------------------------
@@ -354,7 +355,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 							// Who's couldn't get link view
 							viewLink : function(post) {
-								if(!_.contains(['quickpersonality', 'quicktrivia', 'quickpolling', 'quiz'], post.post_type))
+								if(!_.contains(['quickpersonality', 'quicktrivia', 'quickpolling', 'quiz'], post.post_type)) // quiz is old post_type
 								{ return true }
 							},
  							
@@ -380,6 +381,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						};
 
 						$scope.setStatus = function(post, status) {
+							console.log( $scope );
 							appService.appContext.setStatus(post, status, $scope);
 						};
 
@@ -415,8 +417,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							
 							// This use for all directives
 							$rootScope.allPosts = _.extend($scope, { post : post, all : $scope.data });
-
-							console.log( $rootScope.allPosts )
 						};
 
 						$scope.parseFeedsLink = function(post) {
@@ -430,7 +430,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				return {
 					restrict: 'E',
 					replace: true,
-					templateUrl: 'tabTemplate'
+					templateUrl: 'tabTemplate',
 				};
 			}]);
 
@@ -607,6 +607,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.filters.search = searchInput || ''; 
 					$scope.pageCurrent    = 1;
 
+					console.log($scope.filters)
+					
 					request();
 				};
 
@@ -649,8 +651,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function request() {
 					appService.cancel($scope.onRequest);
 
-					console.log( $scope.filters )
-
 					$scope.onLoad 	 = true;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
@@ -676,42 +676,35 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 
 				function createLabelCount(data) {
-					var allPost      = data.all_post,
-						publicPost   = data.public_post,
-						rejectedPost = data.rejected_post,
-						moderatePost = data.moderated_post,
-						privatePost  = data.private_post,
-						status       = $scope.filters.status,
-						label = '';
+					var status = $scope.filters.status,
+						label  = '';
 
-					console.log(data.moderated_post)
-					
 					// Total all post
-					if(_.contains(['all-status'], status))
-						label  = '<b>'+$filter('number')(allPost)+' Total Post</b> | ';  
+					if(_.contains(['all-status', 'public'], status))
+						label  = '<b>'+$filter('number')(data.all_post)+' Total Post</b> | ';  
 					
 					// Public Post
 					if(_.contains(['all-status', 'public'], status))
-						label += $filter('number')(publicPost)+' Public Post | ';
+						label += $filter('number')(data.public_post)+' Public Post | ';
 					
 					// Rejected
-					if(_.contains(['all-status', 'rejected'], status))
-						label += $filter('number')(rejectedPost)+' Rejected | ';
+					if(_.contains(['all-status', 'rejected', 'public'], status))
+						label += $filter('number')(data.rejected_post)+' Rejected | ';
 					
 					// ModerateModeration
-					if(_.contains(['all-status', 'moderated'], status) )
-						label += $filter('number')(moderatePost)+' Need Moderation';
+					if(_.contains(['all-status', 'moderated', 'public'], status) )
+						label += $filter('number')(data.moderated_post)+' Need Moderation';
 
 					// Need Moderation
 					if(_.contains(['private'], status) )
-						label += $filter('number')(privatePost)+' Private Post';
+						label += $filter('number')(data.private_post)+' Private Post';
 
 					// Need Moderation
 					if(_.contains(['approved'], status) )
-						label += $filter('number')(publicPost)+' Approved Post';
+						label += $filter('number')(data.public_post)+' Approved Post';
 
 
-					$rootScope.countPost = label;  
+					$scope.countPost = label;  
 				}
 
 				// On
@@ -728,7 +721,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			})();
 		},
 
-		moderationController: function($scope, $attrs, $rootScope, appService) {
+		moderationController: function($scope, $attrs, $rootScope, $filter, appService) {
 			return (function() {
 				_.map(appService.initData, function(val, key) {
 					$scope[key] = val;
@@ -738,20 +731,26 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				// ------------------------------------------------------------------------
 			
 				appService.controllerData['moderated'] = $scope;
-				$scope.controller = 'moderated';
-				$scope.filters.status = 'moderated';	// Overide status from filters
-				$scope.onRequest = void 0;
+				$scope.controller       = 'moderated';
+				$scope.filters.status   = 'moderated';	// Overide status from filters
+				$scope.onRequest        = void 0;
+				$scope.createLabelCount = createLabelCount;
+
+				$rootScope.moderatedTop = void 0;
+
+
+				// var appContext.filters.status = 'moderated';
+
+				console.log( appService.controllerData );
 
 				request();
-
-
 				// Methods
 				// ------------------------------------------------------------------------
 				
 				$scope.search = function(searchInput) {
 					$scope.filters.search = searchInput || ''; 
 					$scope.pageCurrent    = 1;
-
+					console.log( $scope.filters )
 					request();
 				};
 
@@ -797,13 +796,28 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.pageTotal               = data.all_post;
 					$scope.data                    = data.data;
 					
+					// console.log( 'Top' )
 					// $rootScope.publicCount         = data.public_post;
 					// $rootScope.rejectedCount       = data.rejected_post;
-					$rootScope.moderationCount     = data.moderated_post;
 
 					$scope.onLoad                  = false;
 					$scope.checkAll                = false;
+
+					createLabelCount(data);
 				};
+
+				function createLabelCount(data) {
+					var status = $scope.filters.status,
+						label  = '';
+
+					
+					// ModerateModeration
+					label += $filter('number')(data.moderated_post)+' Need Moderation';
+
+					$scope.countPost         = label;  
+
+					$rootScope.moderatedTop  = data.moderated_post;
+				}
 
 				function handleError(error) {
 					console.log(error);
@@ -813,7 +827,143 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				// ------------------------------------------------------------------------
 				
 				$scope.$on('moderationOnTabChange', function() 
-				{ appService.apply({'localContext': $scope}); });
+				{ 
+					$scope.filters.status = 'moderated';
+					appService.apply({'localContext': $scope}); 
+					console.log( $scope );
+				});
+			})();
+		},
+
+		contributorController : function($scope, $attrs, $rootScope, $filter, appService) {
+			return (function() {
+				_.map(appService.initData, function(val, key) {
+					$scope[key] = val;
+				});
+
+				// Init
+				// ------------------------------------------------------------------------
+			
+				appService.controllerData['contributor'] = $scope;
+				$scope.controller         = 'contributor';
+				$scope.filters.status     = 'contributor';	// Overide status from filters
+				$scope.onRequest          = void 0;
+				$scope.createLabelCount   = createLabelCount;
+
+				console.log( appService.controllerData );
+
+				request();
+
+				// Methods
+				// ------------------------------------------------------------------------
+				
+				$scope.search = function(searchInput) {
+					$scope.filters.search = searchInput || ''; 
+					$scope.pageCurrent    = 1;
+
+					request();
+				};
+
+				$scope.bulkAction = function(selected) {
+					console.log(_.where($scope.data, {'checked': true}).map(function(item) { return item.id }));
+				};
+
+				$scope.dropdownAction = function(name, selected) {
+					$scope.filters[name.replace(/^filter-/, '')] = selected;
+				};
+
+				$scope.onSort = function(sortBy) { 
+					$scope.sort.reverse = $scope.sort.key != sortBy ? false : !$scope.sort.reverse;
+					$scope.sort.key     = sortBy;
+				};
+
+				$scope.onCheckAll = function()
+				{
+					$scope.checkAll = !$scope.checkAll;
+					$scope.data.forEach(function(post) {
+						post.checked = $scope.checkAll;
+					});
+				}
+
+				$scope.changePage = function() { 
+					request();
+				};
+
+				// Local Methods
+				// ------------------------------------------------------------------------
+				
+				function request() {
+					appService.cancel($scope.onRequest);
+
+					console.log( $scope );
+
+					$scope.onLoad 	 = true;
+					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, {'contributor' : true}, $scope.sort);
+					$scope.onRequest.then(handleResponse, handleError);
+				};
+
+				function handleResponse(data) {
+					$scope.pageCurrent             = data.current_page;
+					$scope.pageCount               = data.last_page;
+					$scope.pageTotal               = data.all_post;
+					$scope.data                    = data.data;
+					
+					$scope.onLoad                  = false;
+					$scope.checkAll                = false;
+
+					createLabelCount(data);
+				};
+
+				function handleError(error) {
+					console.log(error);
+				};
+				
+				function createLabelCount(data) {
+					var status = $scope.filters.status,
+						label  = '';
+
+					// Total all post
+					if(_.contains(['all-status', 'public', 'contributor'], status))
+						label  = '<b>'+$filter('number')(data.all_post)+' Total Post</b> | ';  
+					
+					// Public Post
+					if(_.contains(['all-status', 'public', 'contributor'], status))
+						label += $filter('number')(data.public_post)+' Public Post | ';
+					
+					// Rejected
+					if(_.contains(['all-status', 'rejected', 'public', 'contributor'], status))
+						label += $filter('number')(data.rejected_post)+' Rejected | ';
+					
+					// ModerateModeration
+					if(_.contains(['all-status', 'moderated', 'public', 'contributor'], status) )
+						label += $filter('number')(data.moderated_post)+' Need Moderation';
+
+					// Need Moderation
+					if(_.contains(['private'], status) )
+						label += $filter('number')(data.private_post)+' Private Post';
+
+					// Need Moderation
+					if(_.contains(['approved'], status) )
+						label += $filter('number')(data.public_post)+' Approved Post';
+
+					$scope.countPost = label;  
+				}
+
+				// On
+				// ------------------------------------------------------------------------
+				
+				$scope.$on('contributorOnTabChange', function() 
+				{ 
+					$scope.filters.status = 'contributor';
+					appService.apply({'localContext': $scope}); 
+					console.log($scope) 
+				});
+			})();
+		},
+
+		searchController : function($scope, $attrs, $rootSCope) {
+			return (function() {
+
 			})();
 		}
 	});
