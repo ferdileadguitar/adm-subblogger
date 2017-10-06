@@ -45,6 +45,21 @@
 		padding: 0 5px;
 	}
 
+	.tbls-label-count {
+
+		span {
+
+
+			&:after{
+				content : ' | ';
+				display : inline-block;
+				margin  : 0 5px;  
+			}
+			&:first-child { font-weight : 700; }
+			&:last-child:after { content: ''; }
+		}
+	}
+
 	.tbls-approved { background-color: #e8ffea; }
 	.tbls-rejected { background-color: #fff1ee; }
 	.tbls-moderated { background-color: #fdfac5; }

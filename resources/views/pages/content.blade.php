@@ -104,7 +104,7 @@
             <!-- Table Flex -->
             <div class="tbls-houder">
                <div class="tbls tbls-content">
-                    <div><h4 ng-bind-html="countPost"></h4></div>
+                    <div class="tbls-label-count"><h4 ng-bind-html="countPost"></h4></div>
 
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
@@ -259,7 +259,7 @@
             <!-- Table Flex -->
             <div class="tbls-houder" ng-hide="onLoad" ng-style="{'margin-top' : '30px'}">
                 <div class="tbls tbls-content">
-                    <div><h4 ng-bind-html="countPost"></h4></div>
+                    <div class="tbls-label-count"><h4 ng-bind-html="countPost"></h4></div>
 
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>

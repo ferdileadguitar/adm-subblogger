@@ -114,6 +114,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							cancelText: 'Ok',
 							singleButton: true
 						});
+
+						return false;
 					}
 
 					// ------------------------------------------------------------------------
@@ -681,27 +683,27 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					// Total all post
 					if(_.contains(['all-status', 'public'], status))
-						label  = '<b>'+$filter('number')(data.all_post)+' Total Post</b> | ';  
+						label  = '<span>'+$filter('number')(data.all_post)+' Total Post</span>';  
 					
 					// Public Post
 					if(_.contains(['all-status', 'public'], status))
-						label += $filter('number')(data.public_post)+' Public Post | ';
+						label += '<span>'+$filter('number')(data.public_post)+' Public Post</span>';
 					
 					// Rejected
 					if(_.contains(['all-status', 'rejected', 'public'], status))
-						label += $filter('number')(data.rejected_post)+' Rejected | ';
+						label += '<span>'+$filter('number')(data.rejected_post)+' Rejected</span>';
 					
 					// ModerateModeration
 					if(_.contains(['all-status', 'moderated', 'public'], status) )
-						label += $filter('number')(data.moderated_post)+' Need Moderation';
+						label += '<span>'+$filter('number')(data.moderated_post)+' Need Moderation</span>';
 
 					// Need Moderation
 					if(_.contains(['private'], status) )
-						label += $filter('number')(data.private_post)+' Private Post';
+						label += '<span>'+$filter('number')(data.private_post)+' Private Post</span>';
 
 					// Need Moderation
 					if(_.contains(['approved'], status) )
-						label += $filter('number')(data.public_post)+' Approved Post';
+						label += '<span>'+$filter('number')(data.public_post)+' Approved Post</span>';
 
 
 					$scope.countPost = label;  
@@ -756,6 +758,15 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				$scope.bulkAction = function(selected) {
 					console.log(_.where($scope.data, {'checked': true}).map(function(item) { return item.id }));
+					appService.appContext.bulkAction(
+						selected, 
+						_.where($scope.data, 
+							{'checked': true}).map(function(item) { 
+								return {id: item.id}; 
+							}
+						),
+						$scope
+					);
 				};
 
 				$scope.dropdownAction = function(name, selected) {
@@ -812,7 +823,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					
 					// ModerateModeration
-					label += $filter('number')(data.moderated_post)+' Need Moderation';
+					label += '<span>'+$filter('number')(data.moderated_post)+' Need Moderation'+'</span>';
 
 					$scope.countPost         = label;  
 
@@ -866,6 +877,15 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				$scope.bulkAction = function(selected) {
 					console.log(_.where($scope.data, {'checked': true}).map(function(item) { return item.id }));
+					appService.appContext.bulkAction(
+						selected, 
+						_.where($scope.data, 
+							{'checked': true}).map(function(item) { 
+								return {id: item.id, status : item.status}; 
+							}
+						),
+						$scope
+					);
 				};
 
 				$scope.dropdownAction = function(name, selected) {
@@ -924,27 +944,27 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					// Total all post
 					if(_.contains(['all-status', 'public', 'contributor'], status))
-						label  = '<b>'+$filter('number')(data.all_post)+' Total Post</b> | ';  
+						label  = '<span>'+$filter('number')(data.all_post)+' Total Post</span> ';  
 					
 					// Public Post
 					if(_.contains(['all-status', 'public', 'contributor'], status))
-						label += $filter('number')(data.public_post)+' Public Post | ';
+						label += '<span>'+$filter('number')(data.public_post)+' Public Post</span>';
 					
 					// Rejected
 					if(_.contains(['all-status', 'rejected', 'public', 'contributor'], status))
-						label += $filter('number')(data.rejected_post)+' Rejected | ';
+						label += '<span>'+$filter('number')(data.rejected_post)+' Rejected</span>';
 					
 					// ModerateModeration
 					if(_.contains(['all-status', 'moderated', 'public', 'contributor'], status) )
-						label += $filter('number')(data.moderated_post)+' Need Moderation';
+						label += '<span>'+$filter('number')(data.moderated_post)+' Need Moderation</span>';
 
 					// Need Moderation
 					if(_.contains(['private'], status) )
-						label += $filter('number')(data.private_post)+' Private Post';
+						label += '<span>'+$filter('number')(data.private_post)+' Private Post</span>';
 
 					// Need Moderation
 					if(_.contains(['approved'], status) )
-						label += $filter('number')(data.public_post)+' Approved Post';
+						label += '<span>'+$filter('number')(data.public_post)+' Approved Post</span>';
 
 					$scope.countPost = label;  
 				}
