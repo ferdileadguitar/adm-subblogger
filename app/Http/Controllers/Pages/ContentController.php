@@ -10,28 +10,13 @@ use App\User;
 
 class ContentController extends \App\Http\Controllers\PageController
 {
-	protected $globalData = [];
-
-	// ------------------------------------------------------------------------
-	
-    public function __construct()
-    {
-        $this->globalData = [
-    		'pageTitle' => 'Contents - ' . config('app.name'),
-    		'activeNav' => 'contents'
-    	];
-    }
-
-    // ------------------------------------------------------------------------
     
-    public function index(Request $request)
+    public function index()
     {
-        return $this->view('content', array_merge($this->globalData, [
-            'moderationCount' => Post::countModerated()
-        ]));
+        return $this->view('content', ['moderationCount' => Post::countModerated()]);
     }
 
-    public function getPost(Request $request, $username = FALSE)
+    public function getPost($username = FALSE)
     {   
         // Make sure user params has isset
         if( !$username )
@@ -43,10 +28,10 @@ class ContentController extends \App\Http\Controllers\PageController
         // No user abort 404
         if( !empty($user) )
         {
-            return $this->view('content-user', array_merge($this->globalData, [
+            return $this->view('content-user', [
                         'user_id'  => $user->id,
                         'username' => $user->username
-                ]));
+                ]);
         }else
         {
             abort(404);

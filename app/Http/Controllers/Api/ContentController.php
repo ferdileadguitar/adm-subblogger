@@ -21,24 +21,6 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	public function getContents($type = FALSE)
 	{
-        // dd( $type );
-        // $response = array();
-
-        // switch ($type) {
-        //     case 'all-contents':
-        //         // $response = $this->response
-        //         # code...
-        //         break;
-        //     case 'moderated':
-        //         # code....
-        //         break;
-        //     case 'contributor-only':
-        //         break;
-        //     default:
-        //         # code...
-        //         break;
-        // }
-
 		return $this->response(Post::getFiltered($this->request)->cleanPaginate($this->take));
 	}
 

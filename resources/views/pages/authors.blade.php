@@ -5,7 +5,7 @@
 @endpush
 
 @push('scripts')
-<script src="{{ asset('dist/js/content-user.js') }}"></script>
+<script src="{{ asset('dist/js/authors.js') }}"></script>
 @endpush
 
 @section('content')
@@ -312,7 +312,4 @@
         </div>
     </div>
 </script>
-
-<!-- Additional variable -->
-<script type="text/javascript">window.user = {id: '{{ $user_id }}', name: '{{ $username }}'};</script>
 @endsection

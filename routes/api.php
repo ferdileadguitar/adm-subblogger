@@ -19,6 +19,9 @@ Route::group(['middleware' => array('api')], function() {
 	// Post or put feeds data from editor
 	Route::match(['put', 'get'], 'feeds/{type?}', 'Api\ContentController@feedState');
 
+	// Authors
+	Route::get('authors', 'Api\AuthorsController@getAuthors');
+
 	// Image asset 
 	Route::post('asset/cover-img', 'Api\AssetController@postImageCover');
 
