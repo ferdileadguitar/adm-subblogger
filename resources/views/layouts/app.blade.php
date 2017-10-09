@@ -29,7 +29,7 @@
 
     <!-- Scripts -->
     <!-- <script>var baseURL = 'http://new-admin.keepo.pyo/';</script> -->
-    <script>var baseURL = "{{ env('APP_URL') }}";</script>
+    <script>var baseURL = "{{ config('app.url') }}";</script>
     @stack('script_addons')
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
@@ -45,5 +45,6 @@
 
     <script src="{{ asset('dist/js/vendor.js') }}"></script>
     @stack('scripts')
+    @stack('json')
 </body>
 </html>

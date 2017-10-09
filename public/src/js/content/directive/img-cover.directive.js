@@ -138,7 +138,7 @@ class ImgCover {
 						element.find('.fileupload-pool.cover-picture input[type=file]'), 
 						{
 							dropZone: element.find('.fileupload-pool.cover-picture'), 
-							uploadURL: thisFileUpload.uploadCoverUrl
+							uploadURL: window.baseURL + thisFileUpload.uploadCoverUrl // Why i'm put baseURL here ..:()
 						},
 						scope);
 			}

@@ -389,7 +389,6 @@ class ArticleEditors {
 					},
 					// elementsContainer : document.querySelector('.editor-body'),
 				});
-
 				self.mediumInsert($);
 				$('#editor-content').mediumInsert(
 				{

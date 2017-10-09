@@ -9,6 +9,7 @@ Route::group(['middleware' => 'admin'], function() {
 	Route::get('/', 'Pages\ContentController@index')->name('content');
 	Route::get('/contents', 'Pages\ContentController@index')->name('contentWithURI');
 
+	Route::get('users/{username}', 'Pages\ContentController@getPost')->name('contentWithUser');
 });
 
 // Login - Logout

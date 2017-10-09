@@ -68,6 +68,9 @@ class Post extends Model
 		if ($search = $request->input('search'))
 		{ self::setSearch($search); }
 
+		if ($search = $request->input('users'))
+		{ self::setUsers($search); }
+
 		return self::$__instance;
 	}
 
@@ -503,6 +506,13 @@ class Post extends Model
 		});
 	}
 
+	private static function setUsers($search = FALSE)
+	{
+		self::$postData->where(function($query) use($search) {
+			$query->where('user_id', $search);
+		});
+	}
+
 	public function getTagsByPost($post_id){
       	$post = $this->where('id','=',$post_id);
       	$tags = [];
@@ -521,7 +531,7 @@ class Post extends Model
 	// ------------------------------------------------------------------------
 	
 	public function user()
-	{ return $this->belongsTo('App\User'); }
+	{ return $this->belongsTo('App\User', 'user_id'); }
 
 	// ------------------------------------------------------------------------
 	

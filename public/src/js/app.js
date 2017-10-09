@@ -19,8 +19,8 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 		    });
 
 		    this.application.config([
-		    	'$compileProvider', '$httpProvider',
-		    	function($compileProvider, $httpProvider) {
+		    	'$compileProvider', '$httpProvider', 
+		    	function($compileProvider, $httpProvider, $routeProvider) {
 			    	// whitelist href content
                     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|javascript):/);
                     // disable debug info
@@ -216,39 +216,10 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 		},
 
 		appFilter : function() {
-			this.application.filter('appFilter', ['$http', function($http){
-				// return {
-				// 	// coverFilter : coverFilter,
-				// 	// viewFilter  : viewFilter,
-				// 	// editorFilter: editorFilter,
-				// 	makeUppercase: makeUppercase
-				// };
-
-				// function coverFilter(post, event) {
-				// 	console.log( post, event );
-				// 	if (_.contains(['article', 'listicle'], post.post_type))
-				// 	{
-
-				// 	}
-				// }
-
-				// function makeUppercase(item) {
-				// 	return item.toUppercase();
-				// }
-
-				// function viewFilter(post, event) {
-
-				// }
-
-				// function editorFilter(post, event) {
-
-				// }
-				// return {makeUppercase : makeUppercase};
-				
-				return function (item) {
-					console.log( item );
-			        return item.toUpperCase();
-			    };
+			this.application.filter('usersParseLinks', [function(){
+				return function(slug, user) {
+					return [window.baseURL, './../users'].join('/').concat('?name='+user);
+				}
 			}]);
 		},
 

@@ -12,7 +12,7 @@ function _initFileUpload($element, options, $scope) {
 	// ------------------------------------------------------------------------
 
 	fileUploadOptions = {
-		url       : options.uploadURL ? options.uploadURL : this.uploadURL,
+		url       : options.uploadURL ? (baseURL + options.uploadURL) : (baseURL + this.uploadURL),
 		dropZone  : void 0,
 
 		add: function(e, data) {

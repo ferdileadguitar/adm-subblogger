@@ -5,7 +5,7 @@
 @endpush
 
 @push('scripts')
-<script src="{{ asset('dist/js/content.js') }}"></script>
+<script src="{{ asset('dist/js/content-user.js') }}"></script>
 @endpush
 
 @section('content')
@@ -15,7 +15,6 @@
         <nav class="tabs-nav">
             <a ng-click="openTab($event, 'all');" class="box active">All Contents</a>
             <a ng-click="openTab($event, 'moderation');" class="box">Need Moderation <span class="label label-danger" ng-bind="moderatedTop"></span></a>
-            <a ng-click="openTab($event, 'contributor');" class="box">Contributor Only</a>
         </nav>
 
         <aside class="adds">
@@ -38,15 +37,15 @@
     </header>
 
     <div class="tabs-body">
-        <div id="all" class="tab-component tab-open" ng-controller="allController">
+        <div id="all" class="tab-component tab-open" ng-controller="allController" ng-init="(filters.users) = {{ $user_id }}">
             <tab></tab>
         </div>
 
-        <div id="moderation" class="tab-component" ng-controller="moderationController">
+        <div id="moderation" class="tab-component" ng-controller="moderationController" ng-init="(filter.users) = {{ $user_id }}">
             <tab></tab>
         </div>
 
-        <div id="contributor" class="tab-component" ng-controller="contributorController">
+        <div id="contributor" class="tab-component" ng-init="(filters.users) = {{ $user_id }}">
             <!-- Filters -->
             <!-- <tab></tab> -->
             <div class="filters">
@@ -144,7 +143,7 @@
             <div class="tbls-row">
                 <div class="tbls-col-1"><input type="checkbox" ng-click="onCheck(post)" ng-checked="post.checked"></div>
                 <!-- <div class="tbls-col-3"><a ng-href="<@ filters.status | usersParseLinks:(post.user.slug) @>"><@ post.user.display_name @></a></div> -->
-                <div class="tbls-col-3"><a ng-href="<@ post.user.url @>" target="_blank"><@ post.user.display_name @></a></div>
+                <div class="tbls-col-3"><a ng-href="<@ post.user.url @>"><@ post.user.display_name @></a></div>
                 <div class="tbls-col-xl">
                     <div class="tbls-title-box">
                         <figure class="tbls-thumbnail" ng-click="changeCover(post, 'image', $index)" ng-class="{ 'can-change' : showFeature.imgCover(post) }" ng-attr-title="<@ showFeature.title(post) @>"><img ng-src="<@ (post.image.url) ? post.image.url : '{{ url('img/tile-no-image.jpg') }}' @>"></figure>
@@ -314,17 +313,6 @@
     </div>
 </script>
 
-<script id="editorModal" type="text/ng-template">
-    <div class="mdl mdl-popup mdl-open">
-        <div class="mdl-component">
-            <article class="mdl-body">
-                <ng-include src="src.editor"></ng-include>
-            </article>
-            <footer class="mdl-footer">
-            </footer>
-
-            <a class="mdl-close" ng-click="close()">&times;</a>
-        </div>
-    </div>
-</script>
+<!-- Additional variable -->
+<script type="text/javascript">window.user = {id: '{{ $user_id }}', name: '{{ $username }}'};</script>
 @endsection

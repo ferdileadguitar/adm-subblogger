@@ -10,9 +10,10 @@ let ROOT_PATH = path.resolve(__dirname),
 module.exports = {
 	context  : APP_PATH,
 	entry: {
-		login    : ["./src/js/app.js", "./src/js/login.js"],
-		content  : ["./src/js/app.js", "./src/js/content.js"],
-		vendor   : ["underscore", "angular", "angular-sanitize", "joii", "ng-tags-input"],
+		'login'        : ["./src/js/app.js", "./src/js/login.js"],
+		'content'      : ["./src/js/app.js", "./src/js/content.js"],
+		'content-user' : ["./src/js/app.js", "./src/js/content-user.js"],
+		'vendor'       : ["underscore", "angular", "angular-sanitize", "joii", "ng-tags-input"],
 	},
 	output: {
 		path           : DIST_PATH,

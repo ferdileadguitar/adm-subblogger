@@ -9,7 +9,6 @@ Route::group(['middleware' => array('api')], function() {
 
 	// Contents
 	Route::get('contents', 'Api\ContentController@getContents');
-	Route::get('contents/count-moderated', 'Api\ContentController@getCountModerated');
 
 	Route::put('contents/set-status', 'Api\ContentController@setStatus');
 	Route::put('contents/set-sticky', 'Api\ContentController@setSticky');

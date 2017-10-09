@@ -33,20 +33,17 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 			// Application controller
 			// this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput']);
 			// ------------------------------------------------------------------------
-			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', '$rootScope', 'appService', 'tabService', function($scope, $attrs, $filter, $rootScope, appService, tabService) {
+			this.application.controller('app-controller', ['$scope', '$attrs', '$filter', '$rootScope', '$window', 'appService', 'tabService', function($scope, $attrs, $filter, $rootScope, $window, appService, tabService) {
 				// Vars
 				// ------------------------------------------------------------------------
 
 				$scope.mainApp             = self;
 				$scope.onRequest           = void 0;
-				// $scope.searchInput         = void 0;
 				
 				// All controller that's why i'm use rootScope
 				$rootScope.moderationCount = 0;
 				$rootScope.publicCount     = 0;
 				$rootScope.rejectedCount   = 0;
-
-				// $rootScope.countPost       = void 0; 
 
 				// Local init
 				// ------------------------------------------------------------------------
@@ -58,7 +55,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					'controllerData': {
 						'all': { data: [] },
 						'moderated': { data: [] },
-						'contributor': { data: [] },
 					},
 
 					// Data
@@ -75,19 +71,25 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						filters: {
 							dateRange: 'all-time',
 							status: 'all-status',
-							search: ''
+							search: '',
+							users: $window.user.id
 						},
 
 						sort: {
 							key: 'created',
 							reverse: true
 						},
+
+						user : {
+							id : $window.user.id
+						}
 					}
 				});
 				tabService.setTabActive({$$el: $('all'), name: 'all'});
 
 				// ------------------------------------------------------------------------
 				$scope.init = function(data) {
+					console.log( window.user )
 					Object.assign(appService.appContext, data);
 				};
 
@@ -249,7 +251,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					var otherCtrl = void 0;
 
 					if (remove) {
-						['all', 'moderated', 'contributor'].forEach(function(ctrl) {
+						['all', 'moderated'].forEach(function(ctrl) {
 							appService.controllerData[ctrl].data = _.without(
 								appService.controllerData[ctrl].data,
 								_.findWhere(appService.controllerData[ctrl].data, {'id': post.id})
@@ -262,16 +264,16 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					switch (controller) {
 						case 'all':
-							otherCtrl = ['moderated', 'contributor'];
+							otherCtrl = ['moderated'];
 							break;
 						case 'moderated':
-							otherCtrl = ['all', 'contributor'];
+							otherCtrl = ['all'];
 							break;
 						case 'contributor':
 							otherCtrl = ['moderated', 'all'];
 							break;
 						case 'every':
-							otherCtrl = ['all', 'moderated', 'contributor'];
+							otherCtrl = ['all', 'moderated'];
 							break;
 					}
 
@@ -284,9 +286,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 			}]).
 			controller('allController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.allController]).
-			controller('moderationController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.moderationController]).
-			// controller('search', ['$scope', '$attrs', '$rootScope', self.searchController]).
-			controller('contributorController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.contributorController]);
+			controller('moderationController', ['$scope', '$attrs', '$rootScope', '$filter', 'appService', self.moderationController]);
 
 			// Directive
 			// ------------------------------------------------------------------------
@@ -596,11 +596,16 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				// Init
 				// ------------------------------------------------------------------------
 				
+				// console.log( $scope );
+				console.log( $scope.user );
 				appService.controllerData['all'] = $scope;
 				$scope.controller       = 'all';
 				$scope.onRequest        = void 0;
+				// $scope.filters.users    = void 0;
 				$scope.createLabelCount = createLabelCount;
+
 				request();
+
 				
 				// Methods
 				// ------------------------------------------------------------------------
@@ -609,8 +614,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.filters.search = searchInput || ''; 
 					$scope.pageCurrent    = 1;
 
-					console.log($scope.filters)
-					
 					request();
 				};
 
@@ -739,12 +742,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.createLabelCount = createLabelCount;
 
 				$rootScope.moderatedTop = void 0;
-
-
-				// var appContext.filters.status = 'moderated';
-
-				console.log( appService.controllerData );
-
 				request();
 				// Methods
 				// ------------------------------------------------------------------------
@@ -795,6 +792,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				
 				function request() {
 					appService.cancel($scope.onRequest);
+					console.log( $scope.user.id )
 
 					$scope.onLoad 	 = true;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
@@ -845,147 +843,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				});
 			})();
 		},
-
-		contributorController : function($scope, $attrs, $rootScope, $filter, appService) {
-			return (function() {
-				_.map(appService.initData, function(val, key) {
-					$scope[key] = val;
-				});
-
-				// Init
-				// ------------------------------------------------------------------------
-			
-				appService.controllerData['contributor'] = $scope;
-				$scope.controller         = 'contributor';
-				$scope.filters.status     = 'contributor';	// Overide status from filters
-				$scope.onRequest          = void 0;
-				$scope.createLabelCount   = createLabelCount;
-
-				console.log( appService.controllerData );
-
-				request();
-
-				// Methods
-				// ------------------------------------------------------------------------
-				
-				$scope.search = function(searchInput) {
-					$scope.filters.search = searchInput || ''; 
-					$scope.pageCurrent    = 1;
-
-					request();
-				};
-
-				$scope.bulkAction = function(selected) {
-					console.log(_.where($scope.data, {'checked': true}).map(function(item) { return item.id }));
-					appService.appContext.bulkAction(
-						selected, 
-						_.where($scope.data, 
-							{'checked': true}).map(function(item) { 
-								return {id: item.id, status : item.status}; 
-							}
-						),
-						$scope
-					);
-				};
-
-				$scope.dropdownAction = function(name, selected) {
-					$scope.filters[name.replace(/^filter-/, '')] = selected;
-				};
-
-				$scope.onSort = function(sortBy) { 
-					$scope.sort.reverse = $scope.sort.key != sortBy ? false : !$scope.sort.reverse;
-					$scope.sort.key     = sortBy;
-				};
-
-				$scope.onCheckAll = function()
-				{
-					$scope.checkAll = !$scope.checkAll;
-					$scope.data.forEach(function(post) {
-						post.checked = $scope.checkAll;
-					});
-				}
-
-				$scope.changePage = function() { 
-					request();
-				};
-
-				// Local Methods
-				// ------------------------------------------------------------------------
-				
-				function request() {
-					appService.cancel($scope.onRequest);
-
-					console.log( $scope );
-
-					$scope.onLoad 	 = true;
-					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, {'contributor' : true}, $scope.sort);
-					$scope.onRequest.then(handleResponse, handleError);
-				};
-
-				function handleResponse(data) {
-					$scope.pageCurrent             = data.current_page;
-					$scope.pageCount               = data.last_page;
-					$scope.pageTotal               = data.all_post;
-					$scope.data                    = data.data;
-					
-					$scope.onLoad                  = false;
-					$scope.checkAll                = false;
-
-					createLabelCount(data);
-				};
-
-				function handleError(error) {
-					console.log(error);
-				};
-				
-				function createLabelCount(data) {
-					var status = $scope.filters.status,
-						label  = '';
-
-					// Total all post
-					if(_.contains(['all-status', 'public', 'contributor'], status))
-						label  = '<span>'+$filter('number')(data.all_post)+' Total Post</span> ';  
-					
-					// Public Post
-					if(_.contains(['all-status', 'public', 'contributor'], status))
-						label += '<span>'+$filter('number')(data.public_post)+' Public Post</span>';
-					
-					// Rejected
-					if(_.contains(['all-status', 'rejected', 'public', 'contributor'], status))
-						label += '<span>'+$filter('number')(data.rejected_post)+' Rejected</span>';
-					
-					// ModerateModeration
-					if(_.contains(['all-status', 'moderated', 'public', 'contributor'], status) )
-						label += '<span>'+$filter('number')(data.moderated_post)+' Need Moderation</span>';
-
-					// Need Moderation
-					if(_.contains(['private'], status) )
-						label += '<span>'+$filter('number')(data.private_post)+' Private Post</span>';
-
-					// Need Moderation
-					if(_.contains(['approved'], status) )
-						label += '<span>'+$filter('number')(data.public_post)+' Approved Post</span>';
-
-					$scope.countPost = label;  
-				}
-
-				// On
-				// ------------------------------------------------------------------------
-				
-				$scope.$on('contributorOnTabChange', function() 
-				{ 
-					$scope.filters.status = 'contributor';
-					appService.apply({'localContext': $scope}); 
-					console.log($scope) 
-				});
-			})();
-		},
-
-		searchController : function($scope, $attrs, $rootSCope) {
-			return (function() {
-
-			})();
-		}
 	});
 
 	// ------------------------------------------------------------------------
