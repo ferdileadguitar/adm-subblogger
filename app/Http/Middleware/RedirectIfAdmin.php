@@ -32,7 +32,7 @@ class RedirectIfAdmin
     {
         $response = $next($request);
 
-        if( $request->session()->exists('_username') )
+        if( $request->session()->exists('admin:username') )
         {
             if ( $request->ajax() ) 
             {

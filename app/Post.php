@@ -478,7 +478,7 @@ class Post extends Model
 				self::$postData->orderBy('post_type', $reverse);
 				break;
 			case 'view':
-				self::$postData->orderBy('view', $reverse);
+				self::$postData->orderBy('views', $reverse);
 				break;
 			case 'share':
 				self::$postData
@@ -546,15 +546,33 @@ class Post extends Model
 	// ------------------------------------------------------------------------
 	
 	public function share()
-	{ return $this->hasOne('App\Share'); }
+	{ return $this->hasOne('App\Share')->selectRaw('post_id, fb, addon, twitter, shares'); }
 
 	// ------------------------------------------------------------------------
 	
+	public function sumShares()
+	{ 
+		return $this->share()->selectRaw('CAST(SUM(`post_shares`.`fb` + `post_shares`.`addon` + `post_shares`.`twitter` + `post_shares`.`shares`) as UNSIGNED) as "total_shares"')->groupBy('post_id', 'fb', 'addon', 'twitter', 'shares'); 
+	}
+	// ------------------------------------------------------------------------
+
 	public function embed()
 	{ return $this->hasMany('App\Embed', 'id_post'); }
 
 	// ------------------------------------------------------------------------
+
+	public function embedLog()
+	{ return $this->hasMany('App\EmbedLog', 'user_id', 'user_id')->selectRaw('user_id, shareid, post_id'); }
 	
+	// ------------------------------------------------------------------------
+
+
+	public function sumEmbed()
+	{ 
+		return $this->embed()->select(DB::raw('shareid, view, CAST(SUM(`post_embed`.`view`) as UNSIGNED) AS "total_embed"'))->groupBy('id_post', 'shareid', 'view'); 
+	}
+
+	// ------------------------------------------------------------------------
 	public function postTag()
 	{ return $this->hasMany('App\PostTag'); }
 

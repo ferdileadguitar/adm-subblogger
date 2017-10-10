@@ -11,40 +11,10 @@
 @section('content')
 <!-- Tabs -->
 <div class="tabs" ng-controller="tabs">
-    <header class="tabs-header">
-        <nav class="tabs-nav">
-            <a ng-click="openTab($event, 'all');" class="box active">All Contents</a>
-            <a ng-click="openTab($event, 'moderation');" class="box">Need Moderation <span class="label label-danger" ng-bind="moderatedTop"></span></a>
-        </nav>
-
-        <aside class="adds">
-            <div class="box drop" name="bulk-action" singleaction="bulkAction" ng-controller="dropdown">
-                <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
-                    <span class="drop-component-text">Bulk Action</span>
-                    <span class="glyphicon glyphicon-chevron-down"></span>
-                </div>
-
-                <ul class="box drop-list">
-                    <li ng-click="select($event, 'approve');">Approve</li>
-                    <li ng-click="select($event, 'moderate');">Moderate</li>
-                    <li ng-click="select($event, 'reject');">Reject</li>
-                    <li ng-click="select($event, 'sticky');">Sticky</li>
-                    <li ng-click="select($event, 'premium');">Premium</li>
-                    <li class="text-danger" ng-click="select($event, 'delete');">Delete</li>
-                </ul>
-            </div>
-        </aside>
-    </header>
-
     <div class="tabs-body">
         <div id="all" class="tab-component tab-open" ng-controller="allController">
             <tab></tab>
         </div>
-
-        <div id="moderation" class="tab-component" ng-controller="moderationController">
-            <tab></tab>
-        </div>
-
         <div id="contributor" class="tab-component">
             <!-- Filters -->
             <!-- <tab></tab> -->
@@ -93,8 +63,8 @@
                 </div>
 
                 <div class="filter-component filter-full search" ng-controller="search">
-                    <form action="javascript:;" class="box" ng-submit="submit($event)">
-                        <input type="text" ng-model="searchInput" placeholder="Search Post">
+                    <form action="javascript:;" class="box box-xs" ng-submit="submit($event)">
+                        <input type="text" ng-model="searchInput" placeholder="Search Author">
                         <input type="submit" value="Search" class="btn btn-success">
                     </form>
                 </div>
@@ -103,18 +73,18 @@
             <!-- Table Flex -->
             <div class="tbls-houder">
                <div class="tbls tbls-content">
-                    <div class="tbls-label-count"><h4 ng-bind-html="countPost"></h4></div>
+                    <div class="tbls-label-count"><h4 ng-bind-html="countAuthor"></h4></div>
 
                     <header class="tbls-header tbls-row">
                         <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
-                        <div class="tbls-col-3">Author</div>
-                        <div class="tbls-col-xl">Title</div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')">Channel <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('format')">Format  <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">View  <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">Share  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">Embed  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('created')">Created  <span ng-show="sort.key == 'created'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <!-- <div class="tbls-col-3">Author</div> -->
+                        <!-- <div class="tbls-col-xl">Title</div> -->
+                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')">Post <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('format')">Total View  <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">Average View  <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">Total Share  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">Total Embed  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('created')">Email  <span ng-show="sort.key == 'created'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
                         <div class="tbls-col-2"></div>
                         <div class="tbls-col-3"></div>
                     </header>
@@ -138,63 +108,39 @@
 
 <!-- Feeds -->
 <script id="feedListTemplate" type="text/ng-template">
-    <div ng-if="! _.isEmpty(data)" ng-repeat="post in data track by $index">
-        <div class="box" ng-class="{'bg-warning': (post.status == -2), 'bg-danger': (post.status == 0), 'bg-success': (post.status == 1), 'with-footer': (! post.status && post.reason), 'tbls-loading': post.loading }">
+    <div ng-if="! _.isEmpty(data)" ng-repeat="author in data track by $index">
+        <div class="box with-border" ng-class="{'tbls-loading': author.loading }">
             <div class="tbls-row">
-                <div class="tbls-col-1"><input type="checkbox" ng-click="onCheck(post)" ng-checked="post.checked"></div>
-                <!-- <div class="tbls-col-3"><a ng-href="<@ filters.status | usersParseLinks:(post.user.slug) @>"><@ post.user.display_name @></a></div> -->
-                <div class="tbls-col-3"><a ng-href="<@ post.user.url @>"><@ post.user.display_name @></a></div>
-                <div class="tbls-col-xl">
-                    <div class="tbls-title-box">
-                        <figure class="tbls-thumbnail" ng-click="changeCover(post, 'image', $index)" ng-class="{ 'can-change' : showFeature.imgCover(post) }" ng-attr-title="<@ showFeature.title(post) @>"><img ng-src="<@ (post.image.url) ? post.image.url : '{{ url('img/tile-no-image.jpg') }}' @>"></figure>
-                        <div class="tbls-title">
-                            <div>
-                                <article ng-bind-html="post.title"></article>
-                                <footer>
-                                    <a ng-click="setEditor(post, 'title', $index)">Change Title</a>
-                                    <a ng-click="parseFeedsLink(post)" ng-if="showFeature.viewLink(post)">View</a>
-                                    <a ng-click="setEditor(post, post.post_type, $index)" ng-if="showFeature.editorLink(post)">Edit Detail</a>
-                                </footer>
-                            </div>
-                            <div class="tbls-tags">
-                                <article ng-bind-html="convertTags(post.tags)"></article>
-                                <footer>
-                                    <a ng-click="setEditor(post, 'tags', $index)">Edit Tags</a>
-                                </footer>
-                            </div>
-                        </div>
-                    </div>
+                <div class="tbls-col-1"><h4 ng-bind="$index+1"></h4></div>
+                <div class="tbls-col-6 text-left"><a href="javascript:0;" class="full-width"><h4 class="text-left"><@ author.username @></h4></a></div>
+                <div class="tbls-col-3">
+                    <h4 ng-bind-html="author.total_posts | number"></h4>
+                    <h6 class="text-uppercase">post</h6>
                 </div>
                 <div class="tbls-col-3">
-                    <@ post.channel.name @>
-                    <div><a ng-click="setEditor(post, 'channel', $index)" ng-if="showFeature.editorChannel(post)">Edit</a></div>
+                	<h4 ng-bind-html="author.total_views | number"></h4>
+                	<h6 class="text-uppercase">views</h6>
                 </div>
-                <div class="tbls-col-3"><@ post.post_type @></div>
-                <div class="tbls-col-3"><@ (post.views | number) @></div>
-                <div class="tbls-col-3"><@ post.shares || 0 @></div>
-                <div class="tbls-col-3"><@ post.embeds || 0 @></div>
                 <div class="tbls-col-3">
-                    <p><@ post.created @></p>
-                    <div><a ng-click="setEditor(post, 'created', $index)">Edit</a></div>
+                	<h4 ng-bind-html="author.average_views | number"></h4>
+                	<h6 class="text-uppercase">average views</h6>
                 </div>
-                <div class="tbls-col-2 tbls-btn-group">
-                    <div ng-hide="post.status == 2">
-                        <div ng-if="post.status != 1"><a title="Approve" class="btn-round btn-ok" ng-click="setStatus(post, 1)"><span class="glyphicon glyphicon-ok"></span></a></div>
-                        <div ng-if="post.status != -2"><a title="Moderate" class="btn-round btn-exclamation" ng-click="setStatus(post, -2)"><span></span></a></div>
-                        <div ng-if="post.status != 0"><a title="Reject" class="btn-round btn-remove" ng-click="setStatus(post, 0)"><span class="glyphicon glyphicon-remove"></span></a></div>
-                        <div ng-if="!post.is_up_contents"><a title="Up Content" class="btn-round btn-up-content" ng-click="setEditor(post, 'up-content', $index)"><span class="glyphicon glyphicon-chevron-up"></span></a></div>
-                    </div>
+                <div class="tbls-col-3">
+                	<h4 ng-bind-html="author.total_shares | number"></h4>
+                	<h6 class="text-uppercase">total shares</h6>
+                </div>
+                <div class="tbls-col-3">
+                	<h4 ng-bind-html="author.total_embed | number"></h4>
+                	<h6 class="text-uppercase">total embed</h6>
+                </div>
+                <div class="tbls-col-8">
+	                <h4 class="text-left" ng-bind-html="(author.email).length ? author.email : 'email not set'"></h4>
                 </div>
                 <div class="tbls-col-3 tbls-btn-group">
-                    <div><a class="btn" ng-class="{'btn-default': !post.is_sticky, 'btn-primary': post.is_sticky}" ng-click="setSticky(post)" ng-if="post.status != 2">Sticky</a></div>
-                    <div><a class="btn" ng-class="{'btn-default': !post.is_premium, 'btn-success': post.is_premium}" ng-click="setPremium(post)" ng-if="post.status != 2">Premium</a></div>
-                    <div><a class="btn btn-danger" ng-click="delete(post)">Delete</a></div>
+                    <div class="full-width"><a class="btn btn-border-danger text-uppercase" ng-click="setPassword(author, $index)">Reset Pas</a></div>
+                    <div class="full-width"><a class="btn btn-border-danger text-uppercase" ng-click="delete(author)">Delete</a></div>
                 </div>
             </div>
-
-            <footer class="tbls-footer" ng-show="!post.status && post.reason">
-                <p>Rejected: <strong><@ post.reason @></strong> <a>Change Reason</a></p>
-            </footer>
         </div>
     </div>
 </script>
@@ -206,7 +152,7 @@
             <!-- Filters -->
             <div class="filters">
                 <div class="filter-component">
-                    <div class="box drop drop-large" name="filter-dateRange" ng-controller="dropdown">
+                    <div class="box drop drop-small" name="filter-dateRange" ng-controller="dropdown">
                         <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
                             <span class="drop-component-text">All Time</span>
                             <span class="glyphicon glyphicon-chevron-down"></span>
@@ -231,47 +177,45 @@
                         </ul>
                     </div>
                 </div>
-                <div class="filter-component" ng-if=" _.contains(['all', 'contributor'], controller)">
-                    <div class="box drop" name="filter-status" ng-controller="dropdown">
-                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
-                            <span class="drop-component-text">All Status</span>
-                            <span class="glyphicon glyphicon-chevron-down"></span>
-                        </div>
-                        <ul class="box drop-list">
-                            <li ng-click="select($event, 'all-status');">All Status</li>
-                            <li ng-click="select($event, 'private');">Private</li>
-                            <li ng-click="select($event, 'public');">Public</li>
-                            <li ng-click="select($event, 'approved');">Approved</li>
-                            <li ng-click="select($event, 'moderated');">Moderated</li>
-                            <li ng-click="select($event, 'rejected');">Rejected</li>
-                        </ul>
-                    </div>
-                </div>
 
                 <div class="filter-component filter-full search" ng-controller="search">
-                    <form action="javascript:;" class="box" ng-submit="submit($event)">
-                        <input type="text" ng-model="searchInput" placeholder="Search Post">
+                    <form action="javascript:;" class="box box-xs" ng-submit="submit($event)">
+                        <input type="text" ng-model="searchInput" placeholder="Search Author">
                         <input type="submit" value="Search" class="btn btn-success">
                     </form>
                 </div>
+
+                <aside class="adds">
+		            <div class="box drop" name="bulk-action" singleaction="bulkAction" ng-controller="dropdown">
+		                <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
+		                    <span class="drop-component-text">Bulk Action</span>
+		                    <span class="glyphicon glyphicon-chevron-down"></span>
+		                </div>
+
+		                <ul class="box drop-list">
+		                    <li ng-click="select($event, 'set-password');">Set Password</li>
+		                    <li ng-click="select($event, 'delete');">Delete</li>
+		                </ul>
+		            </div>
+		        </aside>
             </div>
 
             <!-- Table Flex -->
             <div class="tbls-houder" ng-hide="onLoad" ng-style="{'margin-top' : '30px'}">
                 <div class="tbls tbls-content">
-                    <div class="tbls-label-count"><h4 ng-bind-html="countPost"></h4></div>
+                    <div class="tbls-label-count"><h4 ng-bind-html="countAuthor"></h4></div>
 
-                    <header class="tbls-header tbls-row">
-                        <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
-                        <div class="tbls-col-3">Author</div>
-                        <div class="tbls-col-xl">Title</div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')">Channel <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('format')">Format  <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">View  <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">Share  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">Embed  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('created')">Created  <span ng-show="sort.key == 'created'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-2"></div>
+                    <header class="tbls-header tbls-row flex-row">
+                        <!-- <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div> -->
+                        <div class="tbls-col-1"></div>
+                        <div class="tbls-col-6"><h5 class="text-uppercase">Author</h5></div>
+                        <!-- <div class="tbls-col-xl">Title</div> -->
+                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')"><h5 class="text-uppercase text-center full-width">Post</h5> <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('format')"><h5 class="text-uppercase text-center full-width">Total View</h5>  <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('view')"><h5 class="text-uppercase text-center full-width">Average View</h5>  <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('share')"><h5 class="text-uppercase text-center full-width">Total Share</h5>  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')"><h5 class="text-uppercase text-center full-width">Total Embed</h5>  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-8 clickable" ng-click="onSort('email')" ng-style="{'justify-content':'center'}"><h5 class="text-uppercase">Email</h5>  <span ng-show="sort.key == 'email'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
                         <div class="tbls-col-3"></div>
                     </header>
 

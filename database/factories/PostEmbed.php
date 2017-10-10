@@ -12,7 +12,7 @@
 			'id_post'    => (empty($post) ? 50390 : $post->id),
 			'accessurl'  => $faker->url(),
 			'domain'     => $faker->domainName(),
-			'shareid'    => (empty($user) ? $user->id : 22017),
+			'shareid'    => (empty($user) ? 22017 : $user->id),
 			'view'       => rand(1000, 200000),
 			'created_on' => date('Y-m-d H:i:s') 
 		];

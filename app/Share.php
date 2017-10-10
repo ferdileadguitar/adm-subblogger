@@ -15,4 +15,6 @@ class Share extends Model
 	
 	public function posts()
 	{ return $this->belongsTo('App\Post'); }
+
+	// public function 
 }

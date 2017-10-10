@@ -2,7 +2,7 @@
         <div class="logo"><a href="//keepo.me"><span>Keepo</span></a></div>
 
         <nav class="main-nav">
-            <a href="{{ url('contents') }}" class="{{ $activeNav == 'contents' ? 'active' : '' }}">Contents</a>
+            <a href="{{ url('contents') }}" class="{{ $activeNav == 'contents' || '' ? 'active' : '' }}">Contents</a>
             <a href="{{ url('authors') }}" class="{{ $activeNav == 'authors' ? 'active' : '' }}">Authors</a>
             <a href="{{ url('channels') }}" class="{{ $activeNav == 'channels' ? 'active' : '' }}">Channels &amp; Formats</a>
             <a href="{{ url('responses') }}" class="{{ $activeNav == 'responses' ? 'active' : '' }}">Responses</a>

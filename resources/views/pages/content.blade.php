@@ -172,8 +172,8 @@
                 </div>
                 <div class="tbls-col-3"><@ post.post_type @></div>
                 <div class="tbls-col-3"><@ (post.views | number) @></div>
-                <div class="tbls-col-3"><@ post.shares || 0 @></div>
-                <div class="tbls-col-3"><@ post.embeds || 0 @></div>
+                <div class="tbls-col-3"><@ post.shares || 0 | number @></div>
+                <div class="tbls-col-3"><@ post.embeds || 0 | number @></div>
                 <div class="tbls-col-3">
                     <p><@ post.created @></p>
                     <div><a ng-click="setEditor(post, 'created', $index)">Edit</a></div>

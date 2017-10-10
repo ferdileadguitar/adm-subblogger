@@ -63,7 +63,7 @@ class LoginController extends Controller
 
         if ( !empty($postLogin) AND $request->ajax() )
         {   
-            $request->session()->put('_username', $postLogin['username']);
+            $request->session()->put('admin:username', $postLogin['username']);
 
             // return response()->json('oK');
         }

@@ -77,4 +77,19 @@
 			color: #c0d5f7;
 		}
 	}
+
+
+}
+
+
+/*AUTHORS PAGE*/
+.btn-border-danger{
+	border: 1px solid red;
+	color: red;
+
+	&:hover {
+		background: red;
+		color: $black-02;
+		transition: .4s all ease;
+	}
 }

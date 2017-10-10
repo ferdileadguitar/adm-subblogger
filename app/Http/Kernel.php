@@ -42,7 +42,7 @@ class Kernel extends HttpKernel
             'bindings',
         ],
         'admin'   => [
-            \App\Http\MIddleware\AdminAuthenticated::class,
+            \App\Http\Middleware\AdminAuthenticated::class,
         ],
         'admin.promise' => [
             \App\Http\Middleware\EncryptCookies::class,
@@ -52,7 +52,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             // \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\MIddleware\RedirectIfAdmin::class,
+            \App\Http\Middleware\RedirectIfAdmin::class,
             // \App\Http\MIddleware\AdminAuthenticated::class,
         ]
     ];

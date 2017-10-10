@@ -13,10 +13,14 @@ class PageController extends Controller
 
     	$this->request = Request();
 
+        $this->slug    = is_null($this->request->segment(1)) ? 'contents' : $this->request->segment(1);
+
     	$this->globalData = [
-    		'pageTitle' => 'Contents - ' . config('app.name'),
-    		'activeNav' => 'contents'
+    		'pageTitle' => title_case($this->slug) .' - ' . config('app.name'),
+    		'activeNav' => $this->slug
     	];
+
+        // dd( $this->request->segment(1) );
     }
 
     // ------------------------------------------------------------------------
