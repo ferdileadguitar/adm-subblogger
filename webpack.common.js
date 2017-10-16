@@ -14,6 +14,7 @@ module.exports = {
 		'content'      : ["./src/js/app.js", "./src/js/content.js"],
 		'content-user' : ["./src/js/app.js", "./src/js/content-user.js"],
 		'authors'      : ["./src/js/app.js", "./src/js/authors.js"],
+		'channel'      : ["./src/js/app.js", "./src/js/channel.js"],
 
 		'vendor'       : ["underscore", "angular", "angular-sanitize", "joii", "ng-tags-input"],
 	},

@@ -13,6 +13,9 @@ Route::group(['middleware' => 'admin'], function() {
 
 	// Author
 	Route::get('authors', 'Pages\AuthorController@index')->name('authorWithURI');
+
+	// Channel & Formats
+	Route::get('channels', 'Pages\ChannelController@index')->name('channelWithURI');
 });
 
 // Login - Logout

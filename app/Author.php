@@ -156,11 +156,6 @@ class Author extends Model
 		}
 	}
 
-	private static function setTotalViews()
-	{
-
-	}
-
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
 		$qryEmbed = null; // qry embed 

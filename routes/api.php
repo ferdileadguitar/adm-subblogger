@@ -21,8 +21,13 @@ Route::group(['middleware' => array('api')], function() {
 
 	// Authors
 	Route::get('authors', 'Api\AuthorsController@getAuthors');
-
 	Route::match(['put', 'post', 'delete'], 'authors/{type}', 'Api\AuthorsController@authorState');
+
+	// Channel
+	Route::get('channel', 'Api\ChannelController@getChannel');
+
+	// Formats
+	Route::get('format', 'Api\FormatController@getFormat');
 
 	// Image asset 
 	Route::post('asset/cover-img', 'Api\AssetController@postImageCover');

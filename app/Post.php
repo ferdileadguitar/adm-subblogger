@@ -564,6 +564,8 @@ class Post extends Model
 	public function embedLog()
 	{ return $this->hasMany('App\EmbedLog', 'user_id', 'user_id')->selectRaw('user_id, shareid, post_id'); }
 	
+	public function channelEmbedLog()
+	{ return $this->hasMany('App\EmbedLog', 'post_id'); }
 	// ------------------------------------------------------------------------
 
 
