@@ -2353,6 +2353,18 @@
       "src": "elusive"
     },
     {
+      "uid": "2d6150442079cbda7df64522dc24f482",
+      "css": "down-dir",
+      "code": 59563,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "80cd1022bd9ea151d554bec1fa05f2de",
+      "css": "up-dir",
+      "code": 59564,
+      "src": "fontawesome"
+    },
+    {
       "uid": "a8f6c803a004a8b9d533e4e7d5c25d14",
       "css": "path",
       "code": 59426,

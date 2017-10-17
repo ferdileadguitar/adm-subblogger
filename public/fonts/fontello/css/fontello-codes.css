@@ -170,6 +170,8 @@
 .icon-cancel-2:before { content: '\e8a8'; } /* '' */
 .icon-right-open:before { content: '\e8a9'; } /* '' */
 .icon-left-open:before { content: '\e8aa'; } /* '' */
+.icon-down-dir:before { content: '\e8ab'; } /* '' */
+.icon-up-dir:before { content: '\e8ac'; } /* '' */
 .icon-reply:before { content: '\f02a'; } /* '' */
 .icon-move:before { content: '\f047'; } /* '' */
 .icon-link-ext:before { content: '\f08e'; } /* '' */
