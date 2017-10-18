@@ -25,15 +25,8 @@ class CreatedUpContentsColumns extends Migration
      */
     public function down()
     {
-        if(Schema::hasTable('posts')) {
-            Schema::table('posts', function(Blueprint $table) {
-                // if( Schema::hasColumn('is_up_contents') ){
-                $table->dropColumn('is_up_contents');
-                // }
-                // else{
-                    // die('Columns doesn\'t exists!');
-                // }
-            });
-        }
+        Schema::table('posts', function(Blueprint $table) {
+            $table->dropColumn('is_up_contents');
+        });
     }
 }
