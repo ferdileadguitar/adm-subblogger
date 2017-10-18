@@ -32,7 +32,12 @@ class Channel extends Model
 		self::getInstance();
 
 		self::$channelsData = self::with('posts', 'postsViews', 'embed', 'share');
-		// self::$channelsData = self::with('embed', 'share');
+
+		self::$channelsData = self::$channelsData->selectRaw('`channels`.`id`, `channels`.`title`, `channels`.`slug`');
+
+		self::$channelsData = self::$channelsData->selectRaw('(SELECT COUNT(*) FROM `post_shares`) as all_total_shares');
+
+		self::$channelsData = self::$channelsData->selectRaw('(SELECT COUNT(*) FROM `view_logs_embed`) as all_total_embed');
 
 		self::$channelsData = self::$channelsData->whereIn('slug', self::$channelList);
 		
@@ -59,10 +64,11 @@ class Channel extends Model
 
 			// Shares
 			$total_shares   = collect($item['share'])->count();
-			$average_shares = 0;
+			$average_shares = number_format($total_shares / $item['all_total_shares'], 4);
+
 			// Embed
 			$total_embed    = collect($item['embed'])->count();
-			$average_embed  = 0;
+			$average_embed  = number_format($total_embed / $item['all_total_embed'], 4);
 
 			return [
 				'id' 				=> @$item['id'],
@@ -90,66 +96,73 @@ class Channel extends Model
 
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
-		// $qryEmbed = null; // qry embed 
-		// $qryPosts = null; // qry posts
+		$qryEmbed = null; // qry embed 
+		$qryPosts = null; // qry posts
 
-		// // If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
-		// if ($dateRange == 'all-time') { $qryEmbed;$qryPosts; }
+		// If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
+		if ($dateRange == 'all-time') { $qryEmbed;$qryPosts; }
 
-		// // ------------------------------------------------------------------------
+		// ------------------------------------------------------------------------
 		
-		// // Start Date and End Date are exist?
-		// if ($startDate AND $endDate)
-		// {
-		// 	$qryPosts = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-		// 	$qryEmbed = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-		// }
+		// Start Date and End Date are exist?
+		if ($startDate AND $endDate)
+		{
+			$qryPosts = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			$qryEmbed = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+		}
 
-		// // ------------------------------------------------------------------------
+		// ------------------------------------------------------------------------
 		
-		// switch ($dateRange) 
-		// {
-		// 	case 'today':
-		// 		$qryPosts   = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
-		// 		$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE(CURDATE())';
-		// 		break;
-		// 	case 'yesterday':
-		// 		$qryPosts   = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
-		// 		$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
-		// 		break;
-		// 	case 'last-7-days':
-		// 		$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-		// 		$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-		// 		break;
-		// 	case 'last-30-days':
-		// 		$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-		// 		$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-		// 		break;
-		// 	case 'last-90-days':
-		// 		$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-		// 		$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-		// 		break;
-		// 	case 'this-month':
-		// 		$qryPosts   = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
-		// 		$qryEmbed   = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
-		// 		break;
-		// 	case 'this-year':
-		// 		$qryPosts   = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
-		// 		$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) = YEAR(CURDATE())';
-		// 		break;
-		// }
+		switch ($dateRange) 
+		{
+			case 'today':
+				$qryPosts   = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
+				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE(CURDATE())';
+				break;
+			case 'yesterday':
+				$qryPosts   = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				break;
+			case 'last-7-days':
+				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				break;
+			case 'last-30-days':
+				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				break;
+			case 'last-90-days':
+				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				break;
+			case 'this-month':
+				$qryPosts   = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				$qryEmbed   = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				break;
+			case 'this-year':
+				$qryPosts   = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
+				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) = YEAR(CURDATE())';
+				break;
+		}
 
-		// self::$authorsData->with([
-		// 	'posts' => function($query) use ($dateRange, $qryPosts){
-		// 		if(!is_null($qryPosts))
-		// 			$query->whereRaw($qryPosts);
+		self::$channelsData->with([
+			'posts' => function($query) use ($dateRange, $qryPosts){
+				if(!is_null($qryPosts))
+					$query->whereRaw($qryPosts);
 
-		// 		$query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
-		// 		$query->groupBy('posts.user_id', 'posts.id');
-		// 	},
-		// 	'embedLog' => function($query) use ($dateRange, $qryEmbed)
-		// 	{ if(!is_null($qryEmbed)) $query->whereRaw($qryEmbed); }
-		// ]);
+				// $query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
+				// $query->groupBy('posts.user_id', 'posts.id');
+			},
+			'postsViews' => function($query) use ($dateRange, $qryPosts){
+				if(!is_null($qryPosts))
+					$query->whereRaw($qryPosts);
+
+				// $query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
+				// $query->groupBy('posts.user_id', 'posts.id');
+			},
+			'embed' => function($query) use ($dateRange, $qryEmbed)
+			{ if(!is_null($qryEmbed)) $query->whereRaw($qryEmbed); }
+		]);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -157,10 +170,10 @@ class Channel extends Model
 	// ------------------------------------------------------------------------
 	
 	public function posts()
-	{ return $this->hasMany('App\Post')->select('id', 'title', 'channel_id', 'views'); }
+	{ return $this->hasMany('App\Post')->select('id', 'title', 'channel_id', 'views', 'created_on'); }
 
 	public function postsViews(){
-		$collection = $this->posts()->select('id', 'title', 'channel_id', 'views');
+		$collection = $this->posts()->select('id', 'title', 'channel_id', 'views', 'created_on');
 
 		return $collection;
 	}
