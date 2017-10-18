@@ -360,6 +360,9 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				$scope.dropdownAction = function(name, selected) {
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
+
+					appService.url          = self.baseURL + 'api/channel/';
+					request();
 				};
 
 				$scope.onSort = function(sortBy) { 
@@ -445,6 +448,13 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				appService.url          = self.baseURL + 'api/format/'; 
 				console.log( appService )
 				request();
+
+				$scope.dropdownAction = function(name, selected) {
+					$scope.filters[name.replace(/^filter-/, '')] = selected;
+					console.log( selected );
+					appService.url          = self.baseURL + 'api/format/';
+					request();
+				};
 
 				function request() {
 					appService.cancel($scope.onRequest);
