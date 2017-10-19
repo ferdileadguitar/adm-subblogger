@@ -73,7 +73,10 @@ class Format extends Model
 
 		// Additional date range here
 		if( $dateRange = $request->input('dateRange') )
-			$sql  .= self::setDateRange($dateRange)['embed'];
+		{ $sql  .= self::setDateRange($dateRange)->embed; }
+		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
+		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->embed; }
+
 		// $sql  .= ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 
 		$sql  .= ' GROUP BY `posts`.`post_type`,`view_logs_embed`.`post_id`)';
@@ -86,7 +89,9 @@ class Format extends Model
 
 		// Additiopnal date range here
 		if( $dateRange = $request->input('dateRange') )
-			$sql  .= self::setDateRange($dateRange)['posts'];
+		{ $sql  .= self::setDateRange($dateRange)->posts; }
+		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
+		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->posts; }
 		
 		$sql  .= ' GROUP BY `posts`.`post_type`) range_posts'; 
 		$sql  .= ' ON range_posts.post_type = `posts`.`post_type`';
@@ -149,20 +154,17 @@ class Format extends Model
 
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
-		$qryPost  = null;
+		$qryPosts = null;
 		$qryEmbed = null;
 		// // If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
-		if ($dateRange == 'all-time') { return; }
+		if ($dateRange == 'all-time') { return (object)['embed' => $qryEmbed, 'posts' => $qryPosts]; }
 
 		// ------------------------------------------------------------------------
-		
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
-			self::$formatData->where(function($query) use($startDate, $endDate) {
-				$query->whereBetween('created_on', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
-			});
-			return;
+			$qryPosts = ' WHERE `posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"';
 		}
 
 		// // ------------------------------------------------------------------------
@@ -170,39 +172,37 @@ class Format extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				// self::$formatData->whereRaw("DATE(posts.created_on) = DATE(CURDATE())");
-				$qryPost  =" WHERE DATE(`posts`.`created_on`) = DATE(CURDATE())";
+				$qryPosts =" WHERE DATE(`posts`.`created_on`) = DATE(CURDATE())";
 				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE())';
 				break;
 			case 'yesterday':
-				// self::$formatData->whereRaw("DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
-				$qryPost  = " WHERE DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+				$qryPosts = " WHERE DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
 				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
 				break;
 			case 'last-7-days':
-				$qryPost  = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
 				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
 				break;
 			case 'last-30-days':
-				// self::$formatData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
-				$qryPost  = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
 				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
 				break;
 			case 'last-90-days':
-				$qryPost  = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 				break;
 			case 'this-month':
-				$qryPost  = ' WHERE DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				$qryPosts = ' WHERE DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
 				$qryEmbed = ' WHERE DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
 				break;
 			case 'this-year':
-				$qryPost  = " WHERE YEAR(`posts`.`created_on`) = YEAR(CURDATE())";
+				$qryPosts = " WHERE YEAR(`posts`.`created_on`) = YEAR(CURDATE())";
 				$qryEmbed = " WHERE FROM_UNIXTIME(`view_logs_embed`.`last_activity`) = YEAR(CURDATE())";
 				break;
 		}
 
-		return ['posts' => $qryPost, 'embed' => $qryEmbed];
+		// dd( $qryPosts );
+		return (object)['posts' => $qryPosts, 'embed' => $qryEmbed];
 	}
 
 	/*==========================================
