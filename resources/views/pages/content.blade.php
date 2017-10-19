@@ -193,8 +193,8 @@
                 </div>
             </div>
 
-            <footer class="tbls-footer" ng-show="!post.status && post.reason">
-                <p>Rejected: <strong><@ post.reason @></strong> <a>Change Reason</a></p>
+            <footer class="tbls-footer" ng-show="!post.status">
+                <p>Rejected by <span ng-bind="posts.rejected.user ? posts.rejected.user : 'Anonymous'"></span> : <strong ng-bind="posts.rejected.msg ? posts.rejected.msg : 'No Reason'"></strong> <a>Change Reason</a></p>
             </footer>
         </div>
     </div>

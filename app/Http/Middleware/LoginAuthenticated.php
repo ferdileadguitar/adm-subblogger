@@ -2,10 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Support\Facades\Auth;
 use Closure;
 
-class AdminAuthenticated
+class LoginAuthenticated
 {
 
     /**
@@ -17,11 +16,13 @@ class AdminAuthenticated
      */
     public function handle($request, Closure $next)
     {
+        $response = $next($request);
+        
         if( $request->session()->exists('admin:username') )
-        { 
-            return $next($request);
-        } 
+        {
+            return redirect()->route('content');
+        }
 
-        return redirect()->route('login');
+        return $response;
     }
 }

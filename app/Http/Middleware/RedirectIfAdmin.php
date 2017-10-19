@@ -19,7 +19,7 @@ class RedirectIfAdmin
         
         $this->request  = Request();
 
-        $this->auth     = Auth();
+        // $this->auth     = Auth();
     }
     /**
      * Handle an incoming request.
@@ -28,17 +28,12 @@ class RedirectIfAdmin
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
         $response = $next($request);
-
+        
         if( $request->session()->exists('admin:username') )
         {
-            if ( $request->ajax() ) 
-            {
-                return response()->json(['status' => 'oK', 'url' => url('/')], 200);
-            }
-
             return redirect()->route('content');
         }
 

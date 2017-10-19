@@ -17,9 +17,13 @@ class PageController extends Controller
 
     	$this->globalData = [
     		'pageTitle' => title_case($this->slug) .' - ' . config('app.name'),
-    		'activeNav' => $this->slug
+    		'activeNav' => $this->slug,
+            'adminUser' => json_encode($this->request->session()->get('admin:username'), TRUE)
     	];
+        // dd( $this->globalData );
+        $this->adminUser = $this->request->session()->get('admin:username');
 
+        // dd( $this );
         // dd( $this->request->segment(1) );
     }
 

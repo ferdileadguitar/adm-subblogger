@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 // API
 // ------------------------------------------------------------------------
 
-Route::group(['middleware' => array('api')], function() {
+Route::group(['middleware' => array('api', 'api.auth')], function() {
 
 	// Contents
 	Route::get('contents', 'Api\ContentController@getContents');
@@ -24,10 +24,10 @@ Route::group(['middleware' => array('api')], function() {
 	Route::match(['put', 'post', 'delete'], 'authors/{type}', 'Api\AuthorsController@authorState');
 
 	// Channel
-	Route::get('channel', 'Api\ChannelController@getChannel');
+	Route::get('channels', 'Api\ChannelController@getChannel');
 
 	// Formats
-	Route::get('format', 'Api\FormatController@getFormat');
+	Route::get('formats', 'Api\FormatController@getFormat');
 
 	// Image asset 
 	Route::post('asset/cover-img', 'Api\AssetController@postImageCover');
@@ -35,3 +35,7 @@ Route::group(['middleware' => array('api')], function() {
 	// Tags
 	Route::get('tags', 'Api\ContentController@getTags');
 });
+
+// Login
+Route::post('login', ['middleware' => 'api', 'uses' => 'Api\LoginController@tryLogin']);
+Route::post('logout', ['middleware' => 'api', 'uses' => 'Api\LoginController@tryLogout']);

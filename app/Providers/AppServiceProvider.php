@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Session\Middleware\StartSession;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,8 +13,9 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
-        // 
+    {   
+        // Set sesion name diff keepo.me
+        // \Config::set('session.cookie', 'laravel_session_admin');
     }
 
     /**

@@ -20,11 +20,11 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				$scope.mainApp             = self;
 				$scope.onRequest           = void 0;
-				
+				// console.log( $window );
 				// Local init
 				// ------------------------------------------------------------------------
 				appService.apply({
-					'url': self.baseURL + 'api/channel/',
+					'url': self.baseURL + 'api/channels/',
 					'appContext': $scope, 
 					'tabService': tabService,
 
@@ -53,6 +53,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							key: '',
 							reverse: false
 						},
+						user : []
 					}
 				});
 				tabService.setTabActive({$$el: $('all'), name: 'all'});
@@ -361,7 +362,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.dropdownAction = function(name, selected) {
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
 
-					appService.url          = self.baseURL + 'api/channel/';
+					appService.url          = self.baseURL + 'api/channels/';
 					request();
 				};
 
@@ -425,7 +426,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.$on('allOnTabChange', function() {
 					appService.apply({'localContext': $scope});
 
-					appService.url          = self.baseURL + 'api/channel/';
+					appService.url          = self.baseURL + 'api/channels/';
 					console.log( appService );
 				});
 
@@ -445,14 +446,14 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				appService.controllerData['format'] = $scope;
 				$scope.controller       = 'format';
 				$scope.onRequest        = void 0;
-				appService.url          = self.baseURL + 'api/format/'; 
+				appService.url          = self.baseURL + 'api/formats/'; 
 				console.log( appService )
 				request();
 
 				$scope.dropdownAction = function(name, selected) {
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
 					console.log( selected );
-					appService.url          = self.baseURL + 'api/format/';
+					appService.url          = self.baseURL + 'api/formats/';
 					request();
 				};
 
@@ -460,7 +461,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					appService.cancel($scope.onRequest);
 
 					$scope.onLoad 	 = true;
-					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
+					$scope.onRequest = appService.get({}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
 				};
 
@@ -474,7 +475,9 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.checkAll                = false;
 					
 					createLabelCount(data);
-					appService.url          = self.baseURL + 'api/channel/';
+
+					// Reset to url
+					appService.url          = self.baseURL + 'api/channels/';
 				};
 
 				function handleError(error) {
@@ -495,7 +498,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.$on('formatOnTabChange', function() {
 					appService.apply({'localContext': $scope});
 
-					appService.url          = self.baseURL + 'api/format/';
+					appService.url          = self.baseURL + 'api/formats/';
 					console.log( appService );
 				});
 			})();

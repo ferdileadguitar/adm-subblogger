@@ -2,12 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Support\Facades\Auth;
 use Closure;
 
-class AdminAuthenticated
+class ApiAuthenticated
 {
-
     /**
      * Handle an incoming request.
      *
@@ -17,11 +15,13 @@ class AdminAuthenticated
      */
     public function handle($request, Closure $next)
     {
-        if( $request->session()->exists('admin:username') )
-        { 
-            return $next($request);
-        } 
+        $response = $next($request);
 
-        return redirect()->route('login');
+        if( !$request->session()->exists('admin:username') )
+        {
+            return response()->json(['msg' => 'You don\'t have permission!'], 400);
+        }
+
+        return $response;
     }
 }

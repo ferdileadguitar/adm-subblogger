@@ -12,7 +12,10 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 		application: void 0,
 
 		__construct: function() {
-			this.baseURL = window.baseURL;
+			this.baseURL   = window.baseURL;
+			this.adminUser = angular.fromJson(window.admin); 
+			// console.log( this );
+
 			this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput'], function($interpolateProvider) {
 		        $interpolateProvider.startSymbol('<@');
 		        $interpolateProvider.endSymbol('@>');

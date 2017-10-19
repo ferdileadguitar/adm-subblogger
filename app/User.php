@@ -61,13 +61,19 @@ class User extends Authenticatable
         $user = User::where(function($query) use($credentials) {
             $query->where('username', $credentials['username'])
                   ->orWhere('email', $credentials['username']);
-        })->select('id', 'email', 'salt', 'password')->first();
+
+        })->select('id', 'username', 'display_name', 'email', 'salt', 'password')->first();
 
         if (! $user)
         { return FALSE; }
 
         // ------------------------------------------------------------------------
-        $list = json_decode(\Storage::get('lists.adm'));
+        // $list = json_decode(\Storage::get('lists.adm'));
+        // dd( $user->email );
+        // dd( $user->email, config('login.email'), in_array($user->email, config('login.email')) );
+        // return false;
+        $list = config('login.email');
+        // dd( $user->checkPassword($credentials) );
         if (! $list)
         { return FALSE; }
 
