@@ -7,7 +7,7 @@
 			c. Publish (1) -> Approved
 
 		- Rejected
-			a. Rejected (1)
+			a. Rejected (0)
 
 		- Private 
 			a. Private (2)
