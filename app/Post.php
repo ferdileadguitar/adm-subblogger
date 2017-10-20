@@ -9,10 +9,18 @@ use App\objectFile;
 use Carbon\Carbon;
 use DB;
 
+use App\Events\KeepoCache;
+
 class Post extends Model
 {
 	public $timestamps  = false;
+	
 	protected $guarded  = [];
+
+	protected $events   = [
+		'updated'		=> Events\KeepoCache::class
+	];
+
 	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
 	private static $__instance  = null;
 	private static $postData    = false;
@@ -22,7 +30,6 @@ class Post extends Model
 	// ------------------------------------------------------------------------
 	// Public Methods
 	// ------------------------------------------------------------------------
-
 	public static function getInstance()
 	{
 		if (self::$__instance === null)
@@ -181,24 +188,26 @@ class Post extends Model
 
 	// ------------------------------------------------------------------------
 	
-	public static function updateStatus($postID = FALSE, $status = 0)
+	public function updateStatus($postID = FALSE, $status = 0)
 	{
 		if (empty($postID)) { return ['error' => 'Post not found']; }
 
 		// ------------------------------------------------------------------------
-		
 		if (is_array($postID)) { $post = self::whereIn('id', $postID); }
 		else { $post = self::where('id', $postID); }
 
 		$post->update(['status' => $status]);
 
+		// Flush cache
+		event(new KeepoCache($post->first()));
+
 		return [
-				'all_post'        => self::getFiltered(self::$request)->countAllPost(), 
-				'public_post'     => self::getFiltered(self::$request)->countPublic(), 
-				'moderated_post'  => self::getFiltered(self::$request)->countAllModerated(), 
-				'rejected_post'   => self::getFiltered(self::$request)->countRejected(),
-				'privated_post'   => self::getFiltered(self::$request)->countPrivate(),
-			];
+			'all_post'        => self::getFiltered(self::$request)->countAllPost(), 
+			'public_post'     => self::getFiltered(self::$request)->countPublic(), 
+			'moderated_post'  => self::getFiltered(self::$request)->countAllModerated(), 
+			'rejected_post'   => self::getFiltered(self::$request)->countRejected(),
+			'privated_post'   => self::getFiltered(self::$request)->countPrivate(),
+		];
 	}
 
 	// ------------------------------------------------------------------------
@@ -213,6 +222,9 @@ class Post extends Model
 		else { $post = self::where('id', $postID); }
 
 		$post->update([$stickyOrPremium => $set]);
+
+		// Flush cache
+		event(new KeepoCache($post->first()));
 	}
 
 	public static function updatePostTitle($postID = FALSE, $postTitle = FALSE) {
@@ -226,6 +238,9 @@ class Post extends Model
 			
 			return $query;
 		})->first();
+
+		// Flush cache
+		event(new KeepoCache($post->first()));
 
 		return ['title' => $post->title, 'slug' => $post->slug, 'url' => implode([config('app.keepo_url'), $post->user->display_name, $post->slug], '/')];
 	} 
@@ -241,6 +256,9 @@ class Post extends Model
 
 			return $query;
 		})->first();	
+
+		// Flush cache
+		event(new KeepoCache($post->first()));
 
 		return ['channel' => array( 'name' => html_entity_decode($post['channel']['title']), 'slug' => $post['channel']['slug'] ) ];
 	}
@@ -276,6 +294,9 @@ class Post extends Model
 		else
 			return ['error' => 'Failed to post'];
 		
+		// Flush Cache
+		event(new KeepoCache($post->first()));
+
 		// Return data
 		return $response;		
 	}
@@ -291,6 +312,9 @@ class Post extends Model
 		
 		$newDate = date('d M Y H:i:s', strtotime($post->created_on));
 		
+		// Flush cache
+		event(new KeepoCache($post->first()));
+
 		return ['created' => $newDate];
 	}
 
@@ -306,6 +330,9 @@ class Post extends Model
 
 		$newDate  = date('d M Y H:i:s', strtotime($post->created_on));
 
+		// Flush cache
+		event(new KeepoCache($post->first()));
+
 		return ['created' => $newDate, 'is_up_contents' => $post->is_up_contents];
 	}
 
@@ -316,6 +343,9 @@ class Post extends Model
 					$query->where(['id' => $postID->id])->update($post);
 					return $query;
 				});
+
+		// Flush cache
+		event(new KeepoCache($post->first()));
 
 		$post = $post->first()->toArray();
 

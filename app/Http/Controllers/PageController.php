@@ -13,7 +13,7 @@ class PageController extends Controller
 
     	$this->request = Request();
 
-        $this->slug    = is_null($this->request->segment(1)) ? 'contents' : $this->request->segment(1);
+        $this->slug    = is_null($this->request->segment(1)) || $this->request->segment(1) == 'users'  ? 'contents' : $this->request->segment(1);
 
     	$this->globalData = [
     		'pageTitle' => title_case($this->slug) .' - ' . config('app.name'),

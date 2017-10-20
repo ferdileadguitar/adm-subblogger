@@ -148,7 +148,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN', 'http://localhost:3000'),
+    'domain' => env('SESSION_DOMAIN', 'https://adm.keepo.me'),
 
     /*
     |--------------------------------------------------------------------------
