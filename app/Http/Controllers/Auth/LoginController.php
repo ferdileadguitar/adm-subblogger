@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Closure;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -26,6 +26,9 @@ class LoginController extends Controller
 
         // Override Original Middleware
         $this->middleware('login');
+
+        // dd( $request->session() );
+        
     }
 
     // ------------------------------------------------------------------------
@@ -37,7 +40,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     { 
         $request->session()->flush('admin:username');
-
+        // dd( $request->session() );
         return redirect()->route('login');
     }
 
@@ -66,13 +69,13 @@ class LoginController extends Controller
         // }); 
 
         // // Override postLogin
-        // $postLogin = $postLogin->first();
         if ( !empty($postLogin) )
         {   
             $request->session()->put('admin:username', array( 'username' => $postLogin->username, 'display_name' => $postLogin->display_name));
         }
+        // dd( $request->session() );
 
-        if (FALSE === (!empty($postLogin->first)))
+        if (FALSE === (!empty($postLogin)))
         { return response()->json(array('status' => 400, 'message' => 'Invalid Username or Password!'), 400); }
     }
 

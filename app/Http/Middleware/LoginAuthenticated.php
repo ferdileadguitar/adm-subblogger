@@ -15,7 +15,7 @@ class LoginAuthenticated
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {
+    {   
         $response = $next($request);
         
         if( $request->session()->exists('admin:username') )
