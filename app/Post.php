@@ -487,7 +487,7 @@ class Post extends Model
 			default;
 				self::$postData->where(function($query) {
 					// $query->whereNotIn('status', [-1, -99]);
-					$query->whereNotIn('status', [-99]); // -1 is unpublish right
+					$query->whereNotIn('status', [-99, -1]); // -1 is unpublish right
 				});
 				break;
 		}
