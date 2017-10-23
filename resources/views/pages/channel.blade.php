@@ -55,7 +55,7 @@
             </div>
 
             <!-- Table Flex -->
-            <div class="tbls-houder" ng-hide="onLoad">
+            <div class="tbls-houder" ng-hide="onLoad" ng-style="{'margin-top': '30px'}">
                <div class="tbls tbls-content">
                     <div class="tbls-label-count"><h4 ng-bind-html="countChannel"></h4></div>
 

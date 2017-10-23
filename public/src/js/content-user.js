@@ -361,6 +361,11 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 								{ return true }
 							},
  							
+							editorTitle : function(post) {
+								if( !_.contains(['quickpolling', 'quicktrivia', 'quickpersonality'], post.post_type) )
+								{ return true }
+							},
+
  							// Who's could edit this. like keepo editor (show modal)
 							editorLink : function(post) {
 								if(_.contains(['article', 'listicle'], post.post_type))
@@ -369,7 +374,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 							// Hide link if post type like on list
 							editorChannel : function(post) {
-								if(!_.contains(['meme', 'funquiz'], post.post_type))
+								if(!_.contains(['meme', 'funquiz', 'quickpolling', 'quicktrivia', 'quickpersonality'], post.post_type))
 								{ return true }	
 							}
 						}
