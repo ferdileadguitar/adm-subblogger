@@ -13,18 +13,15 @@ class PageController extends Controller
 
     	$this->request = Request();
 
-        $this->slug    = is_null($this->request->segment(1)) || $this->request->segment(1) == 'users'  ? 'contents' : $this->request->segment(1);
+        $this->slug    = (in_array($this->request->segment(1), [null, 'users'])) ? 'contents' : $this->request->segment(1);
 
     	$this->globalData = [
     		'pageTitle' => title_case($this->slug) .' - ' . config('app.name'),
     		'activeNav' => $this->slug,
             'adminUser' => json_encode($this->request->session()->get('admin:username'), TRUE)
     	];
-        // dd( $this->globalData );
-        $this->adminUser = $this->request->session()->get('admin:username');
 
-        // dd( $this );
-        // dd( $this->request->segment(1) );
+        $this->adminUser = $this->request->session()->get('admin:username');
     }
 
     // ------------------------------------------------------------------------
