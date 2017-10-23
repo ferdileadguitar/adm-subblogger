@@ -233,8 +233,14 @@ class Post extends Model
 
 		$post = self::where(function($query) use ($postID, $postTitle) {
 			$query->where(['id' => $postID]);
-			// $query->update(['title' => $postTitle, 'slug' => str_slug($postTitle, '-')]);
-			$query->update(['title' => $postTitle]);
+				
+			$title = preg_replace('~<br\s?\/?>$~ixu', '', $postTitle);
+
+	        // Removing blank space at the of context
+	        $title = preg_replace('~(\&nbsp\;|\&amp\;nbsp\;)+$~', '', $postTitle );
+	        $title = htmlentities($postTitle, ENT_QUOTES, 'UTF-8');
+
+			$query->update(['title' => $title]);
 			
 			return $query;
 		})->first();
