@@ -132,7 +132,6 @@ class Format extends Model
 				break;
 			case 'total-share':
 				self::$authorsData
-					 // ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
@@ -142,7 +141,6 @@ class Format extends Model
 				break;
 			case 'email':
 				self::$authorsData
-					 // ->selectRaw('`posts`.*, (SELECT COUNT(`post_embed`.`id_embed`) FROM `post_embed` WHERE `post_embed`.`id_post` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('email', $reverse);
 				break;
 			case 'created':
@@ -172,8 +170,8 @@ class Format extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				$qryPosts =" WHERE DATE(`posts`.`created_on`) = DATE(CURDATE())";
-				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE())';
+				$qryPosts = ' WHERE DATE(`posts`.`created_on`) = DATE(CURDATE())';
+				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE(CURDATE())';
 				break;
 			case 'yesterday':
 				$qryPosts = " WHERE DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
