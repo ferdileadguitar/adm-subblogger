@@ -63,8 +63,9 @@ class CacheListener
             ]
         ];
 
-        // Looping with collect
-        collect($tags)->map(function($cacheTags)
-        { Cache::tags($cacheTags)->flush(); });
+        // Flush Cache
+        foreach ($tags as $cacheTags) {
+            Cache::tags($cacheTags)->flush();
+        }
     }
 }
