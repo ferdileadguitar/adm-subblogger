@@ -264,7 +264,7 @@ class ContentController extends \App\Http\Controllers\ApiController
         	$this->abortRequest(404, 'bad_request', 'Please choose the category')->send();
 
         else {
-        	if( $postID->title != $data['title'] )
+        	if( $postID->title != $data['title'] AND empty($postID->slug) )
         		$this->slugExistsCheck($data['slug']);
         	else
         	{
