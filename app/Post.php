@@ -46,7 +46,7 @@ class Post extends Model
 	{
 		// Init
 		self::getInstance();
-		self::$postData = self::with('user', 'image', 'channel', 'tag', 'share', 'embed');
+		self::$postData = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embed', 'postsMsg');
 
 		// Group By with current post_type list
 		self::$postData = self::$postData->whereIn('post_type', self::$postList);
@@ -88,6 +88,7 @@ class Post extends Model
 		$paginate         = self::$postData->paginate($take)->toArray();
 		
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
+
 			return [
 				// Post
 				'id'         => $post['id'],
@@ -97,9 +98,9 @@ class Post extends Model
 				'url'        => implode([config('app.keepo_url'), @$post['user']['username'], $post['slug']], '/'),
 				// 'url'        => implode([config('app.url'), @$post['user']['username'], $post['slug']], '/'),
 				'image'      => array(
-								'id' 	=>  @$post['image']['id'],
-								'url' 	=>  preg_replace('/https?\:/', '', @$post['image']['full_path']),
-								'name' 	=>  @$post['image']['file_name']
+								'id' 	=>  @$post['object_file']['id'],
+								'url' 	=>  preg_replace('/https?\:/', '', @$post['object_file']['full_path']),
+								'name' 	=>  @$post['object_file']['file_name']
 							),
 				'channel'    => array(
 								'slug'	=> str_slug(@$post['channel']['slug']),
@@ -133,7 +134,10 @@ class Post extends Model
 						'id'    => $tag['id'],
 						'title' => $tag['title']
 					];
-				})
+				}),
+
+				// Reject Msg
+				'reject_msg' => @$post['postsMsg']['message']
 			];
 
 		});
@@ -281,7 +285,7 @@ class Post extends Model
 			$objectFile = array('id' => 1, 'file_name' => null, 'full_path' => null);
 		}
 
-		$post  = self::with('image')->where(function($query) use ($postID, $postImage, $objectFile) {
+		$post  = self::with('objectFile')->where(function($query) use ($postID, $postImage, $objectFile) {
 
 			$query->where(['id' => $postID]);
 			$query->update(['object_file_id' => $objectFile['id']]);
@@ -345,7 +349,7 @@ class Post extends Model
 	public static function updatePostFeeds($post = array(), $postID = FALSE, $response = array()) {
 		if ( empty($postID) ) { return ['error' => 'Post no found']; }
 
-		$post = self::with('user', 'image', 'channel', 'tag', 'share', 'embed')->where(function($query) use ($post, $postID) {
+		$post = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embed')->where(function($query) use ($post, $postID) {
 					$query->where(['id' => $postID->id])->update($post);
 					return $query;
 				});
@@ -364,9 +368,9 @@ class Post extends Model
 				// 'url'        => implode(['https://keepo.me', @$items['user']['username'], $items['slug']], '/'),
 				'url'        => implode([config('app.keepo_url'), @$items['user']['username'], $items['slug']], '/'),
 				'image'      => array(
-								'id' 	=>  @$items['image']['id'],
-								'url' 	=>  preg_replace('/https?\:/', '', @$items['image']['full_path']),
-								'name' 	=>  @$items['image']['fill_name']
+								'id' 	=>  @$items['object_file']['id'],
+								'url' 	=>  preg_replace('/https?\:/', '', @$items['object_file']['full_path']),
+								'name' 	=>  @$items['object_file']['fill_name']
 							),
 				'channel'    => array(
 								'slug'	=> str_slug(@$items['channel']['slug']),
@@ -571,8 +575,11 @@ class Post extends Model
 
 	// ------------------------------------------------------------------------
 	
-	public function image()
-	{ return $this->belongsTo('App\Image', 'object_file_id'); }
+	// public function image()
+	// { return $this->belongsTo('App\Image', 'object_file_id'); }
+
+	public function objectFile()
+	{ return $this->belongsTo('App\ObjectFile', 'object_file_id'); }
 
 	// ------------------------------------------------------------------------
 	
@@ -586,6 +593,11 @@ class Post extends Model
 
 	// ------------------------------------------------------------------------
 	
+
+	public function postsMsg()
+	{ return $this->hasOne('App\PostRejectedMsg'); }
+	// ------------------------------------------------------------------------
+
 	public function sumShares()
 	{ 
 		return $this->share()->selectRaw('CAST(SUM(`post_shares`.`fb` + `post_shares`.`addon` + `post_shares`.`twitter` + `post_shares`.`shares`) as UNSIGNED) as "total_shares"')->groupBy('post_id', 'fb', 'addon', 'twitter', 'shares'); 

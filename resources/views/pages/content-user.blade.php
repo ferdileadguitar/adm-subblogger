@@ -186,14 +186,18 @@
                     </div>
                 </div>
                 <div class="tbls-col-3 tbls-btn-group">
-                    <div><a class="btn" ng-class="{'btn-default': !post.is_sticky, 'btn-primary': post.is_sticky}" ng-click="setSticky(post)" ng-if="post.status != 2">Sticky</a></div>
-                    <div><a class="btn" ng-class="{'btn-default': !post.is_premium, 'btn-success': post.is_premium}" ng-click="setPremium(post)" ng-if="post.status != 2">Premium</a></div>
+                    <div ng-if="showFeature.editorPost(post)"><a class="btn" ng-class="{'btn-default': !post.is_sticky, 'btn-primary': post.is_sticky}" ng-click="setSticky(post)" ng-if="post.status != 2">Sticky</a></div>
+                    <div ng-if="showFeature.editorPost(post)"><a class="btn" ng-class="{'btn-default': !post.is_premium, 'btn-success': post.is_premium}" ng-click="setPremium(post)" ng-if="post.status != 2">Premium</a></div>
                     <div><a class="btn btn-danger" ng-click="delete(post)">Delete</a></div>
                 </div>
             </div>
 
             <footer class="tbls-footer" ng-show="!post.status">
                  <p>Rejected by <span ng-bind="posts.rejected.user ? posts.rejected.user : 'anonymous'" ng-style="{'text-transform' : 'capitalize'}"></span> : <strong ng-bind="posts.rejected.msg ? posts.rejected.msg : 'No Reason'"></strong> <a>Change Reason</a></p>
+            </footer>
+
+            <footer class="tbls-footer" ng-show="!post.status">
+                <p>Rejected by <span ng-bind="posts.rejected.user ? posts.rejected.user : 'Anonymous'"></span> : <strong ng-bind="posts.rejected.msg ? posts.rejected.msg : 'No Reason'"></strong> <a>Change Reason</a></p>
             </footer>
         </div>
     </div>

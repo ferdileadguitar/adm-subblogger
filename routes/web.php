@@ -26,3 +26,6 @@ Route::group(['middleware' => 'admin.promise'], function() {
 });
 
 Route::get('jwt/get/token', 'JWTTokenController@getToken');
+
+// Dev Page
+Route::get('/admin-dev', 'DeveloperController@getIndex');

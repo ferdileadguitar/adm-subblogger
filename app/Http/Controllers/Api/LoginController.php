@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 use App\User;
 
@@ -38,12 +39,9 @@ class LoginController extends Controller
 
         if ( !empty($postLogin) )
         {   
-            // dd( $postLogin->first() );
-            // $request->session()->put('admin:username', $postLogin['username']);
             $request->session()->put('admin:username', $postLogin->display_name);
-            // $request->session()->put('admin:username', $postLogin->username);
 
-            // return response()->json('oK');
+            // Log::info(  )
         }
 
         if (FALSE === (!empty($postLogin->first)))

@@ -19,7 +19,7 @@ class ApiAuthenticated
 
         if( !$request->session()->exists('admin:username') )
         {
-            return response()->json(['msg' => 'You don\'t have permission!'], 400);
+            return response()->json(['status' => 403, 'msg' => 'You don\'t have permission!'], 403);
         }
 
         return $response;

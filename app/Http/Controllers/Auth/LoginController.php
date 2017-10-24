@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 // use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 use App\User;
 
@@ -56,24 +57,22 @@ class LoginController extends Controller
             'username' => $request->input('username'),
             'password' => $request->input('password')
         );
-        // dd( $credentials );
+
         // Load user and try to login
         if (FALSE === ($postLogin = User::getUser($credentials)))
         { abort(500, 'Invalid Username or Password!'); }
 
         // Auth::login($user, FALSE);
-        // return $this->response();
-        // $postLogin = collect($this->user)->map(function($item) use ($credentials){
-        //     if( $item['username'] == $credentials['username'] OR $item['email'] == $credentials['username'] AND Hash::check($credentials['password'], $item['password']) )
-        //         return $item;
-        // }); 
 
         // // Override postLogin
         if ( !empty($postLogin) )
         {   
-            $request->session()->put('admin:username', array( 'username' => $postLogin->username, 'display_name' => $postLogin->display_name));
+            $msg = array( 'username' => $postLogin->username, 'display_name' => $postLogin->display_name, 'email' => $postLogin->email, 'ip' => $request->ip(), 'user-agent' => $request->header('User-Agent'));
+            $request->session()->put('admin:username', $msg);
+
+            Log::useFiles(base_path() . '/storage/logs/login/debug.log', 'info');
+            Log::info(json_encode($msg));
         }
-        // dd( $request->session() );
 
         if (FALSE === (!empty($postLogin)))
         { return response()->json(array('status' => 400, 'message' => 'Invalid Username or Password!'), 400); }

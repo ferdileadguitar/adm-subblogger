@@ -322,10 +322,9 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
                     templateUrl: 'feedListTemplate',
                     link: function($scope, $elements, $attrs) {
 
-                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo'];
+                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo', 'cardquiz', 'personlaity', 'trivia'];
                     	
                     	$scope.changeCover = function(post, type, index) {
-                    		// console.log( $scope )
 							// This is only listicle and article type
 							if (_.contains(postList, post.post_type)) {
 								appService.modalEditor($scope, {
@@ -362,7 +361,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							},
  							
 							editorPost : function(post) {
-								if( _.contains(postList, post.post_type) )
+								console.log( _.intersection(postList, ['article', 'listicle']) );
+								if( _.contains(_.union(postList, ['meme']), post.post_type) )
 								{ return true }
 							},
 
@@ -393,7 +393,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						};
 
 						$scope.setStatus = function(post, status) {
-							console.log( $scope );
 							appService.appContext.setStatus(post, status, $scope);
 						};
 
@@ -619,8 +618,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.filters.search = searchInput || ''; 
 					$scope.pageCurrent    = 1;
 
-					console.log($scope.filters)
-					
 					request();
 				};
 
@@ -749,12 +746,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.createLabelCount = createLabelCount;
 
 				$rootScope.moderatedTop = void 0;
-
-
-				// var appContext.filters.status = 'moderated';
-
-				console.log( appService.controllerData );
-
 				request();
 				// Methods
 				// ------------------------------------------------------------------------
@@ -766,7 +757,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 
 				$scope.bulkAction = function(selected) {
-					console.log(_.where($scope.data, {'checked': true}).map(function(item) { return item.id }));
 					appService.appContext.bulkAction(
 						selected, 
 						_.where($scope.data, 
@@ -816,10 +806,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.pageTotal               = data.all_post;
 					$scope.data                    = data.data;
 					
-					// console.log( 'Top' )
-					// $rootScope.publicCount         = data.public_post;
-					// $rootScope.rejectedCount       = data.rejected_post;
-
 					$scope.onLoad                  = false;
 					$scope.checkAll                = false;
 
@@ -850,7 +836,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				{ 
 					$scope.filters.status = 'moderated';
 					appService.apply({'localContext': $scope}); 
-					console.log( $scope );
 				});
 			})();
 		},
@@ -870,8 +855,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.onRequest          = void 0;
 				$scope.createLabelCount   = createLabelCount;
 
-				console.log( appService.controllerData );
-
 				request();
 
 				// Methods
@@ -885,7 +868,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 
 				$scope.bulkAction = function(selected) {
-					console.log(_.where($scope.data, {'checked': true}).map(function(item) { return item.id }));
 					appService.appContext.bulkAction(
 						selected, 
 						_.where($scope.data, 
@@ -923,8 +905,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				
 				function request() {
 					appService.cancel($scope.onRequest);
-
-					console.log( $scope );
 
 					$scope.onLoad 	 = true;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, {'contributor' : true}, $scope.sort);
@@ -985,7 +965,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				{ 
 					$scope.filters.status = 'contributor';
 					appService.apply({'localContext': $scope}); 
-					console.log($scope) 
 				});
 			})();
 		},
