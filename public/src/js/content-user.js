@@ -321,11 +321,11 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
                     templateUrl: 'feedListTemplate',
                     link: function($scope, $elements, $attrs) {
 
-                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo', 'cardquiz', 'personlaity', 'trivia'];
+                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo', 'cardquiz', 'personality', 'trivia'];
                     	
                     	$scope.changeCover = function(post, type, index) {
 							// This is only listicle and article type
-							if (_.contains(postList, post.post_type)) {
+							if (_.contains(['article', 'licticle', 'gallery'], post.post_type)) {
 								appService.modalEditor($scope, {
 									ids  : index,
 									data : post,
@@ -343,7 +343,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 							// Who's could change the image cover
 							imgCover : function(post) {
-								if(_.contains(postList, post.post_type)) 
+								if(_.contains(['article', 'listicle', 'gallery'], post.post_type)) 
 								{ return true }
 							},
 

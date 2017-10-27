@@ -10,9 +10,6 @@ module.exports = merge(common, {
 	// devServer : {
 	//     contentBase: path.join(__dirname, './public/build'),
 	//     publicPath : 'build',
-	//     // filename: 'js/[name].js',
-	//     // outputPath : 'build',
-	//     // lazy: true,
 	//     open: false,
 	//     hot: true,
 	//     compress:true,

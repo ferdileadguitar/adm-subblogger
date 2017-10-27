@@ -492,8 +492,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.filters.search = searchInput || ''; 
 					$scope.pageCurrent    = 1;
 
-					console.log($scope.filters)
-					
 					request();
 				};
 

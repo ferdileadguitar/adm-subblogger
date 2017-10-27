@@ -75,7 +75,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						filters: {
 							dateRange: 'all-time',
 							status: 'all-status',
-							search: ''
+							search: '',
+							users : !_.isUndefined(window.user) ? window.user.id : null 
 						},
 
 						sort: {
@@ -104,6 +105,24 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				// Local methods
 				// ------------------------------------------------------------------------
 				
+				function convertStatus(selected) {
+					var status = null;
+					switch (selected) {
+						case 'moderate':
+							status = -2;
+							break;
+						case 'reject':
+							status = 0;
+							break;
+						case 'approve':
+						default:
+							status = 1;
+							break;
+					};
+
+					return status;
+				}
+
 				function bulkAction(selected, data, $ctrlScope) {
 					if (['approve', 'moderate', 'reject', 'sticky', 'premium'].includes(selected) &&
 						data.find(function(item) { return item.status == 2; })
@@ -119,32 +138,38 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					}
 
 					// ------------------------------------------------------------------------
+					var newData = [],
+					    oldData = _.map(data, function(item, index){ return item.id }), 
+					    id      = _.map(data, function(item, index) { 
+								if(_.isEqual(item.status, convertStatus(selected))){
+									// console.log(item);
+									newData.push(item.id);
+								}
+								return newData; 
+						})[0],
+					inStatus, method, url, params, set;
+
+					id   = _.difference(oldData, id);
 					
-					var id = _.map(data, function(item, index) { return item.id; }),
-						status, method, url, params, set;
+					if( _.contains(['delete', 'sticky', 'premium'], selected) ) {
+						id = oldData;
+					}
 
 					data.forEach(function(post) {
 						setOtherCtrlData(post, 'every', {loading: true});
 					});
 
 					if (['approve', 'moderate', 'reject'].includes(selected)) {
-						switch (selected) {
-							case 'moderate':
-								status = -2;
-								break;
-							case 'reject':
-								status = 0;
-								break;
-							case 'approve':
-							default:
-								status = 1;
-								break;
-						};
+
+						inStatus = convertStatus(selected);
 
 						method = 'put';
 						url    = {'url': 'set-status'};
-						params = {'post-status': status};
-						set    = {status: status};
+						params = _.extend({'post-status': ''}, $ctrlScope.filters);
+						set    = {status: inStatus};
+
+						params['post-status'] = inStatus;
+						console.log( params, inStatus );
 					}
 					else if (['sticky', 'premium'].includes(selected)) {
 						method = 'put';
@@ -153,18 +178,23 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						set    = selected == 'sticky' ? {'is_sticky' : 1} : {'is_premium': 1};
 					}
 					else {
-						method = 'delete';
-						url    = '';
-						params = {};
+						method = 'put';
+						url    = {'url': 'set-status'};
+						// url    = '';
+						params = _.extend({'post-status': -99}, $ctrlScope.filters);
+						// params = {};
 					}
 
+					// console.log( params );
+					
 					appService[method](url, Object.assign(params, {'id': id.join(',')}))
 						.then(function(response) {
-						  	$scope.publicCount     = response.public_post     || $scope.public_post;
-						  	$scope.moderationCount = response.moderated_post  || $scope.moderated_post;
-						  	$scope.rejectedCount   = response.rejected_post   || $scope.rejected_post;
+						  	// $scope.publicCount     = response.public_post     || $scope.public_post;
+						  	// $scope.moderationCount = response.moderated_post  || $scope.moderated_post;
+						  	// $scope.rejectedCount   = response.rejected_post   || $scope.rejected_post;
 
-						  	$ctrlScope.createLabelCount(response);
+						  	if(!_.contains(['sticky', 'premium'], selected))
+							  	$ctrlScope.createLabelCount(response);
 						  	
 						  	data.forEach(function(post) {
 						  		setOtherCtrlData(post, 'every', {loading: false});
@@ -173,6 +203,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						  		else { setOtherCtrlData(post, 'every', set); }
 						  		
 						  	});
+						  	params = null;
 						  }, function(error) {
 						  	console.log(error);
 
@@ -232,10 +263,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					appService.delete({}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': -99}) )
 					  .then(function(data) {
-					  	// $scope.publicCount     = data.publicCount || $scope.publicCount;
-					  	// $scope.moderationCount = data.moderationCount || $scope.moderationCount;
-					  	// $scope.rejectedCount   = data.rejectedCount || $scope.rejectedCount;
-
 					  	$ctrlScope.createLabelCount(data);
 
 					  	setOtherCtrlData(post, $ctrlScope.controller, {}, true);
@@ -322,11 +349,11 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
                     templateUrl: 'feedListTemplate',
                     link: function($scope, $elements, $attrs) {
 
-                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo', 'cardquiz', 'personlaity', 'trivia'];
+                    	var postList = ['article', 'listicle', 'gallery', 'funquiz', 'convo', 'cardquiz', 'personality', 'trivia'];
                     	
                     	$scope.changeCover = function(post, type, index) {
 							// This is only listicle and article type
-							if (_.contains(postList, post.post_type)) {
+							if (_.contains(['article', 'listicle', 'gallery'], post.post_type)) {
 								appService.modalEditor($scope, {
 									ids  : index,
 									data : post,
@@ -344,13 +371,13 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 							// Who's could change the image cover
 							imgCover : function(post) {
-								if(_.contains(postList, post.post_type)) 
+								if(_.contains(['article', 'listicle', 'gallery'], post.post_type)) 
 								{ return true }
 							},
 
 							// Mouseover on image cover
 							title  : function(post) {
-								if(_.contains(postList, post.post_type)) 
+								if(_.contains(['article', 'listicle', 'gallery'], post.post_type)) 
 								{ return 'Change Cover' }	
 							},
 
@@ -361,7 +388,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 							},
  							
 							editorPost : function(post) {
-								console.log( _.intersection(postList, ['article', 'listicle']) );
 								if( _.contains(_.union(postList, ['meme']), post.post_type) )
 								{ return true }
 							},
@@ -626,6 +652,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						selected, 
 						_.where($scope.data, 
 							{'checked': true}).map(function(item) { 
+								// console.log( item );
 								return {id: item.id, status: item.status}; 
 							}
 						),
@@ -663,6 +690,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.onLoad 	 = true;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
+					console.log( $scope );
+					// $scope.checkAll = true;
 				};
 
 				function handleResponse(data) {

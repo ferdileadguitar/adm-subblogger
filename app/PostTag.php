@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 // Model 
 use App\Tag;
+use App\Post;
+
+use App\Events\KeepoCache;
 
 class PostTag extends Model
 {
@@ -36,7 +39,9 @@ class PostTag extends Model
     }
 
     public function addPostTags($tags = array(), $postID) {
-      $data = array();
+      $data    = array();
+      
+      $post    = Post::where(['id' => $postID]);
 
       foreach ($tags as $row)
       {
@@ -62,7 +67,9 @@ class PostTag extends Model
 
           $this->destroyTagByPost($postID, $tags); // removing tags event
       }
-      // dd( $data );
+
+      // Flush cache
+      event(new KeepoCache($post));
 
       return $data;
     }

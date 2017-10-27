@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Post;
 
 class Channel extends Model
-{
-	protected $fillable = ['id', 'title'];
-	// private static $channelList = ['entertainments-channel'];
+{	
+	protected static $postDateRange   = null;
+	protected static $embedDateRange  = null;
 
-	private static $channelList = ['hobbies-channel', 'animals-channel', 'creepy-channel', 'entertainments-channel', 'facts-channel', 'anime-comic-channel', 'inspirational-channel', 'lifestyle-channel', 'fun-humor-channel', 'news-info-channel', 'nsfw-channel', 'wtf-channel', 'sports-channel', 'tech-channel', 'traveling-channel', 'unique-weird-channel', 'meme', 'fun-quiz'];
+	protected $fillable = ['id', 'title'];
+	private static $channelList = ['hobbies-channel', 'animals-channel', 'creepy-channel', 'entertainments-channel', 'facts-channel', 'anime-comic-channel', 'inspirational-channel', 'lifestyle-channel', 'fun-humor-channel', 'news-info-channel', 'nsfw-channel', 'wtf-channel', 'sports-channel', 'tech-channel', 'traveling-channel', 'unique-weird-channel', 'meme', 'fun-quiz', 'widget'];
 	protected $guarded = [];
 	private static $__instance  = null;
 	private static $channelsData = false;
@@ -47,14 +48,19 @@ class Channel extends Model
 		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
+
+			// Sort
+		if ($sort = $request->input('key'))
+		{ self::setSort($sort, $request->input('reverse')); }
+
 		return self::$__instance;
 	}
 
 	public static function cleanPaginate($take = FALSE){
-		// dd( self::$channelsData->toSql() );
 		$paginate = self::$channelsData->paginate($take)->toArray();
 
-		// dd( $paginate['data'] );
+		// dd( $paginate );
+
 		$paginate['data'] = collect($paginate['data'])->map(function($item) {
 
 			// Posts
@@ -63,7 +69,7 @@ class Channel extends Model
 			$average_views  = (empty($total_posts) || empty($total_views) ? 0 : ($total_views / $total_posts));
 
 			// Shares
-			$total_shares   = collect($item['share'])->count();
+			$total_shares   = collect($item['share'])->sum('total_shares');
 			$average_shares = number_format($total_shares / $item['all_total_shares'], 4);
 
 			// Embed
@@ -94,6 +100,61 @@ class Channel extends Model
 		return $paginate;
 	}
 
+	private static function setSort($sortBy = 'created', $reverse = TRUE)
+	{
+		$reverse = (!$reverse || ($reverse == 'false') ? 'ASC' : 'DESC');
+		
+		// dd( self::$postDateRange );
+
+		switch ($sortBy)
+		{
+			case 'post':
+				$sql  = '`channels`.*, (SELECT COUNT(*) FROM `posts` WHERE `posts`.`channel_id` = `channels`.`id`';
+				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+				$sql .= ') total_posts';
+				self::$channelsData->selectRaw($sql)->orderBy('total_posts', $reverse);
+				break;
+			case 'view':
+				$sql  = '`channels`.*, (SELECT SUM(`posts`.`views`) FROM `posts` WHERE `posts`.`channel_id` = `channels`.`id`';
+				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+				$sql .= ') total_views';
+				self::$channelsData->selectRaw($sql)->orderBy('total_views', $reverse);
+				break;
+			case 'avg-view':
+				$sql  = '`channels`.*, (SELECT (SUM(`posts`.`views`) / (SELECT COUNT(*) FROM `posts`)) FROM `posts` WHERE `posts`.`channel_id` = `channels`.`id`';
+				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+				$sql .= ') avg_views';
+				self::$channelsData->selectRaw($sql)->orderBy('avg_views', $reverse);
+				break;
+			case 'share':
+				
+				// *note: Keepo IssueController line : 1552
+				self::$channelsData
+					->selectRaw('`channels`.*, (SELECT SUM(`post_shares`.`shares` + `post_shares`.`addon`) FROM `posts` LEFT JOIN `post_shares` ON `posts`.`id` = `post_shares`.`post_id` WHERE `posts`.`channel_id` = `channels`.`id`) total_shares')
+					->orderBy('total_shares', $reverse);
+				break;
+			case 'avg-share':
+				self::$channelsData
+					->selectRaw('`channels`.*, (SELECT (SUM(`post_shares`.`shares` + `post_shares`.`addon`) / (SELECT COUNT(*) FROM `post_shares`)) FROM `posts` LEFT JOIN `post_shares` ON `posts`.`id` = `post_shares`.`post_id` WHERE `posts`.`channel_id` = `channels`.`id`) avg_shares')
+					->orderBy('avg_shares', $reverse);
+				break;
+			case 'embed':
+				self::$channelsData
+					->selectRaw('`channels`.*, (SELECT COUNT(*) FROM `view_logs_embed` LEFT JOIN `posts` ON `posts`.`id` = `view_logs_embed`.`post_id` WHERE `posts`.`channel_id` = `channels`.`id`) total_embed')
+					->orderBy('total_embed', $reverse);
+				break;
+			case 'avg-embed':
+				self::$channelsData
+					->selectRaw('`channels`.*, (SELECT ( COUNT(`view_logs_embed`.`post_id`) / (SELECT COUNT(*) FROM `view_logs_embed`) ) FROM `view_logs_embed` LEFT JOIN `posts` ON `posts`.`id` = `view_logs_embed`.`post_id` WHERE `posts`.`channel_id` = `channels`.`id`) avg_embed')
+					->orderBy('avg_embed', $reverse);
+				break;
+			case 'created':
+			default:
+				self::$channelsData->orderBy('users.created_on', $reverse);
+				break;
+		}
+	}
+
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
 		$qryEmbed = null; // qry embed 
@@ -107,8 +168,8 @@ class Channel extends Model
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
-			$qryPosts = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-			$qryEmbed = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			self::$postDateRange = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			self::$embedDateRange = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
 		}
 
 		// ------------------------------------------------------------------------
@@ -116,53 +177,56 @@ class Channel extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				$qryPosts   = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE(CURDATE())';
+				self::$postDateRange   = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
+				self::$embedDateRange  = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())';
 				break;
 			case 'yesterday':
-				$qryPosts   = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				self::$postDateRange   = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				self::$embedDateRange  = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
 				break;
 			case 'last-7-days':
-				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				self::$postDateRange   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				self::$embedDateRange  = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
 				break;
 			case 'last-30-days':
-				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				self::$postDateRange   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				self::$embedDateRange  = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
 				break;
 			case 'last-90-days':
-				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				self::$postDateRange   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				self::$embedDateRange  = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 				break;
 			case 'this-month':
-				$qryPosts   = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
-				$qryEmbed   = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				self::$postDateRange   = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				self::$embedDateRange  = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
 				break;
 			case 'this-year':
-				$qryPosts   = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) = YEAR(CURDATE())';
+				self::$postDateRange   = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
+				self::$embedDateRange  = 'YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())';
 				break;
 		}
 
 		self::$channelsData->with([
-			'posts' => function($query) use ($dateRange, $qryPosts){
-				if(!is_null($qryPosts))
-					$query->whereRaw($qryPosts);
+			'posts' => function($query) use ($dateRange){
+				if(!is_null(self::$postDateRange))
+					$query->whereRaw(self::$postDateRange);
 
 				// $query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
 				// $query->groupBy('posts.user_id', 'posts.id');
 			},
-			'postsViews' => function($query) use ($dateRange, $qryPosts){
-				if(!is_null($qryPosts))
-					$query->whereRaw($qryPosts);
+			'postsViews' => function($query) use ($dateRange){
+				if(!is_null(self::$postDateRange))
+					$query->whereRaw(self::$postDateRange);
 
 				// $query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
 				// $query->groupBy('posts.user_id', 'posts.id');
 			},
-			'embed' => function($query) use ($dateRange, $qryEmbed)
-			{ if(!is_null($qryEmbed)) $query->whereRaw($qryEmbed); }
+			'embed' => function($query) use ($dateRange)
+			{ if(!is_null(self::$embedDateRange)) $query->whereRaw(self::$embedDateRange); }
 		]);
+
+		// dd( self::$postDateRange );
+		// return (object)['post' => self::$postDateRange, 'embed' => $qryEmbed];
 	}
 	
 	// ------------------------------------------------------------------------
@@ -191,9 +255,9 @@ class Channel extends Model
 	{ 
 		$collection = $this->hasManyThrough('App\Share', 'App\Post', 'channel_id');
 
-		$collection = $collection->selectRaw('post_id, CAST(SUM(fb + twitter + shares + addon) as UNSIGNED) as total_shares');
+		$collection = $collection->selectRaw('post_id, CAST(SUM(shares + addon) as UNSIGNED) as total_shares');
 
-		$collection = $collection->groupBy('fb', 'twitter', 'shares', 'addon', 'post_id', 'channel_id');
+		$collection = $collection->groupBy('post_id', 'channel_id');
 
 		return $collection;
 	}

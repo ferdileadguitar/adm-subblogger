@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Channel;
-use App\objectFile;
+use App\ObjectFile;
 use Carbon\Carbon;
 use DB;
 
@@ -21,7 +21,7 @@ class Post extends Model
 		'updated'		=> Events\KeepoCache::class
 	];
 
-	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
+	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'personality', 'trivia', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
 	private static $__instance  = null;
 	private static $postData    = false;
 
@@ -64,7 +64,8 @@ class Post extends Model
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
 		// Status
-		if ($status = $request->input('status'))
+		// dd( $request->method() );
+		if ($status = $request->input('status') AND $request->method() != 'PUT')
 		{ self::setStatus($status); }
 
 		// Sort
@@ -173,10 +174,7 @@ class Post extends Model
 
 	public static function countPublic() 
 	{	
-
-		if(self::$request->input('status'))
-
-		return self::$postData->whereIn('status', [-2, 0, 1])->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		return self::$postData->whereIn('status', [-2, 0, 1])->whereIn('post_type', self::$postList)->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
 	public static function countRejected() 
@@ -192,18 +190,18 @@ class Post extends Model
 
 	// ------------------------------------------------------------------------
 	
-	public function updateStatus($postID = FALSE, $status = 0)
+	public static function updateStatus($postID = FALSE, $status = 0)
 	{
 		if (empty($postID)) { return ['error' => 'Post not found']; }
-
 		// ------------------------------------------------------------------------
 		if (is_array($postID)) { $post = self::whereIn('id', $postID); }
 		else { $post = self::where('id', $postID); }
 
+		// dd( $status );
 		$post->update(['status' => $status]);
 
 		// Flush cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 
 		return [
 			'all_post'        => self::getFiltered(self::$request)->countAllPost(), 
@@ -228,7 +226,7 @@ class Post extends Model
 		$post->update([$stickyOrPremium => $set]);
 
 		// Flush cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 	}
 
 	public static function updatePostTitle($postID = FALSE, $postTitle = FALSE) {
@@ -247,11 +245,13 @@ class Post extends Model
 			$query->update(['title' => $title]);
 			
 			return $query;
-		})->first();
+		});
 
 		// Flush cache
-		event(new KeepoCache($post->first()));
-
+		event(new KeepoCache($post));
+		
+		$post = $post->first();
+		
 		return ['title' => $post->title, 'slug' => $post->slug, 'url' => implode([config('app.keepo_url'), $post->user->display_name, $post->slug], '/')];
 	} 
 
@@ -265,11 +265,13 @@ class Post extends Model
 			$query->update([ 'channel_id' => $channelID->first()->id ]);
 
 			return $query;
-		})->first();	
+		});	
 
 		// Flush cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 
+		$post = $post->first();
+		
 		return ['channel' => array( 'name' => html_entity_decode($post['channel']['title']), 'slug' => $post['channel']['slug'] ) ];
 	}
 
@@ -291,10 +293,11 @@ class Post extends Model
 			$query->update(['object_file_id' => $objectFile['id']]);
 
 			return $query;
-		})->first();
+		});
+
 
 		// Should s not empty
-		if ( !empty($post) AND !empty($objectFile) )
+		if ( !empty($post->first()) AND !empty($objectFile) )
 			$response = ['image' => array(
 								'id' 	=> $objectFile['id'], 
 								'name' 	=> $objectFile['file_name'], 
@@ -304,8 +307,9 @@ class Post extends Model
 		else
 			return ['error' => 'Failed to post'];
 		
+		// dd( $post );
 		// Flush Cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 
 		// Return data
 		return $response;		
@@ -318,12 +322,12 @@ class Post extends Model
 		$post     = self::where(function($query) use ($postID, $postCreated, $convDate) {
 			$query->where(['id' => $postID])->update(['created_on' => $convDate]);
 			return $query;
-		})->first();
+		});
 		
-		$newDate = date('d M Y H:i:s', strtotime($post->created_on));
+		$newDate = date('d M Y H:i:s', strtotime($post->first()->created_on));
 		
 		// Flush cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 
 		return ['created' => $newDate];
 	}
@@ -336,12 +340,12 @@ class Post extends Model
 		$post  = self::where(function($query) use ($postID, $convDate) {
 			$query->where(['id' => $postID])->update(['is_up_contents' => 1,'created_on' => $convDate]);
 			return $query;
-		})->first();
+		});
 
-		$newDate  = date('d M Y H:i:s', strtotime($post->created_on));
+		$newDate  = date('d M Y H:i:s', strtotime($post->first()->created_on));
 
 		// Flush cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 
 		return ['created' => $newDate, 'is_up_contents' => $post->is_up_contents];
 	}
@@ -355,7 +359,7 @@ class Post extends Model
 				});
 
 		// Flush cache
-		event(new KeepoCache($post->first()));
+		event(new KeepoCache($post));
 
 		$post = $post->first()->toArray();
 
@@ -512,6 +516,9 @@ class Post extends Model
 		switch ($sortBy)
 		{
 			case 'channel':
+				self::$postData
+					 ->selectRaw('`posts`.*, (SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
+					 ->orderBy('channel_title', $reverse);
 				self::$postData->orderBy('channel_id', $reverse); 
 				break;
 			case 'format':

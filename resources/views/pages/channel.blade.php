@@ -61,17 +61,59 @@
 
                     <header class="tbls-header tbls-row flex-row">
                         <div class="tbls-col-1"></div>
-                        <div class="tbls-col-6"><h5 class="text-uppercase">format</h5></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')"><h5 class="text-uppercase text-center full-width">Post</h5> <span class="icon down-dir"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('format')"><h5 class="text-uppercase text-center full-width">Total View</h5>  <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('view')"><h5 class="text-uppercase text-center full-width">Average View</h5>  <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('share')"><h5 class="text-uppercase text-center full-width">Total Share</h5>  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-share')"><h5 class="text-uppercase text-center full-width">Average Share</h5>  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')"><h5 class="text-uppercase text-center full-width">Total Embed</h5>  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-embed')"><h5 class="text-uppercase text-center full-width">Average Embed</h5>  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-6"><h6 class="text-uppercase">format</h6></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('post')">
+                            <h6 class="text-uppercase text-center full-width">Post</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'post'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">
+                            <h6 class="text-uppercase text-center full-width">Total View</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'view'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-view')">
+                            <h6 class="text-uppercase text-center full-width">Average View</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'avg-view'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">
+                            <h6 class="text-uppercase text-center full-width">Total Share</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'share'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-share')">
+                            <h6 class="text-uppercase text-center full-width">Average Share</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'avg-share'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">
+                            <h6 class="text-uppercase text-center full-width">Total Embed</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'embed'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-embed')">
+                            <h6 class="text-uppercase text-center full-width">Average Embed</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'avg-embed'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
                     </header>
 
-                    <div class="tbls-body">
+                    <div class="tbls-body tbls-stripped">
                         <feeds></feeds>  
                     </div>
                 </div>
@@ -95,7 +137,7 @@
 
 <!-- Feeds -->
 <script id="feedListTemplate" type="text/ng-template">
-    <div ng-if="! _.isEmpty(data)" ng-repeat="channel in data track by $index">
+    <div class="box-list" ng-if="! _.isEmpty(data)" ng-repeat="channel in data track by $index">
         <div class="box with-border" ng-class="{'tbls-loading': channel.loading }">
             <div class="tbls-row">
                 <div class="tbls-col-1"><h4 ng-bind="$index+1"></h4></div>
@@ -174,17 +216,59 @@
 
                     <header class="tbls-header tbls-row flex-row">
                         <div class="tbls-col-1"></div>
-                        <div class="tbls-col-6"><h5 class="text-uppercase">channel</h5></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')"><h5 class="text-uppercase text-center full-width">Post</h5> <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('format')"><h5 class="text-uppercase text-center full-width">Total View</h5>  <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('view')"><h5 class="text-uppercase text-center full-width">Average View</h5>  <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('share')"><h5 class="text-uppercase text-center full-width">Total Share</h5>  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-share')"><h5 class="text-uppercase text-center full-width">Average Share</h5>  <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')"><h5 class="text-uppercase text-center full-width">Total Embed</h5>  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-embed')"><h5 class="text-uppercase text-center full-width">Average Embed</h5>  <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-6"><h6 class="text-uppercase">channel</h6></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('post')">
+                            <h6 class="text-uppercase text-center full-width">Post</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'post'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">
+                            <h6 class="text-uppercase text-center full-width">Total View</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'view'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-view')">
+                            <h6 class="text-uppercase text-center full-width">Average View</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'avg-view'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">
+                            <h6 class="text-uppercase text-center full-width">Total Share</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'share'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-share')">
+                            <h6 class="text-uppercase text-center full-width">Average Share</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'avg-share'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">
+                            <h6 class="text-uppercase text-center full-width">Total Embed</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'embed'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('avg-embed')">
+                            <h6 class="text-uppercase text-center full-width">Average Embed</h6>  
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'avg-embed'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
                     </header>
 
-                    <div class="tbls-body">
+                    <div class="tbls-body tbls-stripped">
                         <feeds></feeds> 
                     </div>
                 </div>

@@ -102,20 +102,52 @@
             </div>
 
             <!-- Table Flex -->
-            <div class="tbls-houder" ng-style="{'margin-top' : '30px'}">
+            <div class="tbls-houder" ng-style="{'margin-top' : '30px'}" ng-hide="onLoad">
                <div class="tbls tbls-content">
                     <div class="tbls-label-count"><h4 ng-bind-html="countPost"></h4></div>
 
-                    <header class="tbls-header tbls-row">
-                        <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
+                    <header class="tbls-header tbls-row"  ng-style="{'height': '34px'}">
+                        <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()" ng-checked="checkAll"></div>
                         <div class="tbls-col-3"><h6 class="text-uppercase full-width">Author</h6></div>
-                        <div class="tbls-col-xl"><h6 class="text-uppercase full-width">Title<h6 class="text-uppercase full-width"></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')"><h6 class="text-uppercase text-center full-width">Channel</h6> <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('format')"><h6 class="text-uppercase full-width">Format</h6> <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('view')"><h6 class="text-uppercase full-width">View</h6> <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('share')"><h6 class="text-uppercase full-width">Share</h6> <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')"><h6 class="text-uppercase full-width">Embed</h6> <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('created')"><h6 class="text-uppercase full-width">Created</h6> <span ng-show="sort.key == 'created'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
+                        <div class="tbls-col-xl"><h6 class="text-uppercase full-width">Title</h6></div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')">
+                            <h6 class="text-uppercase text-center left">Channel</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'channel'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('format')">
+                            <h6 class="text-uppercase left">Format</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'format'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">
+                            <h6 class="text-uppercase left">View</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'view'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">
+                            <h6 class="text-uppercase left">Share</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'share'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">
+                            <h6 class="text-uppercase left">Embed</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'embed'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('created')">
+                            <h6 class="text-uppercase left">Created</h6> 
+                        </div>
                         <div class="tbls-col-2"></div>
                         <div class="tbls-col-3"></div>
                     </header>
@@ -131,6 +163,11 @@
                         <select ng-model="pageCurrent" ng-options="num for num in _.range(1, pageCount+1)" ng-change="changePage()"></select>
                     </div>
                 </footer>
+            </div>
+
+            <div class="loader" ng-hide="!onLoad">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1"> <defs> <filter id="gooey"> <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"></feGaussianBlur> <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"></feColorMatrix> <feBlend in="SourceGraphic" in2="goo"></feBlend> </filter> </defs> </svg>
+                <div class="blob blob-0"></div> <div class="blob blob-1"></div> <div class="blob blob-2"></div> <div class="blob blob-3"></div> <div class="blob blob-4"></div> <div class="blob blob-5"></div>
             </div>
         </div>
     </div>
@@ -262,16 +299,54 @@
                 <div class="tbls tbls-content">
                     <div class="tbls-label-count"><h4 ng-bind-html="countPost"></h4></div>
 
+                    <style type="text/css">
+                        .on-select .actived {
+                            color: #07a3f7;
+                        }
+                    </style>
+
                     <header class="tbls-header tbls-row">
-                        <div class="tbls-col-1"><input type="checkbox" ng-click="onCheckAll()"></div>
+                        <div class="tbls-col-1" ng-style="{'height': '25px'}"><input type="checkbox" ng-click="onCheckAll()" ng-checked="checkAll"></div>
                         <div class="tbls-col-3"><h6 class="text-uppercase">Author</h6></div>
                         <div class="tbls-col-xl"><h6 class="text-uppercase">Title</h6></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')"><h6 class="text-uppercase full-width">Channel</h6> <span ng-show="sort.key == 'channel'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('format')"><h6 class="text-uppercase full-width">Format</h6> <span ng-show="sort.key == 'format'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('view')"><h6 class="text-uppercase full-width">View</h6> <span ng-show="sort.key == 'view'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('share')"><h6 class="text-uppercase full-width">Share</h6> <span ng-show="sort.key == 'share'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')"><h6 class="text-uppercase full-width">Embed</h6> <span ng-show="sort.key == 'embed'" ng-class="{'glyphicon glyphicon-chevron-up':!sort.reverse,'glyphicon glyphicon-chevron-down':sort.reverse}"></span></div>
-                        <div class="tbls-col-3 clickable" ng-click="onSort('created')"><h6 class="text-uppercase full-width">Created</h6> </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('channel')">
+                            <h6 class="text-uppercase left">Channel</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'channel'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon"ng-class="{'actived': sort.reverse}"></i>
+                            </div>
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('format')">
+                            <h6 class="text-uppercase left">Format</h6>
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'format'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div> 
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('view')">
+                            <h6 class="text-uppercase left">View</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'view'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div> 
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('share')">
+                            <h6 class="text-uppercase left">Share</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'share'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div> 
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('embed')">
+                            <h6 class="text-uppercase left">Embed</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'embed'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div> 
+                        </div>
+                        <div class="tbls-col-3 clickable" ng-click="onSort('created')">
+                            <h6 class="text-uppercase left">Created</h6>
+                        </div>
                         <div class="tbls-col-2"></div>
                         <div class="tbls-col-3"></div>
                     </header>
@@ -327,4 +402,9 @@
         </div>
     </div>
 </script>
+
+<!-- Additional variable -->
+@if(!empty(@$user_id))
+    <script type="text/javascript">window.user = {id: '{{ $user_id }}', name: '{{ $username }}'};</script>
+@endif
 @endsection

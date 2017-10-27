@@ -22,13 +22,14 @@ class KeepoCache
      *
      * @return void
      */
-    public function __construct(Post $post)
+    public function __construct($post)
     {
 
-        $this->post = $post;
+        $this->post = $post->get();
         
         $this->env  = config('app.env');
 
+        // dd( $this->post );
     }
 
     /**

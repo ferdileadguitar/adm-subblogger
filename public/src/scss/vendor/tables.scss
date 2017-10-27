@@ -2,6 +2,11 @@
 // TABLES
 // ==========================================================================
 
+.on-select {
+
+	.actived {color: #07a3f7;}
+}
+
 .tbls {
 	margin-bottom: 0;
 
@@ -12,6 +17,31 @@
 		font-size: 12px;
 
 		.clickable { cursor: pointer; }
+
+		.sort-box {
+			@include display-flex;
+			@include flex-direction(column);
+			position: relative;
+			float: left;
+			width: 20px;
+			height: 100%;
+
+			.on-select {
+
+				.actived {color: #07a3f7;}
+			}
+
+			i {
+				display: inline-flex;
+				position: absolute;
+				bottom: 15px;
+				font-size: 15px;
+
+				&:nth-child(2) {
+					bottom: 7px;
+				}
+			}
+		}
 
 		.glyphicon {
 			top: 2px;
@@ -73,6 +103,17 @@
 	.tbls-moderated { background-color: #fdfac5; }
 
 	.tbls-body {
+
+		&.tbls-stripped {
+
+			.box-list {
+
+				&:nth-child(2n) {
+					background-color: #fcfdff;
+				}
+			}
+		}
+
 		.box { 
 			border-radius: 0;
 			padding: 10px 0; 
@@ -187,7 +228,7 @@
 	.text-capitalize { text-transform: capitalize; }
 
 	.full-width { width: 100%;display: inline; };
-
+	.left { float: left; }
 	// ==========================================================================
 	
 	.tbls-title-box {

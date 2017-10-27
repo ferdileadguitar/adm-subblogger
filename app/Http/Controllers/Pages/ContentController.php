@@ -28,10 +28,7 @@ class ContentController extends \App\Http\Controllers\PageController
         // No user abort 404
         if( !empty($user) )
         {
-            return $this->view('content-user', [
-                        'user_id'  => $user->id,
-                        'username' => $user->username
-                ]);
+            return $this->view('content', [ 'user_id'  => $user->id, 'username' => $user->username ]);
         }else
         {
             abort(404);

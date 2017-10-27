@@ -369,6 +369,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.onSort = function(sortBy) { 
 					$scope.sort.reverse = $scope.sort.key != sortBy ? false : !$scope.sort.reverse;
 					$scope.sort.key     = sortBy;
+					
+					request();
 				};
 
 				$scope.onCheckAll = function()
@@ -447,16 +449,24 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.controller       = 'format';
 				$scope.onRequest        = void 0;
 				appService.url          = self.baseURL + 'api/formats/'; 
-				console.log( appService )
+
 				request();
 
 				$scope.dropdownAction = function(name, selected) {
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
-					console.log( selected );
+
 					appService.url          = self.baseURL + 'api/formats/';
 					request();
 				};
 
+				$scope.onSort = function(sortBy) { 
+					$scope.sort.reverse = $scope.sort.key != sortBy ? false : !$scope.sort.reverse;
+					$scope.sort.key     = sortBy;
+
+					appService.url          = self.baseURL + 'api/formats/';
+					request();
+				};
+				
 				function request() {
 					appService.cancel($scope.onRequest);
 
@@ -499,7 +509,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					appService.apply({'localContext': $scope});
 
 					appService.url          = self.baseURL + 'api/formats/';
-					console.log( appService );
 				});
 			})();
 		}

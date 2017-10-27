@@ -11,7 +11,7 @@ class Format extends Model
 	public $table = 'posts';
 
 	// private static $formatList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
-	private static $formatList    = "'article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'";
+	private static $formatList    = "'article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick', 'personality', 'trivia'";
 	private static $__instance  = null;
     private static $formatData  = false;
 	private static $formatPost  = false;
@@ -65,7 +65,7 @@ class Format extends Model
 		// Total shares
 		$sql  .= ' LEFT OUTER JOIN (SELECT COUNT(*) cnt FROM `post_shares`) ttl_shrs ON `post_shares`.`post_id` = `posts`.`id`';
 
-		$sql  .= ' LEFT OUTER JOIN (SELECT `view_logs_embed`.`post_id` embed_log_id, COUNT(*) cnt';
+		$sql  .= ' LEFT OUTER JOIN (SELECT `view_logs_embed`.`post_id` embed_log_id, `posts`.`post_type`,COUNT(*) cnt';
 
 		$sql  .= ' FROM `view_logs_embed`';
 
@@ -77,11 +77,12 @@ class Format extends Model
 		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
 		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->embed; }
 
+		// dd( $sql );
 		// $sql  .= ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 
-		$sql  .= ' GROUP BY `posts`.`post_type`,`view_logs_embed`.`post_id`)';
+		$sql  .= ' GROUP BY `posts`.`post_type`)';
 
-		$sql  .= ' range_embed ON range_embed.embed_log_id = `posts`.`id`';
+		$sql  .= ' range_embed ON range_embed.post_type = `posts`.`post_type`';
 
 		// Posts Outer
 		$sql  .= ' LEFT OUTER JOIN (SELECT `posts`.`post_type`, COUNT(*) cnt, SUM(`posts`.`views`) cnt_views, AVG(`posts`.`views`) cnt_avg';
@@ -100,6 +101,16 @@ class Format extends Model
 
 		$sql  .= ' GROUP BY `posts`.`post_type`';
 
+		// $sql  .= ' ORDER BY title ASC';
+
+		// Sort
+		if ($sort = $request->input('key'))
+		{ 
+			$sql .= self::setSort($sort, $request->input('reverse')); 
+		// }else {
+			// $sql .= self::setSort($sort, $request->input('reverse')); 
+		}
+
 		self::$formatData = DB::select($sql);
 
 		return self::$__instance;
@@ -107,7 +118,6 @@ class Format extends Model
 
 	public static function cleanPaginate($take = 50) 
 	{
-		// $paginate = self::$formatData->paginate($take)->toArray();
 		$paginate = [
 			'data' 	=> self::$formatData,
 			'total' => count(self::$formatData)
@@ -118,36 +128,38 @@ class Format extends Model
 
 	private static function setSort($sortBy = 'created', $reverse = TRUE)
 	{
+		// dd( 'set' );
+		$sql = null;
 		$reverse = (!$reverse || ($reverse == 'false') ? 'ASC' : 'DESC');
 		switch ($sortBy)
 		{
-			case 'author':
-				self::$authorsData->orderBy('users.username', $reverse); 
-				break;
 			case 'post':
-				self::$authorsData->orderBy('post_type', $reverse);
+				$sql = 'ORDER BY total_posts '.$reverse.'';
+				break;
+			case 'view':
+				$sql = 'ORDER BY total_views '.$reverse.'';
 				break;
 			case 'avg-view':
-				self::$authorsData->orderBy('view', $reverse);
+				$sql = 'ORDER BY average_views '.$reverse.'';
 				break;
-			case 'total-share':
-				self::$authorsData
-					 ->orderBy('share_count', $reverse);
+			case 'share':
+				$sql = 'ORDER BY total_shares '.$reverse.'';
+				break;
+			case 'avg-share':
+				$sql = 'ORDER BY average_shares '.$reverse.'';
 				break;
 			case 'embed':
-				self::$authorsData
-					 ->selectRaw('(SELECT COUNT(`view_logs_embed`.`post_id`) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
-					 ->orderBy('embed_count', $reverse);
+				$sql = 'ORDER BY total_embed '.$reverse.'';
 				break;
-			case 'email':
-				self::$authorsData
-					 ->orderBy('email', $reverse);
+			case 'avg-embed':
+				$sql = 'ORDER BY average_embed '.$reverse.'';
 				break;
-			case 'created':
 			default:
-				self::$authorsData->orderBy('users.created_on', $reverse);
+				$sql = 'ORDER BY title ASC';
 				break;
 		}
+
+		return $sql;
 	}
 
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
@@ -162,7 +174,7 @@ class Format extends Model
 		if ($startDate AND $endDate)
 		{
 			$qryPosts = ' WHERE `posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-			$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"';
+			$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"';
 		}
 
 		// // ------------------------------------------------------------------------
@@ -171,23 +183,23 @@ class Format extends Model
 		{
 			case 'today':
 				$qryPosts = ' WHERE DATE(`posts`.`created_on`) = DATE(CURDATE())';
-				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE(CURDATE())';
+				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())';
 				break;
 			case 'yesterday':
 				$qryPosts = " WHERE DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
 				break;
 			case 'last-7-days':
 				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
 				break;
 			case 'last-30-days':
 				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
 				break;
 			case 'last-90-days':
 				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-				$qryEmbed = ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 				break;
 			case 'this-month':
 				$qryPosts = ' WHERE DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
@@ -195,7 +207,7 @@ class Format extends Model
 				break;
 			case 'this-year':
 				$qryPosts = " WHERE YEAR(`posts`.`created_on`) = YEAR(CURDATE())";
-				$qryEmbed = " WHERE FROM_UNIXTIME(`view_logs_embed`.`last_activity`) = YEAR(CURDATE())";
+				$qryEmbed = " WHERE YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())";
 				break;
 		}
 
@@ -206,23 +218,16 @@ class Format extends Model
 	/*==========================================
 					RELATIONSHIP
 	============================================*/
-	// public function posts()
-	// {  }
-
 	public function formatPost()
 	{
 		$collection = $this->groupBy('post_type')->select('post_type');
-		// dd( $collection )->get();
+
 		return $collection;
 	}
 
 	public function share()
 	{ 
 		$collection = $this->hasOne('App\Share', 'post_id');
-
-		// $collection = $collection->selectRaw('fb, twitter, post_id, CAST(SUM(fb + twitter + shares + addon) as UNSIGNED) as total_shares');
-
-		// $collection = $collection->groupBy('post_id');
 
 		return $collection;
 	}

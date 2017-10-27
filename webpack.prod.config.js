@@ -7,6 +7,12 @@ const path      = require('path');
 
 module.exports = merge(common, {
 	plugins : [
-		// new UglifyJs(),
+		// new UglifyJs({
+		// 	cache      : true,
+		// 	sourceMap  : true,
+		// 	uglifyOptions : {
+		// 		warnings : true
+		// 	}
+		// }),
 	]
 });

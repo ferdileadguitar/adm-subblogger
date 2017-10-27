@@ -20,7 +20,10 @@ class Author extends Model
 
 	protected $fillable = ['username', 'email','display_name', 'slug', 'activated'];
 
-	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
+	protected static $postDateRange   = null;
+	protected static $embedDateRange  = null;
+
+	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick', 'personality', 'trivia'];
 	private static $__instance  = null;
 	private static $authorsData = false;
 
@@ -45,12 +48,11 @@ class Author extends Model
 	public static function getFiltered($request = FALSE)
 	{
 		// Init
-		// $postList = self::$postList;
-
 		self::getInstance();
 
 		self::$authorsData = self::with(['postShares']);
 		self::$authorsData->selectRaw('`users`.`id`, `users`.`username`, `users`.`email`, `users`.`status`, `users`.`activated`');
+		self::$authorsData->where('status', 1);
 
 		// ------------------------------------------------------------------------
 
@@ -62,7 +64,6 @@ class Author extends Model
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
 		// Sort
-		// dd( $request->input() );
 		if ($sort = $request->input('key'))
 		{ self::setSort($sort, $request->input('reverse')); }
 		
@@ -89,11 +90,6 @@ class Author extends Model
 			$average_views = @((is_null($total_views) || is_null($total_posts)) ? 0 : ($total_views / $total_posts));
 
 			/*Build Object*/
-			// $item['total_posts']   = (is_null($total_posts)   ? 0 : $total_posts);
-			// $item['total_views']   = (is_null($total_views)   ? 0 : $total_views);
-			// $item['average_views'] = (!$average_views)        ? 0 : $average_views;
-			// $item['total_embed']   = (is_null($total_embed))  ? 0 : $total_embed;
-			// $item['total_shares']  = (is_null($total_shares)) ? 0 : $total_shares;
 			return [
 				'id' 			=> @$item['id'],
 				'username' 		=> @$item['username'],
@@ -108,8 +104,7 @@ class Author extends Model
 				'total_embed'   => (is_null($total_embed))  ? 0 : $total_embed,
 				'total_shares'  => (is_null($total_shares)) ? 0 : $total_shares,
 			];
-			// return $item;
-		});	
+		});
 
 		return $paginate;	
 	}
@@ -121,35 +116,43 @@ class Author extends Model
 
 	private static function setSort($sortBy = 'created', $reverse = TRUE)
 	{
-		// dd( $sortBy );
 		$reverse = (!$reverse || ($reverse == 'false') ? 'ASC' : 'DESC');
+
 		switch ($sortBy)
 		{
-			case 'author':
-				self::$authorsData->orderBy('users.username', $reverse); 
-				break;
 			case 'post':
-				self::$authorsData->orderBy('post_type', $reverse);
+				$sql  = '`users`.*, (SELECT COUNT(*) FROM `posts`';
+				$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
+				$sql .= ' AND `posts`.`post_type` IN ("'.implode(self::$postList, '","').'")';
+				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+				$sql .= ') total_posts';
+				self::$authorsData->selectRaw($sql)->orderBy('total_posts', $reverse);
+				break;
+			case 'view':
+				$sql  = '`users`.*, (SELECT SUM(`posts`.`views`) FROM `posts` WHERE `posts`.`user_id` = `users`.`id`';
+				$sql .= ' AND `posts`.`post_type` IN ("'.implode(self::$postList, '","').'")';
+				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+				$sql .= ') total_posts';
+				self::$authorsData->selectRaw($sql)->orderBy('total_posts', $reverse);
 				break;
 			case 'avg-view':
-				self::$authorsData->orderBy('view', $reverse);
+				$sql  = '`users`.*, (SELECT AVG(`posts`.`views`) FROM `posts` WHERE `posts`.`user_id` = `users`.`id`';
+				$sql .= ' AND `posts`.`post_type` IN ("'.implode(self::$postList, '","').'")';
+				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+				$sql .= ') avg_posts';
+				self::$authorsData->selectRaw($sql)->orderBy('avg_posts', $reverse);
 				break;
-			case 'total-share':
+			case 'share':
 				self::$authorsData
-					 // ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
-					 ->orderBy('share_count', $reverse);
+					->selectRaw('`users`.*, (SELECT SUM(`post_shares`.`fb` + `post_shares`.`twitter` + `post_shares`.`addon` + `post_shares`.`shares`) FROM `posts` LEFT JOIN `post_shares` ON `posts`.`id` = `post_shares`.`post_id` WHERE `users`.`id` = `posts`.`user_id`) as `share_count`')
+					->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
-				self::$authorsData
-					 ->selectRaw('(SELECT COUNT(`view_logs_embed`.`post_id`) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
-					 ->orderBy('embed_count', $reverse);
+				$sql  = '`users`.*, (SELECT COUNT(*) cnt FROM `view_logs_embed` WHERE `users`.`id` = `view_logs_embed`.`user_id`';
+ 				$sql .= is_null(self::$embedDateRange) ? null : ' AND '.self::$embedDateRange;
+				$sql .=') embed_count';
+				self::$authorsData->selectRaw($sql)->orderBy('embed_count', $reverse);
 				break;
-			case 'email':
-				self::$authorsData
-					 // ->selectRaw('`posts`.*, (SELECT COUNT(`post_embed`.`id_embed`) FROM `post_embed` WHERE `post_embed`.`id_post` = `posts`.`id`) as `embed_count`')
-					 ->orderBy('email', $reverse);
-				break;
-			case 'created':
 			default:
 				self::$authorsData->orderBy('users.created_on', $reverse);
 				break;
@@ -158,19 +161,17 @@ class Author extends Model
 
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
-		$qryEmbed = null; // qry embed 
-		$qryPosts = null; // qry posts
 
 		// If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
-		if ($dateRange == 'all-time') { $qryEmbed;$qryPosts; }
+		if ($dateRange == 'all-time') { self::$embedDateRange;self::$postDateRange; }
 
 		// ------------------------------------------------------------------------
 		
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
-			$qryPosts = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-			$qryEmbed = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			self::$postDateRange  = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			self::$embedDateRange = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
 		}
 
 		// ------------------------------------------------------------------------
@@ -178,52 +179,57 @@ class Author extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				$qryPosts   = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE(CURDATE())';
+				self::$postDateRange    = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
+				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())';
 				break;
 			case 'yesterday':
-				$qryPosts   = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				self::$postDateRange    = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
 				break;
 			case 'last-7-days':
-				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				self::$postDateRange    = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
 				break;
 			case 'last-30-days':
-				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				self::$postDateRange    = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
 				break;
 			case 'last-90-days':
-				$qryPosts   = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				self::$postDateRange    = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
 				break;
 			case 'this-month':
-				$qryPosts   = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
-				$qryEmbed   = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				self::$postDateRange    = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				self::$embedDateRange   = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
 				break;
 			case 'this-year':
-				$qryPosts   = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
-				$qryEmbed   = 'FROM_UNIXTIME(`view_logs_embed`.`last_activity`) = YEAR(CURDATE())';
+				self::$postDateRange    = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
+				self::$embedDateRange   = 'YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())';
 				break;
 		}
 
 		self::$authorsData->with([
-			'posts' => function($query) use ($dateRange, $qryPosts){
-				if(!is_null($qryPosts))
-					$query->whereRaw($qryPosts);
+			'posts' => function($query) use ($dateRange){
+				if(!is_null(self::$postDateRange))
+					$query->whereRaw(self::$postDateRange);
 
 				$query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
 				$query->groupBy('posts.user_id', 'posts.id');
 			},
-			'embedLog' => function($query) use ($dateRange, $qryEmbed)
-			{ if(!is_null($qryEmbed)) $query->whereRaw($qryEmbed); }
+			'embedLog' => function($query)
+			{ 
+				if(!is_null(self::$embedDateRange)) 
+					$query->whereRaw(self::$embedDateRange); 
+
+				$query->selectRaw('COUNT(*) cnt_embed');
+				$query->groupBy('view_logs_embed.user_id');
+			}
 		]);
 	}
 
 	private static function setSearch($search = FALSE)
 	{
 		self::$authorsData->where(function($query) use ($search) {
-			// $query->whereRaw('MATCH(posts.title) AGAINST ("' . $search . '")');
 			$query->whereRaw('users.username LIKE "%' . $search . '%" OR users.email = "' . $search . '"');
 		});
 	}
@@ -306,7 +312,7 @@ class Author extends Model
 
 		$collection = $collection->join('post_shares', 'posts.id', 'post_shares.post_id');
 
-		$collection = $collection->selectRaw('`posts`.`user_id`, `post_shares`.`post_id`, `post_shares`.`fb`, `post_shares`.`twitter`, `post_shares`.`shares`, CAST(SUM(`post_Shares`.`fb` + `post_shares`.`twitter` + `post_shares`.`addon` + `post_shares`.`shares`) as UNSIGNED) as total_shares');
+		$collection = $collection->selectRaw('`posts`.`user_id`, `post_shares`.`post_id`, `post_shares`.`fb`, `post_shares`.`twitter`, `post_shares`.`shares`, CAST(SUM(`post_shares`.`fb` + `post_shares`.`twitter` + `post_shares`.`addon` + `post_shares`.`shares`) as UNSIGNED) as total_shares');
 
 		$collection = $collection->groupBy('post_id', 'user_id' ,'fb', 'twitter', 'addon', 'shares');
 		

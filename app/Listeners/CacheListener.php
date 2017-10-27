@@ -8,9 +8,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Cache;
 
-class CacheListener
+class CacheListener extends KeepoCache
 {
     public $keepoTags = [];
+    public $env       = null;
     /**
      * Create the event listener.
      *
@@ -18,7 +19,7 @@ class CacheListener
      */
     public function __construct()
     {
-        //
+
     }
 
     /**
@@ -32,36 +33,46 @@ class CacheListener
         // Flush cache here 
         // Better i used {Eloquent Events} for handle every changes on database
         // Rather than use this ..
+        $this->env = $event->env;
+
+        foreach ($event->post->toArray() as $item) 
+        { $this->flushCache($item); }
+    }
+
+
+    private function flushCache($data = null)
+    {
         $tags = [
             // Dashboard
             'mypost' => [
-                'env:'.$event->env,
-                'mmf:'.$event->post->user_id
+                'env:'.$this->env,
+                'mmf:'.$data['user_id']
             ],
             'gfa' => [
-                'env:'.$event->env,
+                'env:'.$this->env,
                 'gfa:'
             ],
 
             // // Detail
             'detailPost' => [
-                'env:'.$event->env,
+                'env:'.$this->env,
                 'ldp',
-                'ldp:'.$event->post->slug
+                'ldp:'.$data['slug']
             ],
 
             // // Homepage?
             'feedPost' => [
-                'env:'.$event->env,
+                'env:'.$this->env,
                 'mpl:'
             ],
 
             // Homepage?
             'hmp'  => [
-                'env:'.$event->env,
-                'hmp:'.$event->post->post_type
+                'env:'.$this->env,
+                'hmp:'.$data['post_type']
             ]
         ];
+        // dd( $tags );
 
         // Flush Cache
         foreach ($tags as $cacheTags) {

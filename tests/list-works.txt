@@ -1,0 +1,31 @@
+*List Test Admin Page
+
+1. Login Check
+   - Invalid Username or Password 
+   - List User
+   - Blank input form
+   - Redirect if sesion doesn't exists
+
+2. Content
+   - Redirect if sesion doesn't exists
+   - Filltering dropdown (dateRange, status, bulkAction)
+   - Editor modal (es6)
+   - template cache 
+   - Event broadcaster (Listener)
+   - Validate error massage
+   - Up contents only once execute
+   - Flush cache on every handling events
+
+3. Authors
+   - Dropdown filter (dateRange)
+   - Search author
+   - Reset pasword
+   - validate password client also server
+   - Delete change status (-99)
+
+4. Channel & Format
+   - Filtering dropdown (dateRange)
+   - Accuracy filterimng data by date
+
+5. Api 
+   - Validate if session doesn't exists
