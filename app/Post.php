@@ -78,6 +78,9 @@ class Post extends Model
 		if ($search = $request->input('users'))
 		{ self::setUsers($search); }
 
+		// if ($pSort = $request->input('sort'))
+		// { self::setSortPost($pSort); }
+
 		return self::$__instance;
 	}
 
@@ -528,6 +531,14 @@ class Post extends Model
 			case 'view':
 				self::$postData->orderBy('views', $reverse);
 				break;
+			case 'mv':
+				self::$postData->orderBy('views', $reverse);
+				break;
+			case 'sr':
+				self::$postData
+					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->orderBy('share_count', $reverse);
+				break;
 			case 'share':
 				self::$postData
 					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
@@ -537,6 +548,12 @@ class Post extends Model
 				self::$postData
 					 ->selectRaw('`posts`.*, (SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
+				break;
+			// case 'mv':
+			// 	self::$postData->orderBy('views', 'DESC');
+			// 	break;
+			case 'n':
+				self::$postData->orderBy('created_on', $reverse);
 				break;
 			case 'created':
 			default:

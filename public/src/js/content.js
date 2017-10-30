@@ -661,6 +661,9 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 
 				$scope.dropdownAction = function(name, selected) {
+					// console.log( name = 'filter-sort' );
+					if( _.isEqual(name,'filter-sort') ) { $scope.onSort(selected);$scope.sort.reverse = true;return false;}
+
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
 				};
 
@@ -909,6 +912,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 
 				$scope.dropdownAction = function(name, selected) {
+					if( _.isEqual(name,'filter-sort') ) { $scope.onSort(selected);$scope.sort.reverse = true;return false;}
+					
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
 				};
 

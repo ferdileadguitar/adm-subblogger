@@ -7,7 +7,7 @@
 **/
 
 return [
-	'email' => ['michael_rendy@hotmail.com', 'willytoba@gmail.com', 'july@gmail.com', 'feny@rocketmail.com', 'ferdi@keepo', 'ferdi@gmail.com', 'anonymous@gmail.com'],
+	'email' => ['michael_rendy@hotmail.com', 'willytoba@gmail.com', 'july@gmail.com', 'feny@rocketmail.com', 'ferdi@keepo', 'ferdi@gmail.com', 'ferdiardiansa@rocketmail.com'],
 	'admin' => [
 		[ 
 			'username'   => 'ferdi@keepo', 

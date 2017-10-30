@@ -106,6 +106,7 @@ class Author extends Model
 			];
 		});
 
+		dd( $paginate );
 		return $paginate;	
 	}
 

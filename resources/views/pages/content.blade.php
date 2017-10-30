@@ -76,6 +76,21 @@
                         </ul>
                     </div>
                 </div>
+
+                <div class="filter-component">
+                    <div class="box drop" name="filter-sort" ng-controller="dropdown">
+                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
+                            <span class="drop-component-text">Sort by newest</span>
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </div>
+                        <ul class="box drop-list">
+                            <li ng-click="select($event, 'n');">Sort by newest</li>
+                            <li ng-click="select($event, 'mv');">Most viewed</li>
+                            <li ng-click="select($event, 'sr');">Most shared</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="filter-component">
                     <div class="box drop" name="filter-status" ng-controller="dropdown">
                         <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
@@ -273,6 +288,21 @@
                         </ul>
                     </div>
                 </div>
+
+                 <div class="filter-component" ng-if=" _.contains(['all', 'contributor'], controller)">
+                    <div class="box drop" name="filter-sort" ng-controller="dropdown">
+                        <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
+                            <span class="drop-component-text">Sort by newest</span>
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </div>
+                        <ul class="box drop-list">
+                            <li ng-click="select($event, 'n');">Sort by newest</li>
+                            <li ng-click="select($event, 'mv');">Most viewed</li>
+                            <li ng-click="select($event, 'sr');">Most shared</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="filter-component" ng-if=" _.contains(['all', 'contributor'], controller)">
                     <div class="box drop" name="filter-status" ng-controller="dropdown">
                         <div class="drop-component <@ openList ? 'drop-open' : '' @>" ng-click="openList = (openList ? false : true)">
@@ -317,7 +347,7 @@
                             <h6 class="text-uppercase left">Channel</h6> 
                             <div class="sort-box" ng-class="{'on-select':sort.key == 'channel'}">
                                 <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
-                                <i class="icon-down-dir down-icon"ng-class="{'actived': sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
                             </div>
                         </div>
                         <div class="tbls-col-3 clickable" ng-click="onSort('format')">

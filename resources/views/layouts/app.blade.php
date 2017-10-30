@@ -33,6 +33,7 @@
     <!-- Scripts -->
     <!-- <script>var baseURL = 'http://new-admin.keepo.pyo/';</script> -->
     <script>var baseURL = "{{ config('app.url') }}";</script>
+    <!-- <script>var baseURL = "http://admin.chillikode.com/";</script> -->
     @stack('script_addons')
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
