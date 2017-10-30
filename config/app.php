@@ -217,13 +217,12 @@ return [
           * JWT Token
           * Securely trnsmitter information
         **/
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
         /*
             Log Viewer
         */
-        // Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
-
+        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
     ],
 
     /*

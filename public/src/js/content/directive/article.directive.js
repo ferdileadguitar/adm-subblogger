@@ -389,6 +389,7 @@ class ArticleEditors {
 					},
 					// elementsContainer : document.querySelector('.editor-body'),
 				});
+
 				self.mediumInsert($);
 				$('#editor-content').mediumInsert(
 				{
@@ -398,7 +399,7 @@ class ArticleEditors {
 			        		deleteScript: null,
 			        		autoGrid: 0,
 			        		fileUploadOptions: {
-			        			url: self.thisFileUpload.uploadCoverUrl+"?type=body",
+			        			url: self.fileUpload.uploadCoverUrl+"?type=body",
 			        		},
 			        		styles: {
 			        		    wide: { label: '<span class="icon-align-justify"></span>' },

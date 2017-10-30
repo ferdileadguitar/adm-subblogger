@@ -5,6 +5,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="fb:app_id" content="1555190841439591">
+
     <title>{{ $pageTitle }}</title>
 
     <!-- DNS Prefetch -->
@@ -49,5 +52,8 @@
     </script>
     @stack('scripts')
     @stack('json')
+
+    <!-- Facebook -->
+    @include('layouts.fb-scripts')
 </body>
 </html>

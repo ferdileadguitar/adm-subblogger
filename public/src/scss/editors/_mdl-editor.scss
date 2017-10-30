@@ -339,7 +339,7 @@
 			}
 
 			&.up-content {
-				width: 40%;
+				width: 30%;
 				height: auto;
 
 				.mdl-body {
@@ -379,6 +379,11 @@
 
 											&:nth-child(2) {
 												margin-right: 0!important;
+											}
+
+											&:hover {
+												/*background-color: rgba(252, 253, 255, .8);*/
+												/*@include transition(.4s all ease);*/
 											}
 										}
 									}

@@ -29,3 +29,4 @@ Route::get('jwt/get/token', 'JWTTokenController@getToken');
 
 // Dev Page
 Route::get('/admin-dev', 'DeveloperController@getIndex');
+Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');

@@ -10,8 +10,8 @@ class Format extends Model
 
 	public $table = 'posts';
 
-	// private static $formatList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
-	private static $formatList    = "'article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick', 'personality', 'trivia'";
+	private static $formatList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
+	// private static $formatList    = "'article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick', 'personality', 'trivia'";
 	private static $__instance  = null;
     private static $formatData  = false;
 	private static $formatPost  = false;
@@ -30,7 +30,9 @@ class Format extends Model
 	{
 		// Init
 		self::getInstance();
-		
+	
+		// dd( implode(self::$formatList, '","') );
+
 		$sql   = 'SELECT `posts`.`post_type` title,';
 		
 		// Post Views
@@ -97,7 +99,9 @@ class Format extends Model
 		$sql  .= ' GROUP BY `posts`.`post_type`) range_posts'; 
 		$sql  .= ' ON range_posts.post_type = `posts`.`post_type`';
 
-		$sql  .= ' WHERE `posts`.`post_type` IN ('.self::$formatList.')';
+		$sql  .= ' WHERE `posts`.`post_type` IN ("'.implode(self::$formatList, '","').'")';
+
+		// dd( $sql );
 
 		$sql  .= ' GROUP BY `posts`.`post_type`';
 

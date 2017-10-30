@@ -147,6 +147,10 @@
                         </div>
                         <div class="tbls-col-3 clickable" ng-click="onSort('created')">
                             <h6 class="text-uppercase left">Created</h6> 
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'created'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div>
                         </div>
                         <div class="tbls-col-2"></div>
                         <div class="tbls-col-3"></div>
@@ -346,6 +350,10 @@
                         </div>
                         <div class="tbls-col-3 clickable" ng-click="onSort('created')">
                             <h6 class="text-uppercase left">Created</h6>
+                            <div class="sort-box" ng-class="{'on-select':sort.key == 'created'}">
+                                <i class="icon-up-dir up-icon" ng-class="{'actived': !sort.reverse}"></i>
+                                <i class="icon-down-dir down-icon" ng-class="{'actived': sort.reverse}"></i>
+                            </div> 
                         </div>
                         <div class="tbls-col-2"></div>
                         <div class="tbls-col-3"></div>

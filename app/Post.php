@@ -46,7 +46,7 @@ class Post extends Model
 	{
 		// Init
 		self::getInstance();
-		self::$postData = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embed', 'postsMsg');
+		self::$postData = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embedLog', 'postsMsg');
 
 		// Group By with current post_type list
 		self::$postData = self::$postData->whereIn('post_type', self::$postList);
@@ -64,7 +64,6 @@ class Post extends Model
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
 		// Status
-		// dd( $request->method() );
 		if ($status = $request->input('status') AND $request->method() != 'PUT')
 		{ self::setStatus($status); }
 
@@ -87,7 +86,9 @@ class Post extends Model
 	public static function cleanPaginate($take = 50)
 	{
 		$paginate         = self::$postData->paginate($take)->toArray();
-		
+
+		// dd( $paginate );
+
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 
 			return [
@@ -111,7 +112,7 @@ class Post extends Model
 				'status'     => $post['status'],
 				'views'      => $post['views'],
 				'shares'     => @$post['share']['shares'],
-				'embeds'     => count(@$post['embed']),
+				'embeds'     => count(@$post['embed_log']),
 				'created'    => date('d M Y H:i', strtotime($post['created_on'])),
 
 				//'reason'	 => 'Asd',
@@ -271,8 +272,8 @@ class Post extends Model
 		event(new KeepoCache($post));
 
 		$post = $post->first();
-		
-		return ['channel' => array( 'name' => html_entity_decode($post['channel']['title']), 'slug' => $post['channel']['slug'] ) ];
+
+		return ['channel' => array( 'name' => html_entity_decode($post->channel->title), 'slug' => $post->channel->slug ) ];
 	}
 
 	public static function updatePostImageCover($postID = false, $postImage = array()) {
@@ -347,7 +348,7 @@ class Post extends Model
 		// Flush cache
 		event(new KeepoCache($post));
 
-		return ['created' => $newDate, 'is_up_contents' => $post->is_up_contents];
+		return ['created' => $newDate, 'is_up_contents' => $post->first()->is_up_contents];
 	}
 
 	public static function updatePostFeeds($post = array(), $postID = FALSE, $response = array()) {
@@ -420,7 +421,7 @@ class Post extends Model
 	
 	private static function setContributorOnly()
 	{
-		$contributorList = [5];
+		$contributorList = [5, 22015];
 
 		self::$postData->where(function($query) use($contributorList) {
 			$query->whereIn('user_id', $contributorList);
@@ -534,7 +535,7 @@ class Post extends Model
 				break;
 			case 'embed':
 				self::$postData
-					 ->selectRaw('`posts`.*, (SELECT COUNT(`post_embed`.`id_embed`) FROM `post_embed` WHERE `post_embed`.`id_post` = `posts`.`id`) as `embed_count`')
+					 ->selectRaw('`posts`.*, (SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
 				break;
 			case 'created':
@@ -617,7 +618,7 @@ class Post extends Model
 	// ------------------------------------------------------------------------
 
 	public function embedLog()
-	{ return $this->hasMany('App\EmbedLog', 'user_id', 'user_id')->selectRaw('user_id, shareid, post_id'); }
+	{ return $this->hasMany('App\EmbedLog', 'post_id')->selectRaw('user_id, shareid, post_id'); }
 	
 	public function channelEmbedLog()
 	{ return $this->hasMany('App\EmbedLog', 'post_id'); }
