@@ -23,11 +23,10 @@ class Author extends Model
 	protected static $postDateRange   = null;
 	protected static $embedDateRange  = null;
 
-	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick', 'personality', 'trivia'];
-	private static $__instance  = null;
-	private static $authorsData = false;
+	private static $__instance  	  = null;
+	private static $authorsData 	  = false;
 
-	private static $request     = false;
+	private static $request           = false;
 
 	// ------------------------------------------------------------------------
 	// Public Methods
@@ -56,20 +55,23 @@ class Author extends Model
 
 		// ------------------------------------------------------------------------
 
-
 		// Date Range
 		if ($dateRange = $request->input('dateRange'))
 		{ self::setDateRange($dateRange); }
 		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
+		// Grouping author by default sort
+		self::groupSort();
+		
 		// Sort
-		if ($sort = $request->input('key'))
+		if ($sort = $request->input('key')) 
 		{ self::setSort($sort, $request->input('reverse')); }
 		
 		// Search
 		if ($search = $request->input('search'))
 		{ self::setSearch($search); }
+
 
 		return self::$__instance;
 	}
@@ -81,13 +83,12 @@ class Author extends Model
 		$paginate  = self::$authorsData->paginate($take)->toArray();
 
 		$paginate['data'] = collect($paginate['data'])->map(function($item) {
-
 			/*Count Date Response*/
-			$total_posts   = collect($item['posts'])->count();
-			$total_views   = collect($item['posts'])->sum('total_views');
-			$total_embed   = collect($item['embed_log'])->count();
+			// $total_posts   = collect($item['posts'])->count();
+			// $total_views   = collect($item['posts'])->sum('total_views');
+			// $total_embed   = collect($item['embed_log'])->sum('cnt_embed');
 			$total_shares  = collect($item['post_shares'])->sum('total_shares');
-			$average_views = @((is_null($total_views) || is_null($total_posts)) ? 0 : ($total_views / $total_posts));
+			// $average_views = @((empty($total_views) || empty($total_posts)) ? 0 : ($total_views / $total_posts));
 
 			/*Build Object*/
 			return [
@@ -98,21 +99,88 @@ class Author extends Model
 				'email' 		=> @$item['email'],
 
 				// Post Agregate 
-				'total_posts'  	=> (is_null($total_posts)   ? 0 : $total_posts),
-				'total_views'   => (is_null($total_views)   ? 0 : $total_views),
-				'average_views' => (!$average_views)        ? 0 : $average_views,
-				'total_embed'   => (is_null($total_embed))  ? 0 : $total_embed,
+				// 'total_posts'  	=> (is_null($total_posts)   ? 0 : $total_posts),
+				'total_posts'  	=> @$item['total_posts'],
+				// 'total_views'   => (is_null($total_views)   ? 0 : $total_views),
+				'total_views'   => @$item['total_views'],
+				// 'average_views' => (!$average_views)        ? 0 : $average_views,
+				'average_views' => @$item['avg_posts'],
+				// 'total_embed'   => (is_null($total_embed))  ? 0 : $total_embed,
+				'total_embed'   => @$item['embed_count'],
 				'total_shares'  => (is_null($total_shares)) ? 0 : $total_shares,
 			];
 		});
 
-		dd( $paginate );
+		// dd( $paginate );
 		return $paginate;	
 	}
 
 	public static function countAuthor()
 	{
 		return self::whereIn('status', [1])->paginate(10);
+	}
+
+	private static function groupSort() 
+	{
+		// Total Posts
+		$sql  = '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT COUNT(*) FROM `posts`';
+
+		$sql .= ' JOIN `channels` ON `channels`.`id` = `posts`.`channel_id`';
+
+		$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
+		
+		$sql .= ' AND `channels`.`slug` IN ("'.implode(config('list.channel'), '","').'")';
+
+		$sql .= ' AND `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
+		
+		$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+		
+		$sql .= ') total_posts,';
+
+		// Total views
+		$sql .= '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT CAST(COALESCE(SUM(`posts`.`views`), 0) as UNSIGNED)';
+
+		$sql .= ' FROM `posts`';
+		
+		$sql .= ' JOIN `channels` ON `channels`.`id` = `posts`.`channel_id`';
+
+		$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
+		
+		$sql .= ' AND `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
+		
+		$sql .= ' AND `channels`.`slug` IN ("'.implode(config('list.channel'), '","').'")';
+
+		$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+		
+		$sql .= ') total_views,';
+
+		// AVG Views
+		$sql .= '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT COALESCE(AVG(`posts`.`views`), 0)';
+
+		$sql .= ' FROM `posts`';
+		
+		$sql .= ' JOIN `channels` ON `channels`.`id` = `posts`.`channel_id`';
+
+		$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
+		
+		$sql .= ' AND `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
+		
+		$sql .= ' AND `channels`.`slug` IN ("'.implode(config('list.channel'), '","').'")';
+
+		$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
+		
+		$sql .= ') avg_posts,';
+
+		// Embed
+		$sql .= '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT COUNT(*) cnt FROM `view_logs_embed` ';
+		
+		$sql .= 'WHERE `users`.`id` = `view_logs_embed`.`user_id`';
+		
+		$sql .= is_null(self::$embedDateRange) ? null : ' AND '.self::$embedDateRange;
+		
+		$sql .=') embed_count';
+		
+		self::$authorsData->selectRaw($sql);
 	}
 
 	private static function setSort($sortBy = 'created', $reverse = TRUE)
@@ -122,40 +190,24 @@ class Author extends Model
 		switch ($sortBy)
 		{
 			case 'post':
-				$sql  = '`users`.*, (SELECT COUNT(*) FROM `posts`';
-				$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
-				$sql .= ' AND `posts`.`post_type` IN ("'.implode(self::$postList, '","').'")';
-				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
-				$sql .= ') total_posts';
-				self::$authorsData->selectRaw($sql)->orderBy('total_posts', $reverse);
+				self::$authorsData->orderBy('total_posts', $reverse);
 				break;
 			case 'view':
-				$sql  = '`users`.*, (SELECT SUM(`posts`.`views`) FROM `posts` WHERE `posts`.`user_id` = `users`.`id`';
-				$sql .= ' AND `posts`.`post_type` IN ("'.implode(self::$postList, '","').'")';
-				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
-				$sql .= ') total_posts';
-				self::$authorsData->selectRaw($sql)->orderBy('total_posts', $reverse);
+				self::$authorsData->orderBy('total_views', $reverse);
 				break;
 			case 'avg-view':
-				$sql  = '`users`.*, (SELECT AVG(`posts`.`views`) FROM `posts` WHERE `posts`.`user_id` = `users`.`id`';
-				$sql .= ' AND `posts`.`post_type` IN ("'.implode(self::$postList, '","').'")';
-				$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
-				$sql .= ') avg_posts';
-				self::$authorsData->selectRaw($sql)->orderBy('avg_posts', $reverse);
+				self::$authorsData->orderBy('avg_posts', $reverse);
 				break;
 			case 'share':
 				self::$authorsData
-					->selectRaw('`users`.*, (SELECT SUM(`post_shares`.`fb` + `post_shares`.`twitter` + `post_shares`.`addon` + `post_shares`.`shares`) FROM `posts` LEFT JOIN `post_shares` ON `posts`.`id` = `post_shares`.`post_id` WHERE `users`.`id` = `posts`.`user_id`) as `share_count`')
+					->selectRaw('`users`.*, (SELECT SUM(`post_shares`.`addon` + `post_shares`.`shares`) FROM `posts` LEFT JOIN `post_shares` ON `posts`.`id` = `post_shares`.`post_id` WHERE `users`.`id` = `posts`.`user_id`) as `share_count`')
 					->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
-				$sql  = '`users`.*, (SELECT COUNT(*) cnt FROM `view_logs_embed` WHERE `users`.`id` = `view_logs_embed`.`user_id`';
- 				$sql .= is_null(self::$embedDateRange) ? null : ' AND '.self::$embedDateRange;
-				$sql .=') embed_count';
-				self::$authorsData->selectRaw($sql)->orderBy('embed_count', $reverse);
+				self::$authorsData->orderBy('embed_count', $reverse);
 				break;
 			default:
-				self::$authorsData->orderBy('users.created_on', $reverse);
+				self::$authorsData->orderBy('users.created_on', 'ASC');
 				break;
 		}
 	}
@@ -217,14 +269,15 @@ class Author extends Model
 				$query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
 				$query->groupBy('posts.user_id', 'posts.id');
 			},
-			'embedLog' => function($query)
-			{ 
-				if(!is_null(self::$embedDateRange)) 
-					$query->whereRaw(self::$embedDateRange); 
+			'embedLog' 
+			// => function($query)
+			// { 
+			// 	if(!is_null(self::$embedDateRange)) 
+			// 		$query->whereRaw(self::$embedDateRange); 
 
-				$query->selectRaw('COUNT(*) cnt_embed');
-				$query->groupBy('view_logs_embed.user_id');
-			}
+			// 	$query->selectRaw('COUNT(*) cnt_embed');
+			// 	// $query->groupBy('view_logs_embed.user_id');
+			// }
 		]);
 	}
 
@@ -284,7 +337,7 @@ class Author extends Model
 
 	public function posts()
 	{
-		return $this->hasMany('App\Post', 'user_id')->whereIn('post_type', self::$postList)->select('user_id');
+		return $this->hasMany('App\Post', 'user_id')->whereIn('post_type', config('list.post_type'))->select('user_id');
 	}
 
 	// --------------------- POST AGREGATE ---------------------------------------------------------
@@ -392,7 +445,7 @@ $sql  = DB::select($sql);
 
 // self::$authorsData->whereIn('users.status', [1]); 
 
-// // self::$authorsData->whereIn('posts.post_type', self::$postList); 
+// // self::$authorsData->whereIn('posts.post_type', config('list.post_type')); 
 
 // self::$authorsData->groupBy('users.id', 'users.username', 'users.email', 'users.status', 'users.activated');
 

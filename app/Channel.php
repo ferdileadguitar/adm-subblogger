@@ -12,7 +12,6 @@ class Channel extends Model
 	protected static $embedDateRange  = null;
 
 	protected $fillable = ['id', 'title'];
-	private static $channelList = ['hobbies-channel', 'animals-channel', 'creepy-channel', 'entertainments-channel', 'facts-channel', 'anime-comic-channel', 'inspirational-channel', 'lifestyle-channel', 'fun-humor-channel', 'news-info-channel', 'nsfw-channel', 'wtf-channel', 'sports-channel', 'tech-channel', 'traveling-channel', 'unique-weird-channel', 'meme', 'fun-quiz', 'widget'];
 	protected $guarded = [];
 	private static $__instance  = null;
 	private static $channelsData = false;
@@ -40,7 +39,7 @@ class Channel extends Model
 
 		self::$channelsData = self::$channelsData->selectRaw('(SELECT COUNT(*) FROM `view_logs_embed`) as all_total_embed');
 
-		self::$channelsData = self::$channelsData->whereIn('slug', self::$channelList);
+		self::$channelsData = self::$channelsData->whereIn('slug',  config('list.channel'));
 		
 		// Date Range
 		if ($dateRange = $request->input('dateRange'))

@@ -21,7 +21,6 @@ class Post extends Model
 		'updated'		=> Events\KeepoCache::class
 	];
 
-	private static $postList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'personality', 'trivia', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
 	private static $__instance  = null;
 	private static $postData    = false;
 
@@ -48,8 +47,17 @@ class Post extends Model
 		self::getInstance();
 		self::$postData = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embedLog', 'postsMsg');
 
+		// Only selected channel
+		self::$postData = self::$postData->select('posts.*');
+
+		// Join channels
+		self::$postData = self::$postData->join('channels', 'posts.channel_id', '=', 'channels.id');
+
 		// Group By with current post_type list
-		self::$postData = self::$postData->whereIn('post_type', self::$postList);
+		self::$postData = self::$postData->whereIn('post_type', config('list.post_type'));
+
+		// Group by with current channels
+		self::$postData = self::$postData->whereIn('channels.slug', config('list.channel'));
 
 		// ------------------------------------------------------------------------
 		
@@ -91,7 +99,6 @@ class Post extends Model
 		$paginate         = self::$postData->paginate($take)->toArray();
 
 		// dd( $paginate );
-
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 
 			return [
@@ -163,32 +170,32 @@ class Post extends Model
 
 	public static function countModerated()
 	{
-		return self::where('status', -2)->count();
+		return self::where('posts.status', -2)->count();
 	}
 	
 	public static function countAllPost() {
-		return self::$postData->whereIn('status', [-2, 0, 1, 2])->count(); // Discard draft status (-1)
+		return self::$postData->whereIn('posts.status', [-2, 0, 1, 2])->count(); // Discard draft status (-1)
 	}	
 
 	public static function countAllModerated() 
 	{	
-		return self::$postData->where('status', -2)->count();
+		return self::$postData->where('posts.status', -2)->count();
 	}
 
-
+// 
 	public static function countPublic() 
 	{	
-		return self::$postData->whereIn('status', [-2, 0, 1])->whereIn('post_type', self::$postList)->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		return self::$postData->whereIn('posts.status', [-2, 0, 1])->whereIn('post_type', config('list.post_type'))->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
 	public static function countRejected() 
 	{	
-		return self::$postData->where('status', 0)->count();
+		return self::$postData->where('posts.status', 0)->count();
 	}
 
 	public static function countPrivate() 
 	{	
-		return self::$postData->where('status', 2)->count();
+		return self::$postData->where('posts.status', 2)->count();
 	}
 
 
@@ -424,7 +431,7 @@ class Post extends Model
 	
 	private static function setContributorOnly()
 	{
-		$contributorList = [5, 22015];
+		$contributorList = [5, 241];
 
 		self::$postData->where(function($query) use($contributorList) {
 			$query->whereIn('user_id', $contributorList);
@@ -444,7 +451,7 @@ class Post extends Model
 		if ($startDate AND $endDate)
 		{
 			self::$postData->where(function($query) use($startDate, $endDate) {
-				$query->whereBetween('created_on', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+				$query->whereBetween('posts.created_on', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
 			});
 			return;
 		}
@@ -484,28 +491,28 @@ class Post extends Model
 		switch ($status)
 		{
 			case 'private':
-				self::$postData->where('status', 2);
+				self::$postData->where('posts.status', 2);
 				break;
 			case 'public':
 				// Get moderated, unpublished and publised
 				self::$postData->where(function($query) {
-					$query->whereIn('status', [-2, 0, 1]);
+					$query->whereIn('posts.status', [-2, 0, 1]);
 				});
 				break;
 			case 'approved':
-				self::$postData->where('status', 1);
+				self::$postData->where('posts.status', 1);
 				break;
 			case 'moderated':
-				self::$postData->where('status', -2);
+				self::$postData->where('posts.status', -2);
 				break;
 			case 'rejected':
-				self::$postData->where('status', 0);
+				self::$postData->where('posts.status', 0);
 				break;
 			case 'all-status':
 			default;
 				self::$postData->where(function($query) {
 					// $query->whereNotIn('status', [-1, -99]);
-					$query->whereNotIn('status', [-99, -1]); // -1 is unpublish right
+					$query->whereNotIn('posts.status', [-99, -1]); // -1 is unpublish right
 				});
 				break;
 		}
@@ -553,11 +560,11 @@ class Post extends Model
 			// 	self::$postData->orderBy('views', 'DESC');
 			// 	break;
 			case 'n':
-				self::$postData->orderBy('created_on', $reverse);
+				self::$postData->orderBy('posts.created_on', $reverse);
 				break;
 			case 'created':
 			default:
-				self::$postData->orderBy('created_on', $reverse);
+				self::$postData->orderBy('posts.created_on', $reverse);
 				break;
 		}
 	}

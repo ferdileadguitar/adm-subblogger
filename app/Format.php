@@ -10,8 +10,7 @@ class Format extends Model
 
 	public $table = 'posts';
 
-	private static $formatList    = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
-	// private static $formatList    = "'article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick', 'personality', 'trivia'";
+	private static $formatList  = ['article', 'listicle', 'meme', 'gallery', 'funquiz', 'convo', 'quickpersonality', 'quicktrivia', 'quickpolling','cardclick'];
 	private static $__instance  = null;
     private static $formatData  = false;
 	private static $formatPost  = false;
@@ -31,7 +30,7 @@ class Format extends Model
 		// Init
 		self::getInstance();
 	
-		// dd( implode(self::$formatList, '","') );
+		// dd( implode(config('list.post_type'), '","') );
 
 		$sql   = 'SELECT `posts`.`post_type` title,';
 		
@@ -99,7 +98,7 @@ class Format extends Model
 		$sql  .= ' GROUP BY `posts`.`post_type`) range_posts'; 
 		$sql  .= ' ON range_posts.post_type = `posts`.`post_type`';
 
-		$sql  .= ' WHERE `posts`.`post_type` IN ("'.implode(self::$formatList, '","').'")';
+		$sql  .= ' WHERE `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
 
 		// dd( $sql );
 
@@ -293,7 +292,7 @@ $sql  .= ' GROUP BY `posts`.`post_type`,`view_logs_embed`.`post_id`)';
 $sql  .= ' range_embed ON range_embed.embed_log_id = ts.`id`';
 
 // $sql  .= ' WHERE ts.`post_type` IN ("article", "listicle", "funquiz", "gallery", "meme", "convo", "cardquiz", "quickpersonality", "quicktrivia", "quickpolling")';
-$sql  .= ' WHERE ts.`post_type` IN ('.self::$formatList.')';
+$sql  .= ' WHERE ts.`post_type` IN ('.config('list.post_type').')';
 
 $sql  .= ' GROUP BY ts.`post_type`';
 
@@ -322,7 +321,7 @@ self::$formatData = DB::select($sql);
 // // Date range agregate
 // self::$formatData   = self::$formatData->leftJoin(DB::raw('(SELECT `view_logs_embed`.`post_id` embed_log_id, COUNT(*) cnt FROM `view_logs_embed` LEFT JOIN `posts` ON `view_logs_embed`.`post_id` = `posts`.`id` GROUP BY `posts`.`post_type`, `view_logs_embed`.`post_id`) range_embed'), 'range_embed.embed_log_id', '=', 'posts.id');
 
-// self::$formatData = self::$formatData->whereIn('post_type', self::$formatList);
+// self::$formatData = self::$formatData->whereIn('post_type', config('list.post_type'));
 
 // // self::$formatData = self::$formatData->distinct('range_embed.cnt');
 // self::$formatData = self::$formatData->groupBy('post_type');
