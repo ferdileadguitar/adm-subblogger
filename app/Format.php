@@ -39,9 +39,9 @@ class Format extends Model
 
 		self::$formatData = self::$formatData->leftJoin('view_logs_embed', 'view_logs_embed.post_id', '=', 'posts.id');
 
-		self::$formatData = self::$formatData->leftJoin(DB::Raw('(SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_embd'), 'view_logs_embed.post_id', '=', 'posts.id');
+		self::$formatData = self::$formatData->leftJoin(DB::raw('(SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_embd'), 'view_logs_embed.post_id', '=', 'posts.id');
 
-		self::$formatData = self::$formatData->leftJoin(DB::Raw('(SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_shrs'), 'post_shares.post_id', '=', 'posts.id');
+		self::$formatData = self::$formatData->leftJoin(DB::raw('(SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_shrs'), 'post_shares.post_id', '=', 'posts.id');
 
 		// $sql   = 'SELECT `posts`.`post_type` title,';
 		
@@ -78,7 +78,6 @@ class Format extends Model
 		// $sql  .= ' LEFT OUTER JOIN (SELECT COUNT(*) cnt FROM `post_shares`) ttl_shrs ON `post_shares`.`post_id` = `posts`.`id`';
 
 
-		// $sql   = ' LEFT OUTER JOIN (SELECT `view_logs_embed`.`post_id` embed_log_id, `posts`.`post_type`,COUNT(*) cnt';
 		$sql   = ' (SELECT `view_logs_embed`.`post_id` embed_log_id, `posts`.`post_type`,COUNT(*) cnt';
 
 		$sql  .= ' FROM `view_logs_embed`';
@@ -92,17 +91,11 @@ class Format extends Model
 		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->embed; }
 
 
-		// dd( $sql );
-		// $sql  .= ' WHERE FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-
 		$sql  .= ' GROUP BY `posts`.`post_type`) range_embed';
-
-		// $sql  .= ' range_embed ON range_embed.post_type = `posts`.`post_type`';
 
 		self::$formatData = self::$formatData->leftJoin(DB::Raw($sql), 'range_embed.post_type', '=', 'posts.post_type');
 		
 		// Posts Outer
-		// $sql  .= ' LEFT OUTER JOIN (SELECT `posts`.`post_type`, COUNT(*) cnt, SUM(`posts`.`views`) cnt_views, AVG(`posts`.`views`) cnt_avg';
 		$sql   = ' (SELECT `posts`.`post_type`, COUNT(*) cnt, SUM(`posts`.`views`) cnt_views, AVG(`posts`.`views`) cnt_avg';
 		$sql  .= ' FROM `posts`';
 
@@ -113,27 +106,16 @@ class Format extends Model
 		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->posts; }
 		
 		$sql  .= ' GROUP BY `posts`.`post_type`) range_posts'; 
-		// $sql  .= ' ON range_posts.post_type = `posts`.`post_type`';
 
 		self::$formatData = self::$formatData->leftJoin(DB::Raw($sql), 'range_posts.post_type', '=', 'posts.post_type');
 
-		// $sql  .= ' WHERE `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
-
-		// dd( $sql );
-
-		// $sql  .= ' GROUP BY `posts`.`post_type`';
 		self::$formatData = self::$formatData->groupBy('posts.post_type');
 		
 		self::$formatData = self::$formatData->whereIn('posts.post_type', config('list.post_type'));
 
-		// $sql  .= ' ORDER BY title ASC';
-		// self::$formatData = self::$formatData->orderBy('posts.title','ASC');
-
 		// Sort
 		if ($sort = $request->input('key'))
 		{ self::setSort($sort, $request->input('reverse')); }
-
-		// self::$formatData = DB::select($sql);
 
 		return self::$__instance;
 	}
@@ -141,13 +123,6 @@ class Format extends Model
 	public static function cleanPaginate($take = 50) 
 	{
 		$paginate = self::$formatData->paginate(10)->toArray();
-
-		// dd( $paginate );
-
-		// $paginate = [
-		// 	'data' 	=> self::$formatData,
-		// 	'total' => count(self::$formatData)
-		// ];
 
 		return $paginate;
 	}
@@ -161,35 +136,27 @@ class Format extends Model
 		{
 			case 'post':
 				self::$formatData->orderBy('total_posts', $reverse);
-				// $sql = 'ORDER BY total_posts '.$reverse.'';
 				break;
 			case 'view':
 				self::$formatData->orderBy('total_views', $reverse);
-				// $sql = 'ORDER BY total_views '.$reverse.'';
 				break;
 			case 'avg-view':
 				self::$formatData->orderBy('average_views', $reverse);
-				// $sql = 'ORDER BY average_views '.$reverse.'';
 				break;
 			case 'share':
 				self::$formatData->orderBy('total_views', $reverse);
-				// $sql = 'ORDER BY total_shares '.$reverse.'';
 				break;
 			case 'avg-share':
 				self::$formatData->orderBy('average_views', $reverse);
-				// $sql = 'ORDER BY average_shares '.$reverse.'';
 				break;
 			case 'embed':
 				self::$formatData->orderBy('total_views', $reverse);
-				// $sql = 'ORDER BY total_embed '.$reverse.'';
 				break;
 			case 'avg-embed':
 				self::$formatData->orderBy('average_views', $reverse);
-				// $sql = 'ORDER BY average_embed '.$reverse.'';
 				break;
 			default:
 				self::$formatData->orderBy('title', 'ASC');
-				// $sql = 'ORDER BY title ASC';
 				break;
 		}
 
@@ -200,6 +167,7 @@ class Format extends Model
 	{
 		$qryPosts = null;
 		$qryEmbed = null;
+		
 		// // If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
 		if ($dateRange == 'all-time') { return (object)['embed' => $qryEmbed, 'posts' => $qryPosts]; }
 
