@@ -474,7 +474,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				function request() {
 					appService.cancel($scope.onRequest);
 
-					appService.url          = self.baseURL + 'api/formats/';
+					appService.url   = self.baseURL + 'api/formats/';
 
 					$scope.onLoad 	 = true;
 					// $scope.onRequest = appService.get({}, $scope.filters, $scope.sort);

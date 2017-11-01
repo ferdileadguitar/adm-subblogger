@@ -15,6 +15,8 @@ class Format extends Model
     private static $formatData  = false;
 	private static $formatPost  = false;
 
+	private static $embedSubQry = false;
+
 	public static function getInstance()
 	{
 		if (self::$__instance === null)
@@ -29,107 +31,77 @@ class Format extends Model
 	{
 		// Init
 		self::getInstance();
-	
-		self::$formatData = new self();
-
-		self::$formatData = self::$formatData->selectRaw('`posts`.`post_type` title, COALESCE(range_posts.cnt, 0) total_posts, CAST(COALESCE(range_posts.cnt_views, 0) AS UNSIGNED) total_views, CAST(COALESCE( ( COALESCE(range_posts.cnt_views, 0) / COALESCE(range_posts.cnt, 0)), 0) AS UNSIGNED) average_views, CAST(COALESCE(SUM(`post_shares`.`addon` + `post_shares`.`shares`), 0) AS UNSIGNED) total_shares, CAST(COALESCE(AVG(`post_shares`.`addon` + `post_shares`.`shares`), 0) AS UNSIGNED) average_shares, COALESCE(range_embed.cnt, 0) total_embed, (SELECT COUNT(*) cnt FROM `view_logs_embed`) all_embed, COALESCE(range_embed.cnt, 0) / COALESCE((SELECT COUNT(*) cnt FROM `view_logs_embed`), 0) average_embed');
-
 		
-		self::$formatData = self::$formatData->leftJoin('post_shares', 'post_shares.id', '=', 'posts.id');
+		self::$formatData  = new self();
 
-		self::$formatData = self::$formatData->leftJoin('view_logs_embed', 'view_logs_embed.post_id', '=', 'posts.id');
+		self::$embedSubQry = $embedQry = DB::table('view_logs_embed')->selectRaw('COUNT(*) cnt')->join('posts', 'posts.id', '=', 'view_logs_embed.post_id');
 
-		self::$formatData = self::$formatData->leftJoin(DB::raw('(SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_embd'), 'view_logs_embed.post_id', '=', 'posts.id');
+		self::$formatData  = self::$formatData->selectRaw('`posts`.`post_type` as title');
 
-		self::$formatData = self::$formatData->leftJoin(DB::raw('(SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_shrs'), 'post_shares.post_id', '=', 'posts.id');
+		self::$formatData  = self::$formatData->selectRaw('COUNT(*) total_posts');
 
-		// $sql   = 'SELECT `posts`.`post_type` title,';
+		self::$formatData  = self::$formatData->selectRaw('CAST(SUM(`posts`.`views`) AS UNSIGNED) total_views');
 		
-		// // Post Views
-		// $sql  .= ' COALESCE(range_posts.cnt, 0) total_posts,';
-		// $sql  .= ' CAST(COALESCE(range_posts.cnt_views, 0) AS UNSIGNED) total_views,';
-		// $sql  .= ' CAST(COALESCE( ( COALESCE(range_posts.cnt_views, 0) / COALESCE(range_posts.cnt, 0)), 0) AS UNSIGNED) average_views,';
+		self::$formatData  = self::$formatData->selectRaw('AVG(`posts`.`views`) average_views');
 
-		// // Post Shares 
-		// $sql  .= ' CAST(COALESCE(SUM(`post_shares`.`addon` + `post_shares`.`shares`), 0) AS UNSIGNED) total_shares,';
-		// $sql  .= ' CAST(COALESCE(AVG(`post_shares`.`addon` + `post_shares`.`shares`), 0) AS UNSIGNED) average_shares,';
+		self::$formatData  = self::$formatData->selectRaw('CAST(COALESCE(SUM(`post_shares`.`addon` + `post_shares`.`shares`), 0) AS UNSIGNED) total_shares');
 
-		// // Post Embed 
-		// $sql  .= ' COALESCE(range_embed.cnt, 0) total_embed,';
-		// $sql  .= ' (SELECT COUNT(*) cnt FROM `view_logs_embed`) all_embed,';
-		// $sql  .= ' COALESCE(range_embed.cnt, 0) / COALESCE((SELECT COUNT(*) cnt FROM `view_logs_embed`), 0) average_embed'; // total embed / n(all)
-		// $sql  .= ' CAST(COALESCE(range_embed.cnt, 0) AS UNSIGNED) range_embed';
-
-		// $sql  .= ' CONCAT(DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 DAY), "%d %M %Y"), " - ", DATE_FORMAT(CURDATE(), "%d %M %Y")) date_range';
-
-		// Main Table Posts
-		// $sql  .= ' FROM `posts`';
-
-		// Join Table
-		// $sql  .= ' LEFT JOIN `post_shares` ON `post_shares`.`post_id` = `posts`.`id`'; // post_shares
-
-		// $sql  .= ' LEFT JOIN `view_logs_embed` ON `view_logs_embed`.`post_id` = `posts`.`id`'; // view_logs_embed
-
-		// // Extend outer tables
-		// // Total embed for count average data
-		// $sql  .= ' LEFT OUTER JOIN (SELECT COUNT(*) cnt FROM `view_logs_embed`) ttl_embd ON `view_logs_embed`.`post_id` = `posts`.`id`';
-
-		// // Total shares
-		// $sql  .= ' LEFT OUTER JOIN (SELECT COUNT(*) cnt FROM `post_shares`) ttl_shrs ON `post_shares`.`post_id` = `posts`.`id`';
-
-
-		$sql   = ' (SELECT `view_logs_embed`.`post_id` embed_log_id, `posts`.`post_type`,COUNT(*) cnt';
-
-		$sql  .= ' FROM `view_logs_embed`';
-
-		$sql  .= ' LEFT JOIN `posts` ON `view_logs_embed`.`post_id` = `posts`.`id`';
-
-		// Additional date range here
-		if( $dateRange = $request->input('dateRange') )
-		{ $sql  .= self::setDateRange($dateRange)->embed; }
-		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
-		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->embed; }
-
-
-		$sql  .= ' GROUP BY `posts`.`post_type`) range_embed';
-
-		self::$formatData = self::$formatData->leftJoin(DB::Raw($sql), 'range_embed.post_type', '=', 'posts.post_type');
+		self::$formatData  = self::$formatData->selectRaw('FORMAT(COALESCE(AVG(`post_shares`.`addon` + `post_shares`.`shares`), 0), 4) average_shares');
 		
-		// Posts Outer
-		$sql   = ' (SELECT `posts`.`post_type`, COUNT(*) cnt, SUM(`posts`.`views`) cnt_views, AVG(`posts`.`views`) cnt_avg';
-		$sql  .= ' FROM `posts`';
-
+		self::$formatData  = self::$formatData->selectRaw('(COALESCE(range_embed.cnt, 0)) total_embed');
+		
 		// Additiopnal date range here
 		if( $dateRange = $request->input('dateRange') )
-		{ $sql  .= self::setDateRange($dateRange)->posts; }
+		{ self::setDateRange($dateRange); }
 		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
-		{ $sql  .= self::setDateRange(FALSE, $startDate, $endDate)->posts; }
+		{ self::setDateRange(FALSE, $startDate, $endDate); }
 		
-		$sql  .= ' GROUP BY `posts`.`post_type`) range_posts'; 
+		/*----------------------------------------------------------------*/
 
-		self::$formatData = self::$formatData->leftJoin(DB::Raw($sql), 'range_posts.post_type', '=', 'posts.post_type');
+		self::$formatData  = self::$formatData->selectRaw("COALESCE((COALESCE(range_embed.cnt, 0)) / ({$embedQry->toSql()}), 0) average_embed");
+
+		self::$formatData  = self::$formatData->selectRaw("({$embedQry->toSql()}) all_embed");
+
+		self::$formatData = self::$formatData->leftJoin('post_shares', 'post_shares.post_id', '=', 'posts.id');
+
+		self::$formatData = self::$formatData->leftJoin('channels', 'channels.id', '=', 'posts.channel_id');
+
+		// Count embed hmmmm
+		self::$formatData = self::$formatData->leftJoin(DB::raw("({$embedQry->selectRaw('`posts`.`post_type`')->groupBy('posts.post_type')->toSql()}) range_embed"), 'range_embed.post_type', '=', 'posts.post_type');
 
 		self::$formatData = self::$formatData->groupBy('posts.post_type');
 		
 		self::$formatData = self::$formatData->whereIn('posts.post_type', config('list.post_type'));
 
-		// Sort
+		self::$formatData = self::$formatData->whereIn('channels.slug', config('list.channel'));
+
+		self::$formatData = self::$formatData->whereNotIn('posts.status', [-99]);
+		
+		// // Sort
 		if ($sort = $request->input('key'))
 		{ self::setSort($sort, $request->input('reverse')); }
 
 		return self::$__instance;
 	}
 
+	public static function getPostType($page = 1)
+	{
+		return self::selectRaw('`post_type` as title, 0 as total_posts, 0 total_views, 0 average_views, 0 total_shares, 0 average_shares, 0 total_embed, 0 average_embed')->whereIn('post_type', config('list.post_type'))->groupBy('post_type')->paginate(10)->toArray();
+	}
+
 	public static function cleanPaginate($take = 50) 
 	{
-		$paginate = self::$formatData->paginate(10)->toArray();
+		$paginate = self::getPostType();
+
+		$format   = self::$formatData->paginate(10)->toArray();
+
+		$paginate['data'] = array_replace($paginate['data'], $format['data']);
 
 		return $paginate;
 	}
 
 	private static function setSort($sortBy = 'created', $reverse = TRUE)
 	{
-		// dd( 'set' );
 		$sql = null;
 		$reverse = (!$reverse || ($reverse == 'false') ? 'ASC' : 'DESC');
 		switch ($sortBy)
@@ -144,16 +116,16 @@ class Format extends Model
 				self::$formatData->orderBy('average_views', $reverse);
 				break;
 			case 'share':
-				self::$formatData->orderBy('total_views', $reverse);
+				self::$formatData->orderBy('total_shares', $reverse);
 				break;
 			case 'avg-share':
-				self::$formatData->orderBy('average_views', $reverse);
+				self::$formatData->orderBy('average_shares', $reverse);
 				break;
 			case 'embed':
-				self::$formatData->orderBy('total_views', $reverse);
+				self::$formatData->orderBy('total_embed', $reverse);
 				break;
 			case 'avg-embed':
-				self::$formatData->orderBy('average_views', $reverse);
+				self::$formatData->orderBy('average_embed', $reverse);
 				break;
 			default:
 				self::$formatData->orderBy('title', 'ASC');
@@ -167,7 +139,7 @@ class Format extends Model
 	{
 		$qryPosts = null;
 		$qryEmbed = null;
-		
+
 		// // If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
 		if ($dateRange == 'all-time') { return (object)['embed' => $qryEmbed, 'posts' => $qryPosts]; }
 
@@ -175,8 +147,8 @@ class Format extends Model
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
-			$qryPosts = ' WHERE `posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-			$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"';
+			self::$formatData = self::$formatData->whereRaw('`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"');
+			self::$embedSubQry= self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"');
 		}
 
 		// // ------------------------------------------------------------------------
@@ -184,36 +156,35 @@ class Format extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				$qryPosts = ' WHERE DATE(`posts`.`created_on`) = DATE(CURDATE())';
-				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())';
+				self::$formatData  = self::$formatData->whereRaw('DATE(`posts`.`created_on`) = DATE(CURDATE())');
+ 				self::$embedSubQry = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())');
 				break;
 			case 'yesterday':
-				$qryPosts = " WHERE DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				self::$formatData  = self::$formatData->whereRaw('DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)');
+				self::$embedSubQry = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)');
 				break;
 			case 'last-7-days':
-				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				self::$formatData  = self::$formatData->whereRaw('DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
+				self::$embedSubQry = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
 				break;
 			case 'last-30-days':
-				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				self::$formatData = self::$formatData->whereRaw('DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
+				self::$embedSubQry= self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
 				break;
 			case 'last-90-days':
-				$qryPosts = ' WHERE DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-				$qryEmbed = ' WHERE DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				self::$formatData = self::$formatData->whereRaw('DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
+				self::$embedSubQry= self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
 				break;
 			case 'this-month':
-				$qryPosts = ' WHERE DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
-				$qryEmbed = ' WHERE DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				self::$formatData = self::$formatData->whereRaw('DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
+				self::$embedSubQry= self::$embedSubQry->whereRaw('DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
 				break;
 			case 'this-year':
-				$qryPosts = " WHERE YEAR(`posts`.`created_on`) = YEAR(CURDATE())";
-				$qryEmbed = " WHERE YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())";
+				self::$formatData = self::$formatData->whereRaw('YEAR(`posts`.`created_on`) = YEAR(CURDATE())');
+				self::$embedSubQry= self::$embedSubQry->whereRaw('YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())');
 				break;
 		}
 
-		// dd( $qryPosts );
 		return (object)['posts' => $qryPosts, 'embed' => $qryEmbed];
 	}
 
