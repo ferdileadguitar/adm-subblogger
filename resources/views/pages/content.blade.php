@@ -15,7 +15,7 @@
         <nav class="tabs-nav">
             <a ng-click="openTab($event, 'all');" class="box active">All Contents</a>
             <a ng-click="openTab($event, 'moderation');" class="box">Need Moderation <span class="label label-danger" ng-bind="moderatedTop"></span></a>
-            <a ng-click="openTab($event, 'contributor');" class="box">Contributor Only</a>
+            <a ng-click="openTab($event, 'contributor');" class="box" ng-if="!users">Contributor Only</a>
         </nav>
 
         <aside class="adds">
@@ -46,7 +46,7 @@
             <tab></tab>
         </div>
 
-        <div id="contributor" class="tab-component" ng-controller="contributorController">
+        <div id="contributor" class="tab-component" ng-controller="contributorController" ng-show="_.isNull(filters.users)">
             <!-- Filters -->
             <!-- <tab></tab> -->
             <div class="filters">

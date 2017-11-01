@@ -16,14 +16,14 @@ class ContentController extends \App\Http\Controllers\PageController
         return $this->view('content', ['moderationCount' => Post::countModerated()]);
     }
 
-    public function getPost($username = FALSE)
+    public function getPost($user_slug = FALSE)
     {   
         // Make sure user params has isset
-        if( !$username )
+        if( !$user_slug )
         { return abort(404); }
 
         // Get user detail 
-        $user = User::getUserDetail($username);
+        $user = User::getUserDetail($user_slug);
 
         // No user abort 404
         if( !empty($user) )

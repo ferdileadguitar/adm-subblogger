@@ -136,7 +136,7 @@ class Post extends Model
 				'user'       => array(
 					'id'			=> $post['user']['id'],
 					'display_name' 	=> @$post['user']['display_name'],
-					'url'   		=> $post['user'] ? url(implode(['users', $post['user']['username']], '/')) : null,
+					'url'   		=> $post['user'] ? url(implode(['users', $post['user']['slug']], '/')) : null,
 					'slug'			=> @$post['user']['slug']
 				),	
 				'source' 	=> $post['source'],
@@ -364,7 +364,7 @@ class Post extends Model
 	public static function updatePostFeeds($post = array(), $postID = FALSE, $response = array()) {
 		if ( empty($postID) ) { return ['error' => 'Post no found']; }
 
-		$post = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embed')->where(function($query) use ($post, $postID) {
+		$post = self::with('user', 'objectFile', 'channel', 'tag', 'share', 'embed', 'postsMsg')->where(function($query) use ($post, $postID) {
 					$query->where(['id' => $postID->id])->update($post);
 					return $query;
 				});
@@ -408,7 +408,7 @@ class Post extends Model
 				'user'       => array(
 					'id'			=> $items['user']['id'],
 					'display_name' 	=> @$items['user']['display_name'],
-					'url'   		=> $items['user'] ? url(implode(['users', $items['user']['username']], '/')) : null,
+					'url'   		=> $items['user'] ? url(implode(['users', $items['user']['slug']], '/')) : null,
 				),	
 				'source' 	=> $items['source'],
 				
@@ -418,7 +418,10 @@ class Post extends Model
 						'id'    => $tag['id'],
 						'title' => $tag['title']
 					];
-				})
+				}),
+
+				// Reject Msg
+				'reject_msg' => @$items['postsMsg']['message']
 			];
 		});
 

@@ -208,7 +208,6 @@ class ListicleEditors extends ArticleEditors {
 		// ===================================================*/
 		self._$timeout(() => {
 			$.each($('.eb-listicle .eb-listicle-list .eb-listicle-item'), (index, elm) => {
-				console.log( index )
 				let $self = $('.eb-listicle-item:eq('+index+')'),
 					contentEditor;
 

@@ -142,7 +142,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					    oldData = _.map(data, function(item, index){ return item.id }), 
 					    id      = _.map(data, function(item, index) { 
 								if(_.isEqual(item.status, convertStatus(selected))){
-									// console.log(item);
 									newData.push(item.id);
 								}
 								return newData; 
@@ -169,7 +168,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						set    = {status: inStatus};
 
 						params['post-status'] = inStatus;
-						console.log( params, inStatus );
 					}
 					else if (['sticky', 'premium'].includes(selected)) {
 						method = 'put';
@@ -185,8 +183,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						// params = {};
 					}
 
-					// console.log( params );
-					
 					appService[method](url, Object.assign(params, {'id': id.join(',')}))
 						.then(function(response) {
 						  	// $scope.publicCount     = response.public_post     || $scope.public_post;
@@ -636,7 +632,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.onRequest        = void 0;
 				$scope.createLabelCount = createLabelCount;
 				request();
-				
+
 				// Methods
 				// ------------------------------------------------------------------------
 				
@@ -652,7 +648,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 						selected, 
 						_.where($scope.data, 
 							{'checked': true}).map(function(item) { 
-								// console.log( item );
 								return {id: item.id, status: item.status}; 
 							}
 						),
@@ -661,7 +656,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				};
 
 				$scope.dropdownAction = function(name, selected) {
-					// console.log( name = 'filter-sort' );
 					if( _.isEqual(name,'filter-sort') ) { $scope.onSort(selected);$scope.sort.reverse = true;return false;}
 
 					$scope.filters[name.replace(/^filter-/, '')] = selected;
@@ -693,8 +687,6 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					$scope.onLoad 	 = true;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
-					console.log( $scope );
-					// $scope.checkAll = true;
 				};
 
 				function handleResponse(data) {

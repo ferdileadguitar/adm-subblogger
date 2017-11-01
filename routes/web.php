@@ -9,7 +9,7 @@ Route::group(['middleware' => 'admin'], function() {
 	// Contents
 	Route::get('/', 'Pages\ContentController@index')->name('content');
 	Route::get('/contents', 'Pages\ContentController@index')->name('contentWithURI');
-	Route::get('users/{username}', 'Pages\ContentController@getPost')->name('contentWithUser');
+	Route::get('users/{user_slug}', 'Pages\ContentController@getPost')->name('contentWithUser');
 
 	// Author
 	Route::get('authors', 'Pages\AuthorController@index')->name('authorWithURI');

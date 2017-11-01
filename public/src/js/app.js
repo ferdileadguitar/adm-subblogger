@@ -375,6 +375,8 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 				$scope.openTab = function($event, tabName) {
 					tabService.openTab($attrs, $event, tabName);
 				};
+
+				$scope.users    = (window.user) ? true : false;
 			}]);
 		}
 	});

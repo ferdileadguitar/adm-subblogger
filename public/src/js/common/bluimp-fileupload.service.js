@@ -72,15 +72,20 @@ function _initFileUpload($element, options, $scope) {
                     $scope.dataListicle.models[indexPos].image_str = data.result.url;
                     $scope.dataListicle.models[indexPos].image_id  = data.result.id;
                 });
-			}
+			} 
+            else if(!$(this).closest('.eb-listicle')[0]) {
+                $scope.$apply(function() {
+                    {
+                        $scope.data.image = {id: data.result.id, url: data.result.url, name: data.result.name};
+                    }
+                    // $scope.uploading = false;
+                });
+            }
 
-     	// var $scope = angular.element($element).scope();
-	        $scope.$apply(function() {
-                if(!$(this).closest('.eb-listicle')[0]){
-                    $scope.data.image = {id: data.result.id, url: data.result.url, name: data.result.name};
-                }
-                $scope.uploading = false;
-            });
+            $scope.uploading = false;
+            $scope.$apply();
+        // var $scope = angular.element($element).scope();
+            // console.log( !$(this).closest('.eb-listicle')[0], $scope );return false;
 	        // ------------------------------------------------------------------------
 
             // DOM manipulation
