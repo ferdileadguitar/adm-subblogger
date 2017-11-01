@@ -50,8 +50,10 @@ class Author extends Model
 		self::getInstance();
 
 		self::$authorsData = self::with(['postShares']);
-		self::$authorsData->selectRaw('`users`.`id`, `users`.`username`, `users`.`email`, `users`.`status`, `users`.`activated`');
-		self::$authorsData->where('status', 1);
+		
+		self::$authorsData = self::$authorsData->selectRaw('`users`.`id`, `users`.`username`, `users`.`email`, `users`.`status`, `users`.`activated`');
+		
+		self::$authorsData = self::$authorsData->where('status', 1);
 
 		// ------------------------------------------------------------------------
 

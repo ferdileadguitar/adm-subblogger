@@ -33,13 +33,13 @@ class User extends Authenticatable
 
     // ------------------------------------------------------------------------
     
-    public static function getUserDetail($username)
+    public static function getUserDetail($user_slug)
     {   
-        if ( empty($username) )
+        if ( empty($user_slug) )
         { return FALSE; }
 
-        $user = User::where(function($query) use($username) {
-            $query->where('username', $username);
+        $user = User::where(function($query) use($user_slug) {
+            $query->where('slug', $user_slug);
         })->select('id', 'username', 'email')->first();
 
         if (!$user)

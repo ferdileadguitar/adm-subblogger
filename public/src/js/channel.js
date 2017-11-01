@@ -332,7 +332,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				$scope.controller       = 'all';
 				$scope.onRequest        = void 0;
 				$scope.createLabelCount = createLabelCount;
-				console.log( appService );
+
 				request();
 				
 				// Methods
@@ -467,11 +467,18 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					request();
 				};
 				
+				$scope.changePage = function() { 
+					request();
+				};
+				
 				function request() {
 					appService.cancel($scope.onRequest);
 
+					appService.url          = self.baseURL + 'api/formats/';
+
 					$scope.onLoad 	 = true;
-					$scope.onRequest = appService.get({}, $scope.filters, $scope.sort);
+					// $scope.onRequest = appService.get({}, $scope.filters, $scope.sort);
+					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
 				};
 

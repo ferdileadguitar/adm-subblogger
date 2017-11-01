@@ -201,9 +201,9 @@ class ArticleEditors {
 		scope.data      = angular.copy(_base.allPosts.post);
 
 		// really stuck for this one
-		// if( scope.data.post_type == 'article' ) {
-		scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
-		// }
+		if( scope.data.post_type == 'article' ) {
+			scope.data.content = this._$sce.trustAsHtml($.parseJSON(scope.data.content));
+		}
 
 		// Tags Autocomplete
 		scope.tags     = mainClass._tags(_content.tags);
