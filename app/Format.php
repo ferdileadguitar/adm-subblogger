@@ -137,18 +137,15 @@ class Format extends Model
 
 	private static function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
-		$qryPosts = null;
-		$qryEmbed = null;
-
 		// // If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
-		if ($dateRange == 'all-time') { return (object)['embed' => $qryEmbed, 'posts' => $qryPosts]; }
+		if ($dateRange == 'all-time') { return; }
 
 		// ------------------------------------------------------------------------
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
 			self::$formatData = self::$formatData->whereRaw('`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"');
-			self::$embedSubQry= self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`lasT_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"');
+			self::$embedSubQry= self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"');
 		}
 
 		// // ------------------------------------------------------------------------
@@ -184,8 +181,6 @@ class Format extends Model
 				self::$embedSubQry= self::$embedSubQry->whereRaw('YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())');
 				break;
 		}
-
-		return (object)['posts' => $qryPosts, 'embed' => $qryEmbed];
 	}
 
 	/*==========================================

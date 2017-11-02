@@ -583,9 +583,7 @@ class Post extends Model
 
 	private static function setUsers($search = FALSE)
 	{
-		self::$postData->where(function($query) use($search) {
-			$query->where('user_id', $search);
-		});
+		self::$postData->where('user_id', $search);
 	}
 
 	public function getTagsByPost($post_id){

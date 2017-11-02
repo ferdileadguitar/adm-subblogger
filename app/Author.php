@@ -28,6 +28,10 @@ class Author extends Model
 
 	private static $request           = false;
 
+	private static $postsSubQry       = false;
+	private static $shareSubQry       = false;
+	private static $embedSubQry       = false;
+
 	// ------------------------------------------------------------------------
 	// Public Methods
 	// ------------------------------------------------------------------------
@@ -49,12 +53,26 @@ class Author extends Model
 		// Init
 		self::getInstance();
 
-		self::$authorsData = self::with(['postShares']);
+		self::$authorsData = new self();
 		
-		self::$authorsData = self::$authorsData->selectRaw('`users`.`id`, `users`.`username`, `users`.`email`, `users`.`status`, `users`.`activated`');
-		
-		self::$authorsData = self::$authorsData->where('status', 1);
+		self::$postsSubQry = $postsQry  = DB::table('posts')->selectRaw('`posts`.`id`, `posts`.`user_id`, COUNT(*) cnt, sum(`views`) sum, avg(`views`) avg')->groupBy('posts.user_id');
 
+		self::$shareSubQry = $sharesQry = DB::table('post_shares')->selectRaw('`posts`.`user_id`, `post_shares`.`post_id`, SUM(`post_shares`.`shares` + `post_shares`.`addon`) cnt')->join('posts', 'posts.id', '=', 'post_shares.post_id')->groupBy('posts.user_id');
+		
+		self::$embedSubQry = $embedsQry = DB::table('view_logs_embed')->selectRaw('`view_logs_embed`.`user_id`, `view_logs_embed`.`last_activity`, COUNT(*) cnt')->groupBy('view_logs_embed.user_id');
+
+		self::$authorsData = self::$authorsData->selectRaw('`users`.`id`, `users`.`username`, `users`.`email`, `users`.`status`, `users`.`activated`');
+
+		self::$authorsData = self::$authorsData->selectRaw('COALESCE(range_posts.cnt, 0) total_posts');
+
+		self::$authorsData = self::$authorsData->selectRaw('CAST(COALESCE(range_posts.sum, 0) as UNSIGNED) total_views');
+
+		self::$authorsData = self::$authorsData->selectRaw('COALESCE(range_posts.avg, 0) average_views');
+
+		self::$authorsData = self::$authorsData->selectRaw('COALESCE(range_shares.cnt, 0) total_shares');
+
+		self::$authorsData = self::$authorsData->selectRaw('COALESCE(range_embeds.cnt, 0) total_embed');
+		
 		// ------------------------------------------------------------------------
 
 		// Date Range
@@ -63,8 +81,13 @@ class Author extends Model
 		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
-		// Grouping author by default sort
-		self::groupSort();
+		self::$authorsData = self::$authorsData->leftJoin(DB::raw("({$postsQry->toSql()}) range_posts"), 'range_posts.user_id', '=', 'users.id');
+		
+		self::$authorsData = self::$authorsData->leftJoin(DB::raw("({$sharesQry->toSql()}) range_shares"), 'range_shares.user_id', '=', 'users.id');
+
+		self::$authorsData = self::$authorsData->leftJoin(DB::raw("({$embedsQry->toSql()}) range_embeds"), 'range_embeds.user_id', '=', 'users.id');
+
+		self::$authorsData = self::$authorsData->where('users.status', 1);
 		
 		// Sort
 		if ($sort = $request->input('key')) 
@@ -84,105 +107,12 @@ class Author extends Model
 	{	
 		$paginate  = self::$authorsData->paginate($take)->toArray();
 
-		$paginate['data'] = collect($paginate['data'])->map(function($item) {
-			/*Count Date Response*/
-			// $total_posts   = collect($item['posts'])->count();
-			// $total_views   = collect($item['posts'])->sum('total_views');
-			// $total_embed   = collect($item['embed_log'])->sum('cnt_embed');
-			$total_shares  = collect($item['post_shares'])->sum('total_shares');
-			// $average_views = @((empty($total_views) || empty($total_posts)) ? 0 : ($total_views / $total_posts));
-
-			/*Build Object*/
-			return [
-				'id' 			=> @$item['id'],
-				'username' 		=> @$item['username'],
-				'status' 		=> @$item['status'],
-				'activated' 	=> @$item['activated'],
-				'email' 		=> @$item['email'],
-
-				// Post Agregate 
-				// 'total_posts'  	=> (is_null($total_posts)   ? 0 : $total_posts),
-				'total_posts'  	=> @$item['total_posts'],
-				// 'total_views'   => (is_null($total_views)   ? 0 : $total_views),
-				'total_views'   => @$item['total_views'],
-				// 'average_views' => (!$average_views)        ? 0 : $average_views,
-				'average_views' => @$item['avg_posts'],
-				// 'total_embed'   => (is_null($total_embed))  ? 0 : $total_embed,
-				'total_embed'   => @$item['embed_count'],
-				'total_shares'  => (is_null($total_shares)) ? 0 : $total_shares,
-			];
-		});
-
-		// dd( $paginate );
 		return $paginate;	
 	}
 
 	public static function countAuthor()
 	{
 		return self::whereIn('status', [1])->paginate(10);
-	}
-
-	private static function groupSort() 
-	{
-		// Total Posts
-		$sql  = '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT COUNT(*) FROM `posts`';
-
-		$sql .= ' JOIN `channels` ON `channels`.`id` = `posts`.`channel_id`';
-
-		$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
-		
-		$sql .= ' AND `channels`.`slug` IN ("'.implode(config('list.channel'), '","').'")';
-
-		$sql .= ' AND `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
-		
-		$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
-		
-		$sql .= ') total_posts,';
-
-		// Total views
-		$sql .= '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT CAST(COALESCE(SUM(`posts`.`views`), 0) as UNSIGNED)';
-
-		$sql .= ' FROM `posts`';
-		
-		$sql .= ' JOIN `channels` ON `channels`.`id` = `posts`.`channel_id`';
-
-		$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
-		
-		$sql .= ' AND `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
-		
-		$sql .= ' AND `channels`.`slug` IN ("'.implode(config('list.channel'), '","').'")';
-
-		$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
-		
-		$sql .= ') total_views,';
-
-		// AVG Views
-		$sql .= '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT COALESCE(AVG(`posts`.`views`), 0)';
-
-		$sql .= ' FROM `posts`';
-		
-		$sql .= ' JOIN `channels` ON `channels`.`id` = `posts`.`channel_id`';
-
-		$sql .= ' WHERE `posts`.`user_id` = `users`.`id`';
-		
-		$sql .= ' AND `posts`.`post_type` IN ("'.implode(config('list.post_type'), '","').'")';
-		
-		$sql .= ' AND `channels`.`slug` IN ("'.implode(config('list.channel'), '","').'")';
-
-		$sql .= is_null(self::$postDateRange) ? null : ' AND '.self::$postDateRange;
-		
-		$sql .= ') avg_posts,';
-
-		// Embed
-		$sql .= '`users`.`id`, `users`.`username`, `users`.`email`, `users`.`activated`, `users`.`status`, (SELECT COUNT(*) cnt FROM `view_logs_embed` ';
-		
-		$sql .= 'WHERE `users`.`id` = `view_logs_embed`.`user_id`';
-		
-		$sql .= is_null(self::$embedDateRange) ? null : ' AND '.self::$embedDateRange;
-		
-		$sql .=') embed_count';
-		
-		self::$authorsData->selectRaw($sql);
 	}
 
 	private static function setSort($sortBy = 'created', $reverse = TRUE)
@@ -198,15 +128,13 @@ class Author extends Model
 				self::$authorsData->orderBy('total_views', $reverse);
 				break;
 			case 'avg-view':
-				self::$authorsData->orderBy('avg_posts', $reverse);
+				self::$authorsData->orderBy('average_views', $reverse);
 				break;
 			case 'share':
-				self::$authorsData
-					->selectRaw('`users`.*, (SELECT SUM(`post_shares`.`addon` + `post_shares`.`shares`) FROM `posts` LEFT JOIN `post_shares` ON `posts`.`id` = `post_shares`.`post_id` WHERE `users`.`id` = `posts`.`user_id`) as `share_count`')
-					->orderBy('share_count', $reverse);
+				self::$authorsData->orderBy('total_shares', $reverse);
 				break;
 			case 'embed':
-				self::$authorsData->orderBy('embed_count', $reverse);
+				self::$authorsData->orderBy('total_embed', $reverse);
 				break;
 			default:
 				self::$authorsData->orderBy('users.created_on', 'ASC');
@@ -218,15 +146,15 @@ class Author extends Model
 	{
 
 		// If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
-		if ($dateRange == 'all-time') { self::$embedDateRange;self::$postDateRange; }
+		if ($dateRange == 'all-time') { return; }
 
 		// ------------------------------------------------------------------------
 		
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
-			self::$postDateRange  = '`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
-			self::$embedDateRange = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"';
+			self::$postsSubQry      = self::$postsSubQry->whereRaw('`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"');
+			self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).'"');
 		}
 
 		// ------------------------------------------------------------------------
@@ -234,53 +162,35 @@ class Author extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				self::$postDateRange    = 'DATE(`posts`.`created_on`) = DATE(CURDATE())';
-				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('DATE(`posts`.`created_on`) = DATE(CURDATE())');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE(CURDATE())');
 				break;
 			case 'yesterday':
-				self::$postDateRange    = 'DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
-				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('DATE(`posts`.`created_on`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)');
 				break;
 			case 'last-7-days':
-				self::$postDateRange    = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
-				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
 				break;
 			case 'last-30-days':
-				self::$postDateRange    = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
-				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
 				break;
 			case 'last-90-days':
-				self::$postDateRange    = 'DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
-				self::$embedDateRange   = 'DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('DATE(`posts`.`created_on`) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
 				break;
 			case 'this-month':
-				self::$postDateRange    = 'DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
-				self::$embedDateRange   = 'DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('DATE_FORMAT(`posts`.`created_on`, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('DATE_FORMAT(FROM_UNIXTIME(`view_logs_embed`.`last_activity`), "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
 				break;
 			case 'this-year':
-				self::$postDateRange    = 'YEAR(`posts`.`created_on`) = YEAR(CURDATE())';
-				self::$embedDateRange   = 'YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())';
+				self::$postsSubQry      = self::$postsSubQry->whereRaw('YEAR(`posts`.`created_on`) = YEAR(CURDATE())');
+				self::$embedSubQry      = self::$embedSubQry->whereRaw('YEAR(FROM_UNIXTIME(`view_logs_embed`.`last_activity`)) = YEAR(CURDATE())');
 				break;
 		}
 
-		self::$authorsData->with([
-			'posts' => function($query) use ($dateRange){
-				if(!is_null(self::$postDateRange))
-					$query->whereRaw(self::$postDateRange);
-
-				$query->select('user_id', 'id', DB::raw('CAST(SUM(`posts`.`views`) as UNSIGNED) as total_views'));
-				$query->groupBy('posts.user_id', 'posts.id');
-			},
-			'embedLog' 
-			// => function($query)
-			// { 
-			// 	if(!is_null(self::$embedDateRange)) 
-			// 		$query->whereRaw(self::$embedDateRange); 
-
-			// 	$query->selectRaw('COUNT(*) cnt_embed');
-			// 	// $query->groupBy('view_logs_embed.user_id');
-			// }
-		]);
 	}
 
 	private static function setSearch($search = FALSE)
@@ -313,7 +223,7 @@ class Author extends Model
 
 		// Validate request
         $validator = Validator::make(array('password' => $password), array(
-            'password'     => 'required|between:6,11',
+            'password'     => 'required|between:6,20',
         ));
 
         // Is it valid?
@@ -339,7 +249,18 @@ class Author extends Model
 
 	public function posts()
 	{
-		return $this->hasMany('App\Post', 'user_id')->whereIn('post_type', config('list.post_type'))->select('user_id');
+		$collection = $this->hasMany('App\Post', 'user_id');
+
+		$collection = $collection->join('channels', 'channels.id', '=', 'posts.channel_id');
+		
+		$collection = $collection->whereIn('post_type', config('list.post_type'));
+
+		$collection = $collection->whereIn('channels.slug', config('list.channel'));
+
+		$collection = $collection->whereNotIn('posts.status', [-99]);
+
+		// dd( $collection->toSql() );
+		return $collection->select('posts.user_id', 'posts.post_type', 'posts.views', 'channels.slug');
 	}
 
 	// --------------------- POST AGREGATE ---------------------------------------------------------
