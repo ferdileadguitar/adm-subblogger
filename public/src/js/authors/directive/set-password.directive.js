@@ -3,6 +3,7 @@ class PasswordEditors {
 	constructor($timeout, $rootScope, appService){
 		'ngInject';
 
+		this.restrict     = 'AE';
 		this._$timeout    = $timeout;
 		this._$scope      = $rootScope;
 		this.appService   = appService;
@@ -23,6 +24,10 @@ class PasswordEditors {
 				reType : ""
 			},
 		};
+
+		scope.submit = () => {
+			scope.saveClick(scope.data);
+		}
 
 		scope.notify =  {
 			success : {
