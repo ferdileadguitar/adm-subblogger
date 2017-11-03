@@ -41,7 +41,7 @@ class Post extends Model
 
 	// ------------------------------------------------------------------------
 	
-	public static function getFiltered($request = FALSE)
+	public static function getFiltered($request = FALSE, $bindStatus = FALSE)
 	{
 		// Init
 		self::getInstance();
@@ -54,7 +54,7 @@ class Post extends Model
 		self::$postData = self::$postData->join('channels', 'posts.channel_id', '=', 'channels.id');
 
 		// Group By with current post_type list
-		self::$postData = self::$postData->whereIn('post_type', config('list.post_type'));
+		self::$postData = self::$postData->whereIn('posts.post_type', config('list.post_type'));
 
 		// Group by with current channels
 		self::$postData = self::$postData->whereIn('channels.slug', config('list.channel'));
@@ -72,8 +72,11 @@ class Post extends Model
 		{ self::setDateRange(FALSE, $startDate, $endDate); }
 
 		// Status
-		if ($status = $request->input('status') AND $request->method() != 'PUT')
-		{ self::setStatus($status); }
+		if ($status = $request->input('status') AND $request->method() != 'PUT' OR ($bindStatus))
+		{ 
+			$status = ($bindStatus) ? $bindStatus : $status;
+			self::setStatus($status); 
+		}
 
 		// Sort
 		if ($sort = $request->input('key'))
@@ -86,9 +89,6 @@ class Post extends Model
 		if ($search = $request->input('users'))
 		{ self::setUsers($search); }
 
-		// if ($pSort = $request->input('sort'))
-		// { self::setSortPost($pSort); }
-
 		return self::$__instance;
 	}
 
@@ -96,6 +96,7 @@ class Post extends Model
 	
 	public static function cleanPaginate($take = 50)
 	{
+		// dd( self::$postData->toSql() );
 		$paginate         = self::$postData->paginate($take)->toArray();
 
 		// dd( $paginate );
@@ -155,11 +156,11 @@ class Post extends Model
 		});
 
 		$paginate = collect([
-						'all_post'       => self::getFiltered(self::$request)->countAllPost(), 
-                        'rejected_post'  => self::getFiltered(self::$request)->countRejected(), 
-                        'public_post'    => self::getFiltered(self::$request)->countPublic(), 
-                        'moderated_post' => self::getFiltered(self::$request)->countAllModerated(),
-                        'private_post'   => self::getFiltered(self::$request)->countPrivate()
+						'all_post'       => self::getFiltered(self::$request, 'all-post')->countAllPost(), 
+                        'rejected_post'  => self::getFiltered(self::$request, 'rejected')->countRejected(), 
+                        'public_post'    => self::getFiltered(self::$request, 'public')->countPublic(), 
+                        'moderated_post' => self::getFiltered(self::$request, 'moderated')->countAllModerated(),
+                        'private_post'   => self::getFiltered(self::$request, 'private')->countPrivate()
 			        ])->merge($paginate);
 		
 		return $paginate;	
@@ -174,28 +175,28 @@ class Post extends Model
 	}
 	
 	public static function countAllPost() {
-		return self::$postData->whereIn('posts.status', [-2, 0, 1, 2])->count(); // Discard draft status (-1)
+		return self::$postData->count(); // Discard draft status (-1)
 	}	
 
 	public static function countAllModerated() 
 	{	
-		return self::$postData->where('posts.status', -2)->count();
+		return self::$postData->count();
 	}
 
 // 
 	public static function countPublic() 
 	{	
-		return self::$postData->whereIn('posts.status', [-2, 0, 1])->whereIn('post_type', config('list.post_type'))->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		return self::$postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
 	public static function countRejected() 
 	{	
-		return self::$postData->where('posts.status', 0)->count();
+		return self::$postData->count();
 	}
 
 	public static function countPrivate() 
 	{	
-		return self::$postData->where('posts.status', 2)->count();
+		return self::$postData->count();
 	}
 
 
@@ -215,11 +216,11 @@ class Post extends Model
 		event(new KeepoCache($post));
 
 		return [
-			'all_post'        => self::getFiltered(self::$request)->countAllPost(), 
-			'public_post'     => self::getFiltered(self::$request)->countPublic(), 
-			'moderated_post'  => self::getFiltered(self::$request)->countAllModerated(), 
-			'rejected_post'   => self::getFiltered(self::$request)->countRejected(),
-			'privated_post'   => self::getFiltered(self::$request)->countPrivate(),
+			'all_post'        => self::getFiltered(self::$request, 'all-post')->countAllPost(), 
+			'public_post'     => self::getFiltered(self::$request, 'public')->countPublic(), 
+			'moderated_post'  => self::getFiltered(self::$request, 'moderated')->countAllModerated(), 
+			'rejected_post'   => self::getFiltered(self::$request, 'rejected')->countRejected(),
+			'privated_post'   => self::getFiltered(self::$request, 'private')->countPrivate(),
 		];
 	}
 
@@ -437,7 +438,7 @@ class Post extends Model
 		$contributorList = [5, 241];
 
 		self::$postData->where(function($query) use($contributorList) {
-			$query->whereIn('user_id', $contributorList);
+			$query->whereIn('posts.user_id', $contributorList);
 		});
 	}
 
@@ -492,7 +493,13 @@ class Post extends Model
 	private static function setStatus($status = 'all-status')
 	{
 		switch ($status)
-		{
+		{	
+			case 'all-post':
+				// Get moderated, unpublished and publised
+				self::$postData->where(function($query) {
+					$query->whereIn('posts.status', [-2, 0, 1, 2]);
+				});
+				break;
 			case 'private':
 				self::$postData->where('posts.status', 2);
 				break;
@@ -583,7 +590,7 @@ class Post extends Model
 
 	private static function setUsers($search = FALSE)
 	{
-		self::$postData->where('user_id', $search);
+		self::$postData->where('posts.user_id', $search);
 	}
 
 	public function getTagsByPost($post_id){
