@@ -118,9 +118,9 @@ function _initFileUpload($element, options, $scope) {
 				fid;
 
 	        // ------------------------------------------------------------------------
-	        console.log( $scope )
+	        // console.log( $scope )
 	        $scope.uploading = false;
-	        // $scope.$apply();
+	        $scope.$apply();
 
 	        // ------------------------------------------------------------------------
 
