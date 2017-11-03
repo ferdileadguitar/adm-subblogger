@@ -42,11 +42,11 @@ class Format extends Model
 
 		self::$formatData  = self::$formatData->selectRaw('CAST(SUM(`posts`.`views`) AS UNSIGNED) total_views');
 		
-		self::$formatData  = self::$formatData->selectRaw('AVG(`posts`.`views`) average_views');
+		self::$formatData  = self::$formatData->selectRaw('CONVERT(AVG(`posts`.`views`), DECIMAL(7,2)) average_views');
 
 		self::$formatData  = self::$formatData->selectRaw('CAST(COALESCE(SUM(`post_shares`.`addon` + `post_shares`.`shares`), 0) AS UNSIGNED) total_shares');
 
-		self::$formatData  = self::$formatData->selectRaw('FORMAT(COALESCE(AVG(`post_shares`.`addon` + `post_shares`.`shares`), 0), 4) average_shares');
+		self::$formatData  = self::$formatData->selectRaw('COALESCE(CONVERT(AVG(`post_shares`.`addon` + `post_shares`.`shares`), DECIMAL(7,2)), 0) average_shares');
 		
 		self::$formatData  = self::$formatData->selectRaw('(COALESCE(range_embed.cnt, 0)) total_embed');
 		
@@ -58,7 +58,7 @@ class Format extends Model
 		
 		/*----------------------------------------------------------------*/
 
-		self::$formatData  = self::$formatData->selectRaw("COALESCE((COALESCE(range_embed.cnt, 0)) / ({$embedQry->toSql()}), 0) average_embed");
+		self::$formatData  = self::$formatData->selectRaw("CONVERT(COALESCE((COALESCE(range_embed.cnt, 0)) / ({$embedQry->toSql()}), 0), DECIMAL(7,2)) average_embed");
 
 		self::$formatData  = self::$formatData->selectRaw("({$embedQry->toSql()}) all_embed");
 

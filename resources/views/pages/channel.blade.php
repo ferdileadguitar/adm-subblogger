@@ -151,7 +151,7 @@
                 	<h6 class="text-uppercase">views</h6>
                 </div>
                 <div class="tbls-col-3">
-                	<h4 ng-bind-html="channel.average_views | number" ng-style="{'padding-bottom' : '15px'}"></h4>
+                	<h4 ng-bind-html="channel.average_views" ng-style="{'padding-bottom' : '15px'}"></h4>
                 	<h6 class="text-uppercase">average views</h6>
                 </div>
                 <div class="tbls-col-3">
@@ -159,7 +159,7 @@
                 	<h6 class="text-uppercase">total shares</h6>
                 </div>
                  <div class="tbls-col-3">
-                	<h4 ng-bind-html="channel.average_shares | number" ng-style="{'padding-bottom' : '15px'}"></h4>
+                	<h4 ng-bind-html="channel.average_shares" ng-style="{'padding-bottom' : '15px'}"></h4>
                 	<h6 class="text-uppercase">average shares</h6>
                 </div>
                 <div class="tbls-col-3">
@@ -167,7 +167,7 @@
                 	<h6 class="text-uppercase">total embed</h6>
                 </div>
                 <div class="tbls-col-3">
-                	<h4 ng-bind-html="channel.average_embed | number" ng-style="{'padding-bottom' : '15px'}"></h4>
+                	<h4 ng-bind-html="channel.average_embed" ng-style="{'padding-bottom' : '15px'}"></h4>
                 	<h6 class="text-uppercase">average embed</h6>
                 </div>
             </div>

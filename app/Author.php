@@ -67,7 +67,7 @@ class Author extends Model
 
 		self::$authorsData = self::$authorsData->selectRaw('CAST(COALESCE(range_posts.sum, 0) as UNSIGNED) total_views');
 
-		self::$authorsData = self::$authorsData->selectRaw('COALESCE(range_posts.avg, 0) average_views');
+		self::$authorsData = self::$authorsData->selectRaw('COALESCE(CONVERT(range_posts.avg, DECIMAL(7,2)), 0) average_views');
 
 		self::$authorsData = self::$authorsData->selectRaw('COALESCE(range_shares.cnt, 0) total_shares');
 

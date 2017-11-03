@@ -84,15 +84,15 @@ class Channel extends Model
 				// Posts
 				'total_posts'		=> @$total_posts,
 				'total_views'		=> @$total_views,
-				'average_views'		=> @$average_views,
+				'average_views'		=> number_format(@$average_views, 2, '.', ''),
 				
 				// Shares
 				'total_shares'		=> @$total_shares,
-				'average_shares'	=> @$average_shares,
+				'average_shares'	=> number_format(@$average_shares, 2, '.', ''),
 
 				// Embed
 				'total_embed' 		=> @$total_embed,
-				'average_embed' 	=> @$average_embed
+				'average_embed' 	=> number_format(@$average_embed, 2, '.', '')
 			];
 		});
 

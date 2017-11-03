@@ -122,7 +122,7 @@
                 	<h6 class="text-uppercase">views</h6>
                 </div>
                 <div class="tbls-col-3">
-                	<h4 ng-bind-html="author.average_views | number"></h4>
+                	<h4 ng-bind-html="author.average_views"></h4>
                 	<h6 class="text-uppercase">average views</h6>
                 </div>
                 <div class="tbls-col-3">
