@@ -46,9 +46,8 @@
             <tab></tab>
         </div>
 
-        <div id="contributor" class="tab-component" ng-controller="contributorController" ng-show="_.isNull(filters.users)">
+        <div id="contributor" class="tab-component" ng-controller="contributorController" ng-if="!users">
             <!-- Filters -->
-            <!-- <tab></tab> -->
             <div class="filters">
                 <div class="filter-component">
                     <div class="box drop drop-large" name="filter-dateRange" ng-controller="dropdown">

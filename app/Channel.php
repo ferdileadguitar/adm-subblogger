@@ -103,8 +103,6 @@ class Channel extends Model
 	{
 		$reverse = (!$reverse || ($reverse == 'false') ? 'ASC' : 'DESC');
 		
-		// dd( self::$postDateRange );
-
 		switch ($sortBy)
 		{
 			case 'post':

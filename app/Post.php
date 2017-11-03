@@ -79,6 +79,9 @@ class Post extends Model
 		}
 
 		// Sort
+		if ($search = $request->input('users'))
+		{ self::setUsers($search); }
+
 		if ($sort = $request->input('key'))
 		{ self::setSort($sort, $request->input('reverse')); }
 
@@ -86,8 +89,6 @@ class Post extends Model
 		if ($search = $request->input('search'))
 		{ self::setSearch($search); }
 
-		if ($search = $request->input('users'))
-		{ self::setUsers($search); }
 
 		return self::$__instance;
 	}
@@ -96,7 +97,7 @@ class Post extends Model
 	
 	public static function cleanPaginate($take = 50)
 	{
-		// dd( self::$postData->toSql() );
+		// dd( self::$postData->getBindings() );
 		$paginate         = self::$postData->paginate($take)->toArray();
 
 		// dd( $paginate );
@@ -160,7 +161,9 @@ class Post extends Model
                         'rejected_post'  => self::getFiltered(self::$request, 'rejected')->countRejected(), 
                         'public_post'    => self::getFiltered(self::$request, 'public')->countPublic(), 
                         'moderated_post' => self::getFiltered(self::$request, 'moderated')->countAllModerated(),
-                        'private_post'   => self::getFiltered(self::$request, 'private')->countPrivate()
+                        'private_post'   => self::getFiltered(self::$request, 'private')->countPrivate(),
+                        'sql'            => self::$postData->toSql(),
+                        'qry'            => DB::select('select COUNT(*) total from `posts` where `user_id` = "24720" and `status` = "-2"')
 			        ])->merge($paginate);
 		
 		return $paginate;	
@@ -171,7 +174,7 @@ class Post extends Model
 
 	public static function countModerated()
 	{
-		return self::where('posts.status', -2)->count();
+		// return self::where('posts.status', -2)->count();
 	}
 	
 	public static function countAllPost() {
@@ -501,7 +504,10 @@ class Post extends Model
 				});
 				break;
 			case 'private':
-				self::$postData->where('posts.status', 2);
+				self::$postData->where(function($query) {
+					$query->whereIn('posts.status', [2]);
+				});
+				// self::$postData->where('posts.status', 2);
 				break;
 			case 'public':
 				// Get moderated, unpublished and publised
@@ -510,13 +516,22 @@ class Post extends Model
 				});
 				break;
 			case 'approved':
-				self::$postData->where('posts.status', 1);
+				// self::$postData->where('posts.status', 1);
+				self::$postData->where(function($query) {
+					$query->whereIn('posts.status', [1]);
+				});
 				break;
 			case 'moderated':
-				self::$postData->where('posts.status', -2);
+				self::$postData->where(function($query) {
+					$query->whereIn('posts.status', [-2]);
+				});
+				// self::$postData->where('posts.status', -2);
 				break;
 			case 'rejected':
-				self::$postData->where('posts.status', 0);
+				self::$postData->where(function($query) {
+					$query->whereIn('posts.status', [0]);
+				});
+				// self::$postData->where('posts.status', 0);
 				break;
 			case 'all-status':
 			default;
@@ -590,7 +605,7 @@ class Post extends Model
 
 	private static function setUsers($search = FALSE)
 	{
-		self::$postData->where('posts.user_id', $search);
+		self::$postData = self::$postData->where('posts.user_id', '=', $search);
 	}
 
 	public function getTagsByPost($post_id){
