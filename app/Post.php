@@ -95,13 +95,18 @@ class Post extends Model
 
 	// ------------------------------------------------------------------------
 	
-	public static function cleanPaginate($take = 50)
+	public static function cleanPaginate($take = 50, $page = 0)
 	{
-		// dd( self::$postData->getBindings() );
-		$paginate         = self::$postData->paginate($take)->toArray();
+		$page             = (self::$request->input('page') < 2) ? $page : (self::$request->input('page') - 1) * 10;
+		// $paginate         = self::$postData->paginate($take)->toArray();
+		$posts            = self::$postData;
 
-		// dd( $paginate );
-		$paginate['data'] = collect($paginate['data'])->map(function($post) {
+		$total            = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+
+		$data             = self::$postData->groupBy('posts.id')->skip($page)->take($take)->get()->toArray();
+
+		// $paginate['data'] = collect($paginate['data'])->map(function($post) {
+		$paginate['data'] = collect($data)->map(function($post) {
 
 			return [
 				// Post
@@ -160,10 +165,11 @@ class Post extends Model
 						'all_post'       => self::getFiltered(self::$request, 'all-post')->countAllPost(), 
                         'rejected_post'  => self::getFiltered(self::$request, 'rejected')->countRejected(), 
                         'public_post'    => self::getFiltered(self::$request, 'public')->countPublic(), 
+                        'approved_post'  => self::getFiltered(self::$request, 'approved')->countApproved(), 
                         'moderated_post' => self::getFiltered(self::$request, 'moderated')->countAllModerated(),
                         'private_post'   => self::getFiltered(self::$request, 'private')->countPrivate(),
-                        'sql'            => self::$postData->toSql(),
-                        'qry'            => DB::select('select COUNT(*) total from `posts` where `user_id` = "24720" and `status` = "-2"')
+			        	'last_page'      => (int) ceil($total / 10),
+			        	'current_page'   => (int) self::$request->input('page')
 			        ])->merge($paginate);
 		
 		return $paginate;	
@@ -178,28 +184,61 @@ class Post extends Model
 	}
 	
 	public static function countAllPost() {
-		return self::$postData->count(); // Discard draft status (-1)
+		$posts  = self::$postData;
+
+		$total  = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+		
+		return $total; // Discard draft status (-1)
 	}	
 
 	public static function countAllModerated() 
 	{	
-		return self::$postData->count();
+		$posts  = self::$postData;
+
+		$total  = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+		
+		return $total; // Discard draft status (-1)
+		// return self::$postData->count();
 	}
 
-// 
+	public static function countApproved() 
+	{	
+		$posts  = self::$postData;
+
+		$total  = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+		
+		return $total; // Discard draft status (-1)
+		// return self::$postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+	}
+
 	public static function countPublic() 
 	{	
-		return self::$postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		$posts  = self::$postData;
+
+		$total  = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+		
+		return $total; // Discard draft status (-1)
+		// return self::$postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
 	public static function countRejected() 
 	{	
-		return self::$postData->count();
+		$posts  = self::$postData;
+
+		$total  = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+		
+		return $total; // Discard draft status (-1)
+		// return self::$postData->count();
 	}
 
 	public static function countPrivate() 
 	{	
-		return self::$postData->count();
+		$posts  = self::$postData;
+
+		$total  = DB::table(DB::raw("({$posts->toSql()}) as ttl_post"))->setBindings($posts->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
+		
+		return $total; // Discard draft status (-1)
+		// return self::$postData->count();
 	}
 
 
@@ -553,7 +592,7 @@ class Post extends Model
 		{
 			case 'channel':
 				self::$postData
-					 ->selectRaw('`posts`.*, (SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
+					 ->selectRaw('(SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
 					 ->orderBy('channel_title', $reverse);
 				self::$postData->orderBy('channel_id', $reverse); 
 				break;
@@ -568,17 +607,17 @@ class Post extends Model
 				break;
 			case 'sr':
 				self::$postData
-					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->selectRaw('(SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'share':
 				self::$postData
-					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->selectRaw('(SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
 				self::$postData
-					 ->selectRaw('`posts`.*, (SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
+					 ->selectRaw('(SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
 				break;
 			// case 'mv':

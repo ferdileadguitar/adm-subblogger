@@ -734,8 +734,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					// Need Moderation
 					if(_.contains(['approved'], status) )
-						label += '<span>'+$filter('number')(data.public_post)+' Approved Post</span>';
-
+						label += '<span>'+$filter('number')(data.approved_post)+' Approved Post</span>';
 
 					$scope.countPost = label;  
 				}
