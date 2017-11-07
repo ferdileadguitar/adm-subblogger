@@ -48,26 +48,28 @@ class Post extends Model
 	public function getFiltered($request = FALSE, $bindStatus = FALSE)
 	{
 		// Init
-		$this->getInstance();
-		$this->postData = $this->with('user', 'objectFile', 'channel', 'tag', 'share', 'embedLog', 'postsMsg');
+		//$this->getInstance();
+		$postData = $this->with('user', 'objectFile', 'channel', 'tag', 'share', 'embedLog', 'postsMsg'); // its not allowed to set global variable as $this->postData
+
+		//echo json_encode([$postData->where(['user_id'=> 1831, 'status'=> -2])->groupBy('id')->limit(10)->get(), $request->input('status')]);die;
 
 		// Only selected channel
-		$this->postData = $this->postData->select('posts.*');
+		$postData = $postData->select('posts.*');
 
 		// Join channels
-		$this->postData = $this->postData->join('channels', 'posts.channel_id', '=', 'channels.id');
+		//$postData = $postData->join('channels', 'posts.channel_id', '=', 'channels.id'); // unused join see at keepo-brand-new repository on app/Post.php:83-85
 
 		// Group By with current post_type list
-		$this->postData = $this->postData->whereIn('posts.post_type', config('list.post_type'));
+		$postData = $postData->whereIn('posts.post_type', config('list.post_type'));
 
 		// Group by with current channels
-		$this->postData = $this->postData->whereIn('channels.slug', config('list.channel'));
+		//$postData = $postData->whereIn('channels.slug', config('list.channel'));
 
 		// ------------------------------------------------------------------------
 		
 		// Contributor only
 		if ($request->input('contributor'))
-		{ $this->setContributorOnly(); }
+		{ $this->setContributorOnly($model); }
 
 		// Date Range
 		if ($dateRange = $request->input('dateRange'))
@@ -79,22 +81,28 @@ class Post extends Model
 		if ($status = $request->input('status') AND $request->method() != 'PUT' OR ($bindStatus))
 		{ 
 			$status = ($bindStatus) ? $bindStatus : $status;
-			$this->setStatus($status); 
+			$this->setStatus($postData, $status); // this is how u should set pass data inside model
 		}
+
 
 		// Sort
 		if ($search = $request->input('users'))
-		{ $this->setUsers($search); }
+		{ $this->setUsers($postData, $search); }
+
 
 		if ($sort = $request->input('key'))
-		{ $this->setSort($sort, $request->input('reverse')); }
+		{ $this->setSort($postData, $sort, $request->input('reverse')); }
 
 		// Search
 		if ($search = $request->input('search'))
-		{ $this->setSearch($search); }
+		{ $this->setSearch($postData, $search); }
+
+		//echo json_encode($postData->groupBy('posts.id')->limit(10)->get());die;
 
 		// dd( $this->postData->getBindings() );
-		return $this->__instance;
+		//return $this->__instance;
+//echo json_encode($postData->groupBy('posts.id'));die;
+		return $postData;
 	}
 
 	// ------------------------------------------------------------------------
@@ -102,9 +110,14 @@ class Post extends Model
 	public function cleanPaginate($take = 50, $page = 0)
 	{
 		// Init
-		$this->getFiltered($this->request);
+		//echo json_encode($this->request->input('status').'sdfasdf');die;
+		$postData = $this->getFiltered($this->request);
+//echo json_encode([$postData->limit(10)->get(), $postData->orderBy('posts.id', 'desc')->paginate(1)->toArray(), $postData->get()->count()]);die;
+//echo json_encode($postData->limit($take)->get()->toArray());die;
+		$paginate  = $postData->groupBy('posts.id')->paginate($take)->toArray();
 
-		$paginate  = $this->postData->groupBy('posts.id')->paginate($take)->toArray();
+		$paginate = $paginate['data'] ? $paginate : ['data'=> $postData->take($take)->get()];
+//echo json_encode($paginate);die;
 
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 			return [
@@ -161,12 +174,12 @@ class Post extends Model
 		});
 
 		$paginate = collect([
-						'all_post'       => $this->countAllPost(), 
-                        'rejected_post'  => $this->countRejected(), 
-                        'public_post'    => $this->countPublic(), 
-                        'approved_post'  => $this->countApproved(), 
-                        'moderated_post' => $this->countAllModerated(),
-                        'private_post'   => $this->countPrivate(),
+						'all_post'       => $this->countAllPost($postData), 
+                        'rejected_post'  => $this->countRejected($postData), 
+                        'public_post'    => $this->countPublic($postData), 
+                        'approved_post'  => $this->countApproved($postData), 
+                        'moderated_post' => $this->countAllModerated($postData),
+                        'private_post'   => $this->countPrivate($postData),
 			        ])->merge($paginate);
 		
 		return $paginate;	
@@ -180,45 +193,45 @@ class Post extends Model
 		// return $this->where('posts.status', -2)->count();
 	}
 	
-	public function countAllPost() {
-		$this->getFiltered($this->request, 'all-post');
+	public function countAllPost($postData) {
+		$postData = $this->getFiltered($this->request, 'all-post');
 
-		return $this->postData->count();
+		return $postData->count();
 	}	
 
-	public function countAllModerated() 
+	public function countAllModerated($postData) 
 	{	
-		$this->getFiltered($this->request, 'moderated');
+		$postData = $this->getFiltered($this->request, 'moderated');
 
-		return $this->postData->count();
+		return $postData->count();
 	}
 
-	public function countApproved() 
+	public function countApproved($postData) 
 	{	
-		$this->getFiltered($this->request, 'approved');
+		$postData = $this->getFiltered($this->request, 'approved');
 
-		return $this->postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
-	public function countPublic() 
+	public function countPublic($postData) 
 	{	
-		$this->getFiltered($this->request, 'public');
+		$postData = $this->getFiltered($this->request, 'public');
 
-		return $this->postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
-	public function countRejected() 
+	public function countRejected($postData) 
 	{	
-		$this->getFiltered($this->request, 'rejected');
+		$postData = $this->getFiltered($this->request, 'rejected');
 
-		return $this->postData->count();
+		return $postData->count();
 	}
 
-	public function countPrivate() 
+	public function countPrivate($postData) 
 	{	
-		$this->getFiltered($this->request, 'private');
+		$postData = $this->getFiltered($this->request, 'private');
 
-		return $this->postData->count();
+		return $postData->count();
 	}
 
 
@@ -456,18 +469,18 @@ class Post extends Model
 	// Private Methods
 	// ------------------------------------------------------------------------
 	
-	private function setContributorOnly()
+	private function setContributorOnly($model)
 	{
 		$contributorList = [5, 241];
 
-		$this->postData->where(function($query) use($contributorList) {
+		return $model->where(function($query) use($contributorList) {
 			$query->whereIn('posts.user_id', $contributorList);
 		});
 	}
 
 	// ------------------------------------------------------------------------
 
-	private function setDateRange($dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
+	private function setDateRange($model, $dateRange = 'all-time', $startDate = FALSE, $endDate = FALSE)
 	{
 		// If dateRange is 'all-time', well dont filter the date then ¯\_(ツ)_/¯
 		if ($dateRange == 'all-time') { return; }
@@ -477,10 +490,9 @@ class Post extends Model
 		// Start Date and End Date are exist?
 		if ($startDate AND $endDate)
 		{
-			$this->postData->where(function($query) use($startDate, $endDate) {
+			return $model->where(function($query) use($startDate, $endDate) {
 				$query->whereBetween('posts.created_on', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
 			});
-			return;
 		}
 
 		// ------------------------------------------------------------------------
@@ -488,39 +500,41 @@ class Post extends Model
 		switch ($dateRange) 
 		{
 			case 'today':
-				$this->postData->whereRaw("DATE(posts.created_on) = DATE(CURDATE())");
+				$model->whereRaw("DATE(posts.created_on) = DATE(CURDATE())");
 				break;
 			case 'yesterday':
-				$this->postData->whereRaw("DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
+				$model->whereRaw("DATE(posts.created_on) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
 				break;
 			case 'last-7-days':
-				$this->postData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
+				$model->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
 				break;
 			case 'last-30-days':
-				$this->postData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
+				$model->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
 				break;
 			case 'last-90-days':
-				$this->postData->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
+				$model->whereRaw('DATE(posts.created_on) >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)');
 				break;
 			case 'this-month':
-				$this->postData->whereRaw('DATE_FORMAT(posts.created_on, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
+				$model->whereRaw('DATE_FORMAT(posts.created_on, "%Y-%m") = DATE_FORMAT(CURDATE(), "%Y-%m")');
 				break;
 			case 'this-year':
-				$this->postData->whereRaw("YEAR(posts.created_on) = YEAR(CURDATE())");
+				$model->whereRaw("YEAR(posts.created_on) = YEAR(CURDATE())");
 				break;
 		}
+
+		return $model;
 	}
 
 	// ------------------------------------------------------------------------
 	
-	private function setStatus($status = 'all-status')
+	private function setStatus($model, $status = 'all-status')
 	{
 		// $this->getFiltered($this->request);
 		switch ($status)
 		{	
 			case 'all-post':
 				// Get moderated, unpublished and publised
-				$this->postData->where(function($query) {
+				$model->where(function($query) {
 					$query->whereIn('posts.status', [-2, 0, 1, 2]);
 				});
 				break;
@@ -528,16 +542,16 @@ class Post extends Model
 				// $this->postData->where(function($query) {
 				// 	$query->whereIn('posts.status', [2]);
 				// });
-				$this->postData->where('posts.status', 2);
+				$model->where('posts.status', 2);
 				break;
 			case 'public':
 				// Get moderated, unpublished and publised
-				$this->postData->where(function($query) {
+				$model->where(function($query) {
 					$query->whereIn('posts.status', [-2, 0, 1]);
 				});
 				break;
 			case 'approved':
-				$this->postData->where('posts.status', 1);
+				$model->where('posts.status', 1);
 				// $this->postData->where(function($query) {
 				// 	$query->whereIn('posts.status', [1]);
 				// });
@@ -546,62 +560,63 @@ class Post extends Model
 				// $this->postData->where(function($query) {
 				// 	$query->whereIn('posts.status', [-2]);
 				// });
-				$this->postData->where('posts.status', -2);
+				$model->where('posts.status', -2);
 				// $this->postData->whereNotIn('posts.status', [2, 1, 0, -1, -99]);
 				break;
 			case 'rejected':
 				// $this->postData->where(function($query) {
 				// 	$query->whereIn('posts.status', [0]);
 				// });
-				$this->postData->where('posts.status', 0);
+				$model->where('posts.status', 0);
 				break;
 			case 'all-status':
 			default;
-				$this->postData->where(function($query) {
+				$model->where(function($query) {
 					// $query->whereNotIn('status', [-1, -99]);
 					$query->whereNotIn('posts.status', [-99, -1]); // -1 is unpublish right
 				});
 				break;
 		}
 
-		// dd( $this->postData->toSql() );
+		//echo json_encode($model->toSql());die;		
+		return $model;
+// dd( $this->postData->toSql() );
 	}
 
 	// ------------------------------------------------------------------------
 	
-	private function setSort($sortBy = 'created', $reverse = TRUE)
-	{
+	private function setSort($model, $sortBy = 'created', $reverse = TRUE){
 		$reverse = (!$reverse || ($reverse == 'false') ? 'ASC' : 'DESC');
 
 		switch ($sortBy)
 		{
 			case 'channel':
-				$this->postData
+				$model
 					 ->selectRaw('(SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
 					 ->orderBy('channel_title', $reverse);
 				break;
 			case 'format':
 				// dd( $this->postData->toSql() );
-				$this->postData->orderBy('posts.post_type', $reverse);
+				$model->orderBy('posts.post_type', $reverse);
 				break;
 			case 'view':
-				$this->postData->orderBy('posts.views', $reverse);
+				$model->orderBy('posts.views', $reverse);
 				break;
 			case 'mv':
-				$this->postData->orderBy('posts.views', $reverse);
+				$model->orderBy('posts.views', $reverse);
 				break;
 			case 'sr':
-				$this->postData
+				$model
 					 ->selectRaw('(SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'share':
-				$this->postData
+				$model
 					 ->selectRaw('(SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
-				$this->postData
+				$model
 					 ->selectRaw('(SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
 				break;
@@ -609,27 +624,29 @@ class Post extends Model
 			// 	$this->postData->orderBy('views', 'DESC');
 			// 	break;
 			case 'n':
-				$this->postData->orderBy('posts.created_on', $reverse);
+				$model->orderBy('posts.created_on', $reverse);
 				break;
 			case 'created':
 			default:
-				$this->postData->orderBy('posts.created_on', $reverse);
+				$model->orderBy('posts.created_on', $reverse);
 				break;
 		}
+
+		return $model;
 	}
 
 	// ------------------------------------------------------------------------
 	
-	private function setSearch($search = FALSE)
+	private function setSearch($model, $search = FALSE)
 	{
-		$this->postData->where(function($query) use ($search) {
+		return $model->where(function($query) use ($search) {
 			$query->whereRaw('MATCH(posts.title) AGAINST ("' . $search . '")');
 		});
 	}
 
-	private function setUsers($search = FALSE)
+	private function setUsers($model, $search = FALSE)
 	{
-		$this->postData = $this->postData->where('posts.user_id', '=', $search);
+		return $model->where('posts.user_id', '=', $search);
 	}
 
 	public function getTagsByPost($post_id){
