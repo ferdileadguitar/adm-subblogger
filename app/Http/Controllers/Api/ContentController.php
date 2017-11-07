@@ -21,14 +21,14 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	public function getContents($type = FALSE)
 	{
-		return $this->response(Post::getFiltered($this->request)->cleanPaginate($this->take));
+		return $this->response((new Post)->cleanPaginate($this->take));
 	}
 
 	// ------------------------------------------------------------------------
 	
 	public function deleteContent()
 	{
-		$result = Post::getFiltered($this->request)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
+		$result = (new Post)->getFiltered($this->request)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }
@@ -40,7 +40,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	// public function getCountModerated()
 	// {
-	// 	return $this->response(['counted' => Post::countModerated()]);
+	// 	return $this->response(['counted' => (new Post)->countModerated()]);
 	// }
 
 	// ------------------------------------------------------------------------
@@ -48,7 +48,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 	public function setStatus()
 	{
         // dd( $this->request->input() );
-		$result = Post::getFiltered($this->request)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
+		$result = (new Post)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }
@@ -60,7 +60,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	public function setSticky() 
 	{
-		$result = Post::updateStickyPremium(explode(',', $this->request->input('id')), 'sticky', $this->request->input('set'));
+		$result = (new Post)->updateStickyPremium(explode(',', $this->request->input('id')), 'sticky', $this->request->input('set'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }
@@ -72,7 +72,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	public function setPremium() 
 	{
-		$result = Post::updateStickyPremium(explode(',', $this->request->input('id')), 'premium', $this->request->input('set'));
+		$result = (new Post)->updateStickyPremium(explode(',', $this->request->input('id')), 'premium', $this->request->input('set'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }
@@ -110,7 +110,7 @@ class ContentController extends \App\Http\Controllers\ApiController
     }
 
     public function setPostTitle() {
-        $result = Post::updatePostTitle( $this->request['id'], $this->request['title'] );
+        $result = (new Post)->updatePostTitle( $this->request['id'], $this->request['title'] );
 
         if ( isset($result['error']))
         { return $this->response($result['error'], 404); }
@@ -119,7 +119,7 @@ class ContentController extends \App\Http\Controllers\ApiController
     }
 
     public function setPostChannel() {
-        $result = Post::updatePostChannel( $this->request['id'], $this->request['channel.slug'] );
+        $result = (new Post)->updatePostChannel( $this->request['id'], $this->request['channel.slug'] );
 
         if ( isset($result['error']))
         { return $this->response($result['error'], 404); }
@@ -128,7 +128,7 @@ class ContentController extends \App\Http\Controllers\ApiController
     }
 
     public function setPostCreated() {
-        $result = Post::updatePostCreated( $this->request['id'], $this->request['created'] );
+        $result = (new Post)->updatePostCreated( $this->request['id'], $this->request['created'] );
 
         if ( isset($result['error']) )
         { return $this->response($result['error'], 404); }
@@ -137,7 +137,7 @@ class ContentController extends \App\Http\Controllers\ApiController
     }
 
     public function setUpContent() {
-        $result = Post::updatePostUpContent( $this->request['id'], $this->request['created'] );
+        $result = (new Post)->updatePostUpContent( $this->request['id'], $this->request['created'] );
 
         if ( isset($result['error']) )
         { return $this->response($result['error'], 404); }
@@ -146,7 +146,7 @@ class ContentController extends \App\Http\Controllers\ApiController
     }
 
     public function setPostImageCover() {
-        $result = Post::updatePostImageCover( $this->request['id'], $this->request['image'] );
+        $result = (new Post)->updatePostImageCover( $this->request['id'], $this->request['image'] );
         
         if ( isset($result['error']) )
         { return $this->response($result['error'], 404); }
@@ -192,7 +192,7 @@ class ContentController extends \App\Http\Controllers\ApiController
             return $this->abortRequest(404, 'not_found', 'You must at least fill Title and Category')->send();
 
         // Get Post ID
-        $postID = @Post::where('slug', '=', $this->request->input('slug'))->first();
+        $postID = @(new Post)->where('slug', '=', $this->request->input('slug'))->first();
 
         $tags   = explode(config('feeds.tag_separator'), $this->request->input('tags'));
 
@@ -278,7 +278,7 @@ class ContentController extends \App\Http\Controllers\ApiController
             $tags = $this->setPostTags($tags, $postID->id);
 
             // Now update the feeds
-            $post = Post::updatePostFeeds($data, $postID);
+            $post = (new Post)->updatePostFeeds($data, $postID);
 
         	// Let's give the response
         	return response()->json($post, 200)->send(); 
@@ -292,12 +292,12 @@ class ContentController extends \App\Http\Controllers\ApiController
      */
     private function slugExistsCheck(&$slug)
     {
-        if(Post::where('slug', '=', $slug)->count() > 0)
+        if((new Post)->where('slug', '=', $slug)->count() > 0)
         {
             // Which one is available?
             for ($i=2; $i <= 1000; $i++)
             {
-                if(Post::where('slug', '=', $slug.$i)->count() == 0)
+                if((new Post)->where('slug', '=', $slug.$i)->count() == 0)
                 {
                     $slug .= $i;
                     break;

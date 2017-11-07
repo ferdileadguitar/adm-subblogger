@@ -13,7 +13,7 @@ class ContentController extends \App\Http\Controllers\PageController
     
     public function index()
     {
-        return $this->view('content', ['moderationCount' => Post::countModerated()]);
+        return $this->view('content', ['moderationCount' => (new Post)->countModerated()]);
     }
 
     public function getPost($user_slug = FALSE)
