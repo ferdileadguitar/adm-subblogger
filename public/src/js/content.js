@@ -213,15 +213,23 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					var _contributor = ($ctrlScope.controller == 'contributor') ? { 'contributor' : true } : {};
 					setOtherCtrlData(post, $ctrlScope.controller, {loading: true});
 
+
 					appService.put({'url': 'set-status'}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': status, _contributor}) )
 					  .then(function(data) {
 					  	// $root
 					  	$ctrlScope.createLabelCount(data);
 
+					  	if (typeof $ctrlScope.filters._contributor != 'undefined')
+						  	delete $ctrlScope.filters._contributor;
+						
+						console.log( $ctrlScope.filters );
+
 					  	setOtherCtrlData(post, $ctrlScope.controller, {loading: false});
 					  	setOtherCtrlData(post, $ctrlScope.controller, {status: status});
 					  }, function(error) {
 					  	console.log(error);
+					  	if (typeof $ctrlScope.filters._contributor != 'undefined')
+						  	delete $ctrlScope.filters._contributor;
 
 					  	setOtherCtrlData(post, $ctrlScope.controller, {loading: false});
 					  });
@@ -979,7 +987,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 					// Need Moderation
 					if(_.contains(['approved'], status) )
-						label += '<span>'+$filter('number')(data.public_post)+' Approved Post</span>';
+						label += '<span>'+$filter('number')(data.approved_post)+' Approved Post</span>';
 
 					$scope.countPost = label;  
 				}

@@ -28,7 +28,7 @@ class ContentController extends \App\Http\Controllers\ApiController
 	
 	public function deleteContent()
 	{
-		$result = (new Post)->getFiltered($this->request)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
+		$result = (new Post)->updateStatus(explode(',', $this->request->input('id')), $this->request->input('post-status'));
 
 		if (! empty($result['error']))
 		{ return $this->response($result['error'], 404); }

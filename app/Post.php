@@ -48,17 +48,8 @@ class Post extends Model
 	public function getFiltered($request = FALSE, $bindStatus = FALSE)
 	{
 		// Init
-		//$this->getInstance();
-		$postData = $this->with('user', 'objectFile', 'channel', 'tag', 'share', 'embedLog', 'postsMsg'); // its not allowed to set global variable as $this->postData
-
-		//echo json_encode([$postData->where(['user_id'=> 1831, 'status'=> -2])->groupBy('id')->limit(10)->get(), $request->input('status')]);die;
-
-		// Only selected channel
-		// $postData = $postData->select('posts.*');
-
-		// Join channels
-		// $postData = $postData->join('channels', 'posts.channel_id', '=', 'channels.id'); // unused join see at keepo-brand-new repository on app/Post.php:83-85
-
+		$postData  = $this->with('user', 'objectFile', 'channel', 'tag', 'share', 'postsMsg', 'embed'); // its not allowed to set global variable as $this->postData
+		
 		// Group By with current post_type list
 		$postData = $postData->whereIn('posts.post_type', config('list.post_type'));
 
@@ -84,11 +75,8 @@ class Post extends Model
 			$this->setStatus($postData, $status); // this is how u should set pass data inside model
 		}
 
-
-		// Sort
 		if ($search = $request->input('users'))
 		{ $this->setUsers($postData, $search); }
-
 
 		if ($sort = $request->input('key'))
 		{ $this->setSort($postData, $sort, $request->input('reverse')); }
@@ -96,6 +84,7 @@ class Post extends Model
 		// Search
 		if ($search = $request->input('search'))
 		{ $this->setSearch($postData, $search); }
+
 
 		return $postData;
 	}
@@ -105,21 +94,18 @@ class Post extends Model
 	public function cleanPaginate($take = 50, $page = 0)
 	{
 		// Init
-		//echo json_encode($this->request->input('status').'sdfasdf');die;
 		$postData  = $this->getFiltered($this->request);
-//echo json_encode([$postData->limit(10)->get(), $postData->orderBy('posts.id', 'desc')->paginate(1)->toArray(), $postData->get()->count()]);die;
-//echo json_encode($postData->limit($take)->get()->toArray());die;
+
+		// dd( $postData->toSql() );
 		$total     = @DB::table(DB::raw("({$postData->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
 		$paginate  = $postData->groupBy('posts.id')->paginate($take)->toArray();
 
 		$page      = ($this->request->input('page') < 2) ? $page : ($this->request->input('page') - 1) * 10;
 
-		// dd( $postData->skip($page)->take($take)->toSql() );
-		// $paginate  = $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()];
 		$paginate  =  $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()->toArray(), 'total' => $total, 'last_page' => (int) ceil($total / 10), 'current_page' => (int) $this->request->input('page')];
-//echo json_encode($paginate);die;
-		// dd( $paginate );
+
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
+
 			return [
 				// Post
 				'id'         => $post['id'],
@@ -141,7 +127,7 @@ class Post extends Model
 				'status'     => $post['status'],
 				'views'      => $post['views'],
 				'shares'     => @$post['share']['shares'],
-				'embeds'     => count(@$post['embed_log']),
+				'embeds'     => count(@$post['embed']),
 				'created'    => date('d M Y H:i', strtotime($post['created_on'])),
 
 				//'reason'	 => 'Asd',
@@ -504,7 +490,8 @@ class Post extends Model
 		if ($startDate AND $endDate)
 		{
 			return $model->where(function($query) use($startDate, $endDate) {
-				$query->whereBetween('posts.created_on', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+				// $query->whereBetween('posts.created_on', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+				$query->whereRaw('`posts`.`created_on` BETWEEN "'.date('Y-m-d', strtotime($startDate)).' 00:00:00" AND "'.date('Y-m-d', strtotime($endDate)).' 23:59:59"');
 			});
 		}
 
@@ -605,7 +592,7 @@ class Post extends Model
 		{
 			case 'channel':
 				$model
-					 ->selectRaw('`posts`.*, (SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
+					 ->selectRaw('`posts`.*, (SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id` LIMIT 50) as `channel_title`')
 					 ->orderBy('channel_title', $reverse);
 				break;
 			case 'format':
@@ -620,17 +607,17 @@ class Post extends Model
 				break;
 			case 'sr':
 				$model
-					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->selectRaw('`posts`.*, (SELECT SUM(`post_shares`.`shares`) FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id` LIMIT 50) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'share':
 				$model
-					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->selectRaw('`posts`.*, (SELECT SUM(`post_shares`.`shares`) FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id` LIMIT 50) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
 				$model
-					 ->selectRaw('`posts`.*, (SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
+					 ->selectRaw('`posts`.*, (SELECT COUNT(`post_embed`.`id_embed`) FROM `post_embed` WHERE `post_embed`.`id_post` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
 				break;
 			// case 'mv':
@@ -698,7 +685,7 @@ class Post extends Model
 	// ------------------------------------------------------------------------
 	
 	public function share()
-	{ return $this->hasOne('App\Share')->selectRaw('post_id, fb, addon, twitter, shares'); }
+	{ return $this->hasOne('App\Share')->selectRaw('post_id, shares'); }
 
 	// ------------------------------------------------------------------------
 	
@@ -709,7 +696,7 @@ class Post extends Model
 
 	public function sumShares()
 	{ 
-		return $this->share()->selectRaw('CAST(SUM(`post_shares`.`fb` + `post_shares`.`addon` + `post_shares`.`twitter` + `post_shares`.`shares`) as UNSIGNED) as "total_shares"')->groupBy('post_id', 'fb', 'addon', 'twitter', 'shares'); 
+		return $this->share()->selectRaw('CAST(SUM(`post_shares`.`addon` + `post_shares`.`shares`) as UNSIGNED) as "total_shares"')->groupBy('post_id'); 
 	}
 	// ------------------------------------------------------------------------
 
