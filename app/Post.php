@@ -54,28 +54,28 @@ class Post extends Model
 		//echo json_encode([$postData->where(['user_id'=> 1831, 'status'=> -2])->groupBy('id')->limit(10)->get(), $request->input('status')]);die;
 
 		// Only selected channel
-		$postData = $postData->select('posts.*');
+		// $postData = $postData->select('posts.*');
 
 		// Join channels
-		//$postData = $postData->join('channels', 'posts.channel_id', '=', 'channels.id'); // unused join see at keepo-brand-new repository on app/Post.php:83-85
+		// $postData = $postData->join('channels', 'posts.channel_id', '=', 'channels.id'); // unused join see at keepo-brand-new repository on app/Post.php:83-85
 
 		// Group By with current post_type list
 		$postData = $postData->whereIn('posts.post_type', config('list.post_type'));
 
 		// Group by with current channels
-		//$postData = $postData->whereIn('channels.slug', config('list.channel'));
+		// $postData = $postData->whereIn('channels.slug', config('list.channel'));
 
 		// ------------------------------------------------------------------------
 		
 		// Contributor only
 		if ($request->input('contributor'))
-		{ $this->setContributorOnly($model); }
+		{ $this->setContributorOnly($postData); }
 
 		// Date Range
 		if ($dateRange = $request->input('dateRange'))
-		{ $this->setDateRange($dateRange); }
+		{ $this->setDateRange($postData, $dateRange); }
 		elseif (($startDate = $request->input('startDate')) AND ($endDate = $request->input('endDate')))
-		{ $this->setDateRange(FALSE, $startDate, $endDate); }
+		{ $this->setDateRange($postData, FALSE, $startDate, $endDate); }
 
 		// Status
 		if ($status = $request->input('status') AND $request->method() != 'PUT' OR ($bindStatus))
@@ -111,14 +111,19 @@ class Post extends Model
 	{
 		// Init
 		//echo json_encode($this->request->input('status').'sdfasdf');die;
-		$postData = $this->getFiltered($this->request);
+		$postData  = $this->getFiltered($this->request);
 //echo json_encode([$postData->limit(10)->get(), $postData->orderBy('posts.id', 'desc')->paginate(1)->toArray(), $postData->get()->count()]);die;
 //echo json_encode($postData->limit($take)->get()->toArray());die;
+		$total     = @DB::table(DB::raw("({$postData->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
 		$paginate  = $postData->groupBy('posts.id')->paginate($take)->toArray();
 
-		$paginate = $paginate['data'] ? $paginate : ['data'=> $postData->take($take)->get()];
-//echo json_encode($paginate);die;
+		$page      = ($this->request->input('page') < 2) ? $page : ($this->request->input('page') - 1) * 10;
 
+		// dd( $postData->skip($page)->take($take)->toSql() );
+		// $paginate  = $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()];
+		$paginate  =  $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()->toArray(), 'total' => $total, 'last_page' => (int) ceil($total / 10), 'current_page' => (int) $this->request->input('page')];
+//echo json_encode($paginate);die;
+		// dd( $paginate );
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 			return [
 				// Post
@@ -193,45 +198,64 @@ class Post extends Model
 		// return $this->where('posts.status', -2)->count();
 	}
 	
-	public function countAllPost($postData) {
+	public function countAllPost($postData = false) {
 		$postData = $this->getFiltered($this->request, 'all-post');
 
-		return $postData->count();
+		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+
+		return $total;
 	}	
 
-	public function countAllModerated($postData) 
+	public function countAllModerated($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'moderated');
 
-		return $postData->count();
+		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		
+		return $total;
+		// return $postData->count();
 	}
 
-	public function countApproved($postData) 
+	public function countApproved($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'approved');
 
-		return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		
+		return $total;
+
+		// return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
-	public function countPublic($postData) 
+	public function countPublic($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'public');
 
-		return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
+		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		
+		return $total;
+
+		// return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
-	public function countRejected($postData) 
+	public function countRejected($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'rejected');
 
-		return $postData->count();
+		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		
+		return $total;
+		// return $postData->count();
 	}
 
-	public function countPrivate($postData) 
+	public function countPrivate($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'private');
 
-		return $postData->count();
+		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		
+		return $total;
+		// return $postData->count();
 	}
 
 
@@ -592,7 +616,7 @@ class Post extends Model
 		{
 			case 'channel':
 				$model
-					 ->selectRaw('(SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
+					 ->selectRaw('`posts`.*, (SELECT `channels`.`title` FROM `channels` WHERE `channels`.`id` = `posts`.`channel_id`) as `channel_title`')
 					 ->orderBy('channel_title', $reverse);
 				break;
 			case 'format':
@@ -607,17 +631,17 @@ class Post extends Model
 				break;
 			case 'sr':
 				$model
-					 ->selectRaw('(SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'share':
 				$model
-					 ->selectRaw('(SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
+					 ->selectRaw('`posts`.*, (SELECT `post_shares`.`shares` FROM `post_shares` WHERE `post_shares`.`post_id` = `posts`.`id`) as `share_count`')
 					 ->orderBy('share_count', $reverse);
 				break;
 			case 'embed':
 				$model
-					 ->selectRaw('(SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
+					 ->selectRaw('`posts`.*, (SELECT COUNT(*) FROM `view_logs_embed` WHERE `view_logs_embed`.`post_id` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
 				break;
 			// case 'mv':
