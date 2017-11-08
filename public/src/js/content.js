@@ -210,9 +210,10 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 				}
 
 				function setStatus(post, status, $ctrlScope) {
+					var _contributor = ($ctrlScope.controller == 'contributor') ? { 'contributor' : true } : {};
 					setOtherCtrlData(post, $ctrlScope.controller, {loading: true});
 
-					appService.put({'url': 'set-status'}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': status}) )
+					appService.put({'url': 'set-status'}, _.extend($ctrlScope.filters, {'id': post.id, 'post-status': status, _contributor}) )
 					  .then(function(data) {
 					  	// $root
 					  	$ctrlScope.createLabelCount(data);

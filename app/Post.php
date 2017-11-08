@@ -97,11 +97,6 @@ class Post extends Model
 		if ($search = $request->input('search'))
 		{ $this->setSearch($postData, $search); }
 
-		//echo json_encode($postData->groupBy('posts.id')->limit(10)->get());die;
-
-		// dd( $this->postData->getBindings() );
-		//return $this->__instance;
-//echo json_encode($postData->groupBy('posts.id'));die;
 		return $postData;
 	}
 
@@ -201,7 +196,7 @@ class Post extends Model
 	public function countAllPost($postData = false) {
 		$postData = $this->getFiltered($this->request, 'all-post');
 
-		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 
 		return $total;
 	}	
@@ -210,49 +205,43 @@ class Post extends Model
 	{	
 		$postData = $this->getFiltered($this->request, 'moderated');
 
-		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 		
 		return $total;
-		// return $postData->count();
 	}
 
 	public function countApproved($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'approved');
 
-		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 		
 		return $total;
-
-		// return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
 	public function countPublic($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'public');
 
-		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 		
 		return $total;
-
-		// return $postData->count(); // Moderate (-2), , Rejected (0) and Approved (1)
 	}
 
 	public function countRejected($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'rejected');
 
-		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 		
 		return $total;
-		// return $postData->count();
 	}
 
 	public function countPrivate($postData = false) 
 	{	
 		$postData = $this->getFiltered($this->request, 'private');
 
-		$total    = DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
+		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 		
 		return $total;
 		// return $postData->count();
