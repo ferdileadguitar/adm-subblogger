@@ -69,7 +69,7 @@
 
 		.date-range-component
 		{
-			display: flex;
+			@include display-flex;
 
 			input {
 				border: 1px solid $black-10;

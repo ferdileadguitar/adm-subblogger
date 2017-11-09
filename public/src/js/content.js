@@ -66,6 +66,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					
 					'initData': {
 						onLoad: true,
+						onError:false,
 
 						data: [],
 
@@ -694,6 +695,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					appService.cancel($scope.onRequest);
 
 					$scope.onLoad 	 = true;
+					$scope.onError 	 = false;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
 				};
@@ -715,6 +717,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				function handleError(error) {
 					console.log(error);
+					$scope.onLoad  = false;
+					$scope.onError = true;
 				};
 
 				function createLabelCount(data) {
@@ -828,6 +832,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					appService.cancel($scope.onRequest);
 
 					$scope.onLoad 	 = true;
+					$scope.onError 	 = false;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
 				};
@@ -859,6 +864,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				function handleError(error) {
 					console.log(error);
+					$scope.onLoad  = false;
+					$scope.onError = true;
 				};
 				
 				// On
@@ -941,6 +948,7 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 					appService.cancel($scope.onRequest);
 
 					$scope.onLoad 	 = true;
+					$scope.onError 	 = false;
 					$scope.onRequest = appService.get({'page': $scope.pageCurrent}, $scope.filters, {'contributor' : true}, $scope.sort);
 					$scope.onRequest.then(handleResponse, handleError);
 				};
@@ -959,6 +967,8 @@ require(['./app.js', 'joii', 'angular-sanitize'], function(MainApp, joii) {
 
 				function handleError(error) {
 					console.log(error);
+					$scope.onLoad  = false;
+					$scope.onError = true;
 				};
 				
 				function createLabelCount(data) {
