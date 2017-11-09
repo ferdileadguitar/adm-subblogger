@@ -96,7 +96,6 @@ class Post extends Model
 		// Init
 		$postData  = $this->getFiltered($this->request);
 
-		// dd( $postData->toSql() );
 		$total     = @DB::table(DB::raw("({$postData->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
 		$paginate  = $postData->groupBy('posts.id')->paginate($take)->toArray();
 
@@ -230,7 +229,6 @@ class Post extends Model
 		$total    = @DB::table(DB::raw("({$postData->groupBy('posts.id')->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->selectRaw('COUNT(*) total')->first()->total;
 		
 		return $total;
-		// return $postData->count();
 	}
 
 
@@ -243,7 +241,6 @@ class Post extends Model
 		if (is_array($postID)) { $post = $this->whereIn('id', $postID); }
 		else { $post = $this->where('id', $postID); }
 
-		// dd( $status );
 		$post->update(['status' => $status]);
 
 		// Flush cache
@@ -354,7 +351,6 @@ class Post extends Model
 		else
 			return ['error' => 'Failed to post'];
 		
-		// dd( $post );
 		// Flush Cache
 		event(new KeepoCache($post));
 
@@ -539,9 +535,6 @@ class Post extends Model
 				});
 				break;
 			case 'private':
-				// $this->postData->where(function($query) {
-				// 	$query->whereIn('posts.status', [2]);
-				// });
 				$model->where('posts.status', 2);
 				break;
 			case 'public':
@@ -552,35 +545,22 @@ class Post extends Model
 				break;
 			case 'approved':
 				$model->where('posts.status', 1);
-				// $this->postData->where(function($query) {
-				// 	$query->whereIn('posts.status', [1]);
-				// });
 				break;
 			case 'moderated':
-				// $this->postData->where(function($query) {
-				// 	$query->whereIn('posts.status', [-2]);
-				// });
 				$model->where('posts.status', -2);
-				// $this->postData->whereNotIn('posts.status', [2, 1, 0, -1, -99]);
 				break;
 			case 'rejected':
-				// $this->postData->where(function($query) {
-				// 	$query->whereIn('posts.status', [0]);
-				// });
 				$model->where('posts.status', 0);
 				break;
 			case 'all-status':
 			default;
 				$model->where(function($query) {
-					// $query->whereNotIn('status', [-1, -99]);
 					$query->whereNotIn('posts.status', [-99, -1]); // -1 is unpublish right
 				});
 				break;
 		}
 
-		//echo json_encode($model->toSql());die;		
 		return $model;
-// dd( $this->postData->toSql() );
 	}
 
 	// ------------------------------------------------------------------------
@@ -620,9 +600,6 @@ class Post extends Model
 					 ->selectRaw('`posts`.*, (SELECT COUNT(`post_embed`.`id_embed`) FROM `post_embed` WHERE `post_embed`.`id_post` = `posts`.`id`) as `embed_count`')
 					 ->orderBy('embed_count', $reverse);
 				break;
-			// case 'mv':
-			// 	$this->postData->orderBy('views', 'DESC');
-			// 	break;
 			case 'n':
 				$model->orderBy('posts.created_on', $reverse);
 				break;
@@ -670,9 +647,6 @@ class Post extends Model
 	{ return $this->belongsTo('App\User', 'user_id'); }
 
 	// ------------------------------------------------------------------------
-	
-	// public function image()
-	// { return $this->belongsTo('App\Image', 'object_file_id'); }
 
 	public function objectFile()
 	{ return $this->belongsTo('App\ObjectFile', 'object_file_id'); }
