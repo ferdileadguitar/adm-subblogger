@@ -75,7 +75,7 @@ class Format extends Model
 
 		self::$formatData = self::$formatData->whereIn('channels.slug', config('list.channel'));
 
-		self::$formatData = self::$formatData->whereNotIn('posts.status', [-99]);
+		self::$formatData = self::$formatData->whereNotIn('posts.status', [-99, -1]);
 		
 		// // Sort
 		if ($sort = $request->input('key'))

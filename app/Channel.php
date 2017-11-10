@@ -231,10 +231,10 @@ class Channel extends Model
 	// ------------------------------------------------------------------------
 	
 	public function posts()
-	{ return $this->hasMany('App\Post')->select('id', 'title', 'channel_id', 'views', 'created_on'); }
+	{ return $this->hasMany('App\Post')->select('id', 'title', 'channel_id', 'views', 'created_on', 'status')->whereNotIn('status', [-99, -1]); }
 
 	public function postsViews(){
-		$collection = $this->posts()->select('id', 'title', 'channel_id', 'views', 'created_on');
+		$collection = $this->posts()->select('id', 'title', 'channel_id', 'views', 'created_on', 'status')->whereNotIn('status', [-99, -1]);
 
 		return $collection;
 	}
