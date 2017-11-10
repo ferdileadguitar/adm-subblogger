@@ -12,7 +12,7 @@ module.exports = {
 	entry: {
 		'login'        : ["./src/js/app.js", "./src/js/login.js"],
 		'content'      : ["./src/js/app.js", "./src/js/content.js"],
-		'content-user' : ["./src/js/app.js", "./src/js/content-user.js"],
+		// 'content-user' : ["./src/js/app.js", "./src/js/content-user.js"],
 		'authors'      : ["./src/js/app.js", "./src/js/authors.js"],
 		'channel'      : ["./src/js/app.js", "./src/js/channel.js"],
 
@@ -30,7 +30,7 @@ module.exports = {
 				use: ExtractTextPlugin.extract({
 					fallback: "style-loader",
 					use: [
-						{ loader : "css-loader" }, 
+						{ loader : "css-loader", options : { minimize : true } }, 
 						// { loader : "postcss-loader" }, 
 						{ loader : "sass-loader" }, 
 						{
@@ -63,6 +63,21 @@ module.exports = {
 			{
 				test    : /\.js$/,
 				exclude : /node_modules/,
+				// use     : [
+				// 	{ 
+				// 		loader  : 'ng-annotate-loader', 
+				// 		options : {
+				// 			add : false,
+				// 			map : false
+				// 		}
+				// 	},
+				// 	{ 
+				// 		loader  : 'babel-loader',
+				// 		options: {
+				//           	presets: ['@babel/preset-env']
+				//         }
+				// 	}
+				// ],
 			},
 			{	
 				test : /\.html$/,

@@ -1,9 +1,3 @@
-// SCSS
-// ------------------------------------------------------------------------
-
-// APP
-// ------------------------------------------------------------------------
-
 require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(joii, ngTagsInput) {
 	'use strict';
 
@@ -14,7 +8,6 @@ require(['joii', 'jquery', 'underscore', 'angular', 'ng-tags-input'], function(j
 		__construct: function() {
 			this.baseURL   = window.baseURL;
 			this.adminUser = angular.fromJson(window.admin); 
-			// console.log( this );
 
 			this.application = angular.module('keepoApp', ['ngSanitize', 'ngTagsInput'], function($interpolateProvider) {
 		        $interpolateProvider.startSymbol('<@');

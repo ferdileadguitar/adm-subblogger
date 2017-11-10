@@ -55,7 +55,7 @@ class Author extends Model
 
 		self::$authorsData = new self();
 		
-		self::$postsSubQry = $postsQry  = DB::table('posts')->selectRaw('`posts`.`id`, `posts`.`user_id`, COUNT(*) cnt, sum(`views`) sum, avg(`views`) avg')->groupBy('posts.user_id');
+		self::$postsSubQry = $postsQry  = DB::table('posts')->selectRaw('`posts`.`id`, `posts`.`user_id`, COUNT(*) cnt, sum(`views`) sum, avg(`views`) avg')->groupBy('posts.user_id')->whereRaw('`posts`.`status` not in (-99, -1)');
 
 		self::$shareSubQry = $sharesQry = DB::table('post_shares')->selectRaw('`posts`.`user_id`, `post_shares`.`post_id`, SUM(`post_shares`.`shares` + `post_shares`.`addon`) cnt')->join('posts', 'posts.id', '=', 'post_shares.post_id')->groupBy('posts.user_id');
 		
