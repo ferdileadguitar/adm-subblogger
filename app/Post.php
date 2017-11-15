@@ -375,7 +375,7 @@ class Post extends Model
 		return ['created' => $newDate];
 	}
 
-	public function updatePostUpContent($postID = FALSE, $postCreated) {
+	public function updatePostUpContent($postID = FALSE, $postCreated = FALSE) {
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
 		
 		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');

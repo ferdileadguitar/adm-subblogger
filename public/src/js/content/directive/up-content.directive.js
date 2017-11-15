@@ -15,36 +15,29 @@ class Created extends ArticleEditors{
 		
 		let _base     = this._$scope.allPosts,
 		    _content  = _base.post,
-			data      = _content,
-			picker;
+			data      = _content;
 		
 		scope.created = data.created;
 
-		picker = element.find('[datetime-picker]').datetimepicker({
+		element.find('[datetime-picker]').datetimepicker({
 			format        : 'Y-m-d H:i:s',
 			timepicker    : false,
 			inline 		  : true,
 			startDate     : data.created,//or 1986/12/08
 			formatDate    : 'd M y',
 			regional      : 'fr',
-			onChangeDateTime : (current_time, $input) => {
+			todayButton   : false,
+			maxDate       : true,
+			onChangeDateTime : function(current_time, $input) {
 				// We handle at PHP sorry, .. about this
-				scope.created = current_time.toLocaleDateString();
-				console.log( current_time.toLocaleDateString() )
+				console.log( $input[0].value )
+				scope.created = $input[0].value;
 
 			},
-			onSelectDate: (a, b) => {
-				console.log( a, b )
-			},
-			onClose : (current_time, $input) => {
+			onClose : function(current_time, $input) {
 				console.log( current_time );
 			}
 		});
-
-		scope.dateNow = () => {
-			console.log( picker.datetimepicker );
-			picker.datetimepicker().datetimepicker('setDate', 'today');
-		}
 	}
 }
 
