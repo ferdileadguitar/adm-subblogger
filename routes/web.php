@@ -4,7 +4,7 @@ Auth::routes();
 
 // Admin Pages
 // ------------------------------------------------------------------------
-Route::group(['middleware' => 'admin'], function() {
+Route::group(['middleware' => ['admin', 'web']], function() {
 
 	// Contents
 	Route::get('/', 'Pages\ContentController@index')->name('content');
@@ -16,6 +16,10 @@ Route::group(['middleware' => 'admin'], function() {
 
 	// Channel & Formats
 	Route::get('channels', 'Pages\ChannelController@index')->name('channelWithURI');
+
+	Route::get('settings', 'Pages\AdminSettings@getHome')->name('homeSettings');
+	Route::post('access/user', 'Pages\AdminSettings@addAccessUser')->name('accessUser');
+	Route::get('access/user/rm', 'Pages\AdminSettings@deletedAccessUser')->name('delAccessUser');
 });
 
 // Login - Logout

@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {   
         // Set sesion name diff keepo.me
-        // \Config::set('session.cookie', 'laravel_session_admin');
+        \Config::set('login.email', explode(",", \Storage::disk('public')->get('login.txt')));
 
         // $data = Cache::tags(['env:local', 'mmf:2'])->get("2///1////1/50");
         // dd( $data );
