@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Session\Middleware\StartSession;
 
+use Config;
 use Cache;
 use App\Post;
 
@@ -18,10 +19,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {   
         // Set sesion name diff keepo.me
-        \Config::set('login.email', explode(",", \Storage::disk('public')->get('login.txt')));
-
-        // $data = Cache::tags(['env:local', 'mmf:2'])->get("2///1////1/50");
-        // dd( $data );
+        $file      = [
+            'login'        => \Storage::disk('public')->get('login.txt'),
+            'contributor'  => []
+        ];
+        $loginList        = empty($file['login']) ? [] : explode(",", $file['login']);
+        $contributorList  = $file['contributor']; 
+        
+        // Set login config
+        Config::set('login.email', $loginList);
     }
 
     /**
