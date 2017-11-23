@@ -13,19 +13,20 @@ class Created extends ArticleEditors{
 		
 		let _base     = this._$scope.allPosts,
 		    _content  = _base.post,
-			data      = _content, picker;
+			data      = _content, picker,
+			todayDate = new Date().getDate();
 		
 		scope.created = data.created;
 
 		picker = element.find('[datetime-picker]').datetimepicker({
 			format          : 'YYYY-MM-DD HH:mm',
 			inline 		    : true,
-			maxDate         : 'now',
+			maxDate         : new Date(new Date().setDate(todayDate + 1)),
 			defaultDate     : data.created,
-			// todayHightlight : true
+			sideBySide      : true
 		});
 
-		picker.on('dp.change', (e) => { scope.created = picker.val(); });
+		picker.on('dp.change', (e) => { scope.created = picker.val();console.info(scope.created) });
 	}
 }
 

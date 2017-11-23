@@ -360,14 +360,14 @@ class Post extends Model
 
 	public function updatePostCreated($postID = FALSE, $postCreated = FALSE) {
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
-		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');
+		$convDate = date('Y-m-d H:i:s', strtotime($postCreated));
 
 		$post     = $this->where(function($query) use ($postID, $postCreated, $convDate) {
 			$query->where(['id' => $postID])->update(['created_on' => $convDate]);
 			return $query;
 		});
 		
-		$newDate = date('d M Y H:i:s', strtotime($post->first()->created_on));
+		$newDate = date('d M Y H:i', strtotime($post->first()->created_on));
 		
 		// Flush cache
 		event(new KeepoCache($post));
@@ -378,14 +378,14 @@ class Post extends Model
 	public function updatePostUpContent($postID = FALSE, $postCreated = FALSE) {
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
 		
-		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');
+		$convDate = date('Y-m-d H:i:s', strtotime($postCreated));
 
 		$post  = $this->where(function($query) use ($postID, $convDate) {
 			$query->where(['id' => $postID])->update(['is_up_contents' => 1,'created_on' => $convDate]);
 			return $query;
 		});
 
-		$newDate  = date('d M Y H:i:s', strtotime($post->first()->created_on));
+		$newDate  = date('d M Y H:i', strtotime($post->first()->created_on));
 
 		// Flush cache
 		event(new KeepoCache($post));
