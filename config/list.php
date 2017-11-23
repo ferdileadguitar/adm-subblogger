@@ -39,7 +39,8 @@
 			'cardclick', 
 			'personality', 
 			'trivia'
-		]
+		],
+		'contributor' => []
 	];
 
 ?>

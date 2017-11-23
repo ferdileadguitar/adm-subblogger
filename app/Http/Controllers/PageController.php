@@ -19,6 +19,7 @@ class PageController extends Controller
     		'pageTitle' => title_case($this->slug) .' - ' . config('app.name'),
     		'activeNav' => $this->slug,
             'adminUser' => json_encode($this->request->session()->get('admin:username'), TRUE)
+            // 'adminUser' => 'anonymous'
     	];
 
         $this->adminUser = $this->request->session()->get('admin:username');

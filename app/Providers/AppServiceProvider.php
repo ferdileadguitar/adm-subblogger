@@ -18,16 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {   
-        // Set sesion name diff keepo.me
-        $file      = [
-            'login'        => \Storage::disk('public')->get('login.txt'),
-            'contributor'  => []
-        ];
-        $loginList        = empty($file['login']) ? [] : explode(",", $file['login']);
-        $contributorList  = $file['contributor']; 
-        
-        // Set login config
-        Config::set('login.email', $loginList);
+        //
     }
 
     /**
@@ -37,6 +28,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->register('App\Providers\AdminSettingsProvider');
     }
 }

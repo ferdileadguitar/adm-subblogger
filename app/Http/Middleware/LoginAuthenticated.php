@@ -17,10 +17,16 @@ class LoginAuthenticated
     public function handle($request, Closure $next)
     {   
         $response = $next($request);
-        
+
         if( $request->session()->exists('admin:username') )
         {
             return redirect()->route('content');
+        }
+        
+        // Ajax requesy
+        if( $request->ajax() )
+        {
+            return response()->json(['status' => 403, 'msg' => 'You don\'t have permission!'], 403);
         }
 
         return $response;

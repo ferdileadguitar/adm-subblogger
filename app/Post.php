@@ -466,7 +466,7 @@ class Post extends Model
 	
 	private function setContributorOnly($model)
 	{
-		$contributorList = [5, 241];
+		$contributorList = config('list.contributor');
 
 		return $model->where(function($query) use($contributorList) {
 			$query->whereIn('posts.user_id', $contributorList);

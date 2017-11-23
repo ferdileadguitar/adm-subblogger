@@ -17,14 +17,22 @@ Route::group(['middleware' => ['admin', 'web']], function() {
 	// Channel & Formats
 	Route::get('channels', 'Pages\ChannelController@index')->name('channelWithURI');
 
-	Route::get('settings', 'Pages\AdminSettings@getHome')->name('homeSettings');
+	// Settings
+	Route::get('settings', 'Pages\AdminSettings@getHome')->name('settings');
+
+	// List User Login
 	Route::post('access/user', 'Pages\AdminSettings@addAccessUser')->name('accessUser');
 	Route::get('access/user/rm', 'Pages\AdminSettings@deletedAccessUser')->name('delAccessUser');
+
+	// List Contributor
+	Route::post('contributor/user', 'Pages\AdminSettings@addContributorUser')->name('contributorUser');
+	Route::get('contributor/user/rm', 'Pages\AdminSettings@deletedContributorUser')->name('delContributorUser');
 });
+
 
 // Login - Logout
 // ------------------------------------------------------------------------
-Route::group(['middleware' => 'admin.promise'], function() {
+Route::group(['middleware' => 'login'], function() {
 	Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 	Route::post('/login', 'Auth\LoginController@tryLogin')->name('login');
 });

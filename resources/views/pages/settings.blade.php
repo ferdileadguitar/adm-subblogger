@@ -54,6 +54,7 @@
 		  margin-right: -250px;
 		}
 
+		nav.main-nav a { text-decoration: none;  }
 
 		/* Sidebar Styles */
 
@@ -193,16 +194,16 @@
 	        	
 	        	<div class="col-lg-12 col-md-8" id="login">
 	        		<header>
-						<h1>Admin List</h1>
+						<h1>Admin Access User</h1>
 
 						<h3>Here is written who is entitled to get access to the admin page</h3>
 						<h4>*note : make sure it have account on keepo</h4>
 						<hr />
 	        		</header>
 					
-					@if(Session::has('error'))
-					    <div class="alert alert-danger"> 
-					    	{!! Session::get('error') !!}
+					@if (session('user:flash'))	
+					    <div class="alert alert-{{ session('user:flash') }}" style="width: 41%;">
+					        <h3>{{ session('msg') }}</h3>
 					    </div>
 					@endif
 
@@ -227,7 +228,7 @@
 							
 						<div class="form-row">
 					    	<div class="form-group col-md-9">
-				          		<input type="email" class="form-control col-sm-7" name="email" placeholder="type email here" autofocus required style="font-size: 16px;" />
+				          		<input type="email" class="form-control col-sm-7" name="email" placeholder="type email here" autofocus required style="font-size: 16px;width: 55%;" />
 					    	</div>
 						</div>						    
 
@@ -242,27 +243,27 @@
 	        		<header>
 						<h1>Contributor</h1>
 
-						<h3>Here is written who is entitled to get access to the admin page</h3>
+						<h3>Here is written who is the contributor of <strong>keepo.me</strong></h3>
 						<h4>*note : make sure it have account on keepo</h4>
 						<hr />
 	        		</header>
 					
-					@if(Session::has('error'))
-					    <div class="alert alert-danger"> 
-					    	{!! Session::get('error') !!}
+					@if (session('contributor:flash'))	
+					    <div class="alert alert-{{ session('contributor:flash') }}" style="width: 41%;">
+					        <h3>{{ session('msg') }}</h3>
 					    </div>
 					@endif
 
-					<form action="{{ route('accessUser') }}" method="POST">
-						@if(!empty(@$user))
-							@forelse($user as $item)
+					<form action="{{ route('contributorUser') }}" method="POST">
+						@if(!empty(@$contributor))
+							@forelse($contributor as $item)
 							  	<div class="form-row">
 							    	<div class="form-group col-md-5">
-							          		<input type="email" class="form-control col-sm-12" value="{{ $item }}" readonly="true" name="emailList[]" style="font-size: 16px;" />
+							          		<input type="email" class="form-control col-sm-12" value="{{ $item['email'] }}" readonly="true" name="emailList[]" style="font-size: 16px;" />
 							    	</div>
 							    
 							    	<div class="form-group col-md-2">
-									  	<a href="{{ url('access/user/rm?key='.$item) }}" class="btn btn-danger"><i class="glyphicon glyphicon-remove" style="color: white;"></i></a>
+									  	<a href="{{ url('contributor/user/rm?key='.$item['id']) }}" class="btn btn-danger"><i class="glyphicon glyphicon-remove" style="color: white;"></i></a>
 							    	</div>
 							  	</div>
 							@empty
@@ -274,7 +275,7 @@
 							
 						<div class="form-row">
 					    	<div class="form-group col-md-9">
-				          		<input type="email" class="form-control col-sm-7" name="email" placeholder="type email here" autofocus required style="font-size: 16px;" />
+				          		<input type="email" class="form-control col-sm-7" name="email" placeholder="type email here" autofocus required style="font-size: 16px;width: 55%;" />
 					    	</div>
 						</div>						    
 
