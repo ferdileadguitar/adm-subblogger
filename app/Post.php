@@ -99,9 +99,9 @@ class Post extends Model
 		$total     = @DB::table(DB::raw("({$postData->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
 		$paginate  = $postData->groupBy('posts.id')->paginate($take)->toArray();
 
-		$page      = ($this->request->input('page') < 2) ? $page : ($this->request->input('page') - 1) * 10;
+		$page      = ($this->request->input('page') < 2) ? $page : ($this->request->input('page') - 1) * $take;
 
-		$paginate  =  $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()->toArray(), 'total' => $total, 'last_page' => (int) ceil($total / 10), 'current_page' => (int) $this->request->input('page')];
+		$paginate  =  $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()->toArray(), 'total' => $total, 'last_page' => (int) ceil($total / $take), 'current_page' => (int) $this->request->input('page')];
 
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 

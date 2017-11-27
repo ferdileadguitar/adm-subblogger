@@ -15,7 +15,7 @@ use App\Channel;
 class ContentController extends \App\Http\Controllers\ApiController
 {
 	protected $posts;
-	protected $take = 10;
+	protected $take = 100;
 
 	// ------------------------------------------------------------------------
 	
