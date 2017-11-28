@@ -21,7 +21,6 @@ class Created extends ArticleEditors{
 		picker = element.find('[datetime-picker]').datetimepicker({
 			format          : 'YYYY-MM-DD HH:mm',
 			inline 		    : true,
-			maxDate         : new Date(new Date().setDate(todayDate + 1)),
 			defaultDate     : data.created,
 			sideBySide      : true
 		});
