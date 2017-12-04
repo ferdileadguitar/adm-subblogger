@@ -229,6 +229,7 @@ return [
         */
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
+        \Malyusha\WebpackAssets\WebpackAssetsServiceProvider::class
     ],
 
     /*
@@ -284,6 +285,8 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         
         'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
+        
+        'WebpackAssets' => \Malyusha\WebpackAssets\Facade::class
     ],
 
 ];

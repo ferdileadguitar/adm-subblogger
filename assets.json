@@ -1,0 +1,21 @@
+{
+  "content": {
+    "js": "/dist/js/content.1879b.js",
+    "css": "/dist/css/content.1879b.css"
+  },
+  "authors": {
+    "js": "/dist/js/authors.622ed.js",
+    "css": "/dist/css/authors.622ed.css"
+  },
+  "channel": {
+    "js": "/dist/js/channel.b9d13.js",
+    "css": "/dist/css/channel.b9d13.css"
+  },
+  "login": {
+    "js": "/dist/js/login.ca1e4.js",
+    "css": "/dist/css/login.ca1e4.css"
+  },
+  "vendor": {
+    "js": "/dist/js/vendor.d6017.js"
+  }
+}

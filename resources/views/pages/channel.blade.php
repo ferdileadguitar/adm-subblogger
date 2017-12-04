@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @push('css')
-<link href="{{ asset('dist/css/channel.css') }}" rel="stylesheet">
+<link href="{{ webpack()->path('channel.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
-<script src="{{ asset('dist/js/channel.js') }}"></script>
+<script src="{{ webpack()->path('channel.js') }}"></script>
 @endpush
 
 @section('content')

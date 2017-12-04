@@ -47,7 +47,7 @@
       crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script> -->
 
-    <script src="{{ asset('dist/js/vendor.js') }}"></script>
+    <script src="{{ webpack()->path('vendor.js') }}"></script>
     <script type="text/javascript">
         window.admin = {!! $adminUser !!};
     </script>

@@ -11,6 +11,6 @@ module.exports = merge(common, {
 				mangle   : false,
 			},
 			sourceMap : true
-		}),
+		})
 	]
 });
