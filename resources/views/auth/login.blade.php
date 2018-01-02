@@ -9,7 +9,7 @@
     <title>{{ config('app.name', 'Keepo') }}</title>
 
     <!-- Style -->
-    <link href="{{ asset('dist/css/login.css') }}" rel="stylesheet">
+    <link href="{{ webpack()->path('login.css') }}" rel="stylesheet">
 
 </head>
 <body>
@@ -52,7 +52,7 @@
     <script>var baseURL = "{{ config('app.url') }}";</script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
-    <script src="{{ asset('dist/js/vendor.js') }}"></script>
-    <script src="{{ asset('dist/js/login.js') }}"></script>
+    <script src="{{ webpack()->path('vendor.js') }}"></script>
+    <script src="{{ webpack()->path('login.js') }}"></script>
 </body>
 </html>

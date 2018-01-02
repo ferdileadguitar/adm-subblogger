@@ -205,11 +205,13 @@ return [
         /*
          * Application Service Providers...
          */
+        
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
 
         Intervention\Image\ImageServiceProvider::class,
 
@@ -227,6 +229,7 @@ return [
         */
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
+        \Malyusha\WebpackAssets\WebpackAssetsServiceProvider::class
     ],
 
     /*
@@ -282,6 +285,8 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         
         'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
+        
+        'WebpackAssets' => \Malyusha\WebpackAssets\Facade::class
     ],
 
 ];

@@ -25,11 +25,10 @@ class PostTag extends Model
       $exists_tag = self::where(['post_id' => $post_id])->with('tag')->get(); // lets search tags within already exists on DB
       $response   = array();
 
-      // dd( $tag_requests );
       foreach ($exists_tag as $t) {
         if(!in_array($t->tag->slug, $tag_requests)){
-          $post_tag = self::where('tag_id',$t->tag_id);
-          // dd( $t );
+          $post_tag = self::where(['tag_id' => $t->tag_id, 'post_id' => $post_id]);
+
           if(!$post_tag->delete()) {
             return false;
           }
@@ -65,15 +64,15 @@ class PostTag extends Model
           if(PostTag::where('tag_id', '=', $tagID['id'])->where('post_id', '=', $postID)->count() == 0)
               PostTag::insert(['tag_id' => $tagID['id'], 'post_id' => $postID]);
 
-          $this->destroyTagByPost($postID, $tags); // removing tags event
       }
+
+      $this->destroyTagByPost($postID, $tags); // removing tags event
 
       // Flush cache
       event(new KeepoCache($post));
 
       return $data;
     }
-
 
     // Belong to Relationship
 

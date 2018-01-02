@@ -32,13 +32,16 @@ class ArticleEditors {
 		return ['$http', '$rootScope', '$timeout', '$sce', '$q', 'appFactory', 'appService'];
 	}
  
-	_post(data) {
-	}
+	_post(data) { }
 
 	static _listicleFormat(element, obj) {
-		let data = obj.data, listicleItems = [], contentStringify;
+		let data = obj.data, listicleItems = [], contentStringify,
+			_content;
 		
 		data.content = _.extend({}, obj.dataListicle);
+		
+		_content     = editors.content.serialize()['editor-content'].value.replace(/contenteditable(=(\"|\')true(\"|\')|)/ig, '');
+
 		_.each(data.content.models, (value, index) => {
 			let $element 		= $(element).find('.eb-listicle-list'),
 				$listicleEl 	= $element.find('.eb-listicle-item:eq(' + index + ')'),
@@ -59,7 +62,7 @@ class ArticleEditors {
 		});
 		
 		data.tags    = tags.join(';');
-		data.content = JSON.stringify({ content : (data.content.content), sort : (data.content.sort), models : (listicleItems) });
+		data.content = JSON.stringify({ content : _content, sort : (data.content.sort), models : (listicleItems) });
 		
 		return {
 			obj    : data,

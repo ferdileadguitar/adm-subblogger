@@ -17,6 +17,7 @@ class AdminAuthenticated
      */
     public function handle($request, Closure $next)
     {
+        // dd( $request->session()->all() );
         if( $request->session()->exists('admin:username') )
         { 
             return $next($request);

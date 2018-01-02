@@ -1,6 +1,7 @@
 const webpack           = require('webpack');
 const path              = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const AssetsPlugin = require('assets-webpack-plugin');
 
 let ROOT_PATH = path.resolve(__dirname),
 	APP_PATH  = path.resolve(ROOT_PATH, 'public'),
@@ -20,8 +21,9 @@ module.exports = {
 	},
 	output: {
 		path           : DIST_PATH,
-		filename       : "js/[name].js",
-		chunkFilename  : "js/[name].js"
+		filename       : "js/[name].[hash:8].js",
+		chunkFilename  : "js/[name].[hash:8].js",
+		publicPath     : '/dist/'
 	},
 	module: {
 		rules: [
@@ -105,9 +107,16 @@ module.exports = {
 		}
 	},
 	plugins : [
-		new ExtractTextPlugin("css/[name].css"),
+		new ExtractTextPlugin("css/[name].[hash:8].css"),
 		new webpack.ProvidePlugin({jQuery: "jquery",$: "jquery","window.jQuery": "jquery"}),
 		new webpack.ProvidePlugin({"_": "underscore"}),
-		new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "js/vendor.js"}),
+		new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "js/vendor.[hash:8].js"}),
+
+		// versioning
+		new AssetsPlugin({
+			filename : 'assets.json', 
+			// path     : path.join(__dirname, 'public'),
+			prettyPrint : true
+		})
 	]
 };

@@ -1,5 +1,5 @@
     <header class="main-header">
-        <div class="logo"><a href="//keepo.me"><span>Keepo</span></a></div>
+        <div class="logo"><a href="{{ url('/') }}"><span>Keepo</span></a></div>
 
         <nav class="main-nav">
             <a href="{{ url('contents') }}" class="{{ $activeNav == 'contents' || '' ? 'active' : '' }}">Contents</a>

@@ -1,5 +1,5 @@
-import 'style-loader!css-loader!jquery-datetimepicker/jquery.datetimepicker.css';
-import 'jquery-datetimepicker';
+import 'style-loader!css-loader!eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css';
+import datetimepicker from 'eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker';
 import ArticleEditors from './article.directive';
 
 class Created extends ArticleEditors{
@@ -11,40 +11,21 @@ class Created extends ArticleEditors{
 
 	link(scope, element, attrs) {
 
-		$.datetimepicker.setLocale('en');
-		
 		let _base     = this._$scope.allPosts,
 		    _content  = _base.post,
-			data      = _content,
-			picker;
+			data      = _content, picker,
+			todayDate = new Date().getDate();
 		
 		scope.created = data.created;
 
 		picker = element.find('[datetime-picker]').datetimepicker({
-			format        : 'Y-m-d H:i:s',
-			timepicker    : false,
-			inline 		  : true,
-			startDate     : data.created,//or 1986/12/08
-			formatDate    : 'd M y',
-			regional      : 'fr',
-			onChangeDateTime : (current_time, $input) => {
-				// We handle at PHP sorry, .. about this
-				scope.created = current_time.toLocaleDateString();
-				console.log( current_time.toLocaleDateString() )
-
-			},
-			onSelectDate: (a, b) => {
-				console.log( a, b )
-			},
-			onClose : (current_time, $input) => {
-				console.log( current_time );
-			}
+			format          : 'YYYY-MM-DD HH:mm',
+			inline 		    : true,
+			defaultDate     : data.created,
+			sideBySide      : true
 		});
 
-		scope.dateNow = () => {
-			console.log( picker.datetimepicker );
-			picker.datetimepicker().datetimepicker('setDate', 'today');
-		}
+		picker.on('dp.change', (e) => { scope.created = picker.val();console.info(scope.created) });
 	}
 }
 

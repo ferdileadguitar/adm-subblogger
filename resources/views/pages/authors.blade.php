@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @push('css')
-<link href="{{ asset('dist/css/authors.css') }}" rel="stylesheet">
+<link href="{{ webpack()->path('authors.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
-<script src="{{ asset('dist/js/authors.js') }}"></script>
+<script src="{{ webpack()->path('authors.js') }}"></script>
 @endpush
 
 @section('content')

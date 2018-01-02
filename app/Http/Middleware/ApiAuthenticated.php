@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Session;
 
 class ApiAuthenticated
 {
@@ -16,6 +17,8 @@ class ApiAuthenticated
     public function handle($request, Closure $next)
     {
         $response = $next($request);
+
+        // dd( \Session::all() );
 
         if( !$request->session()->exists('admin:username') )
         {

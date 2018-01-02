@@ -27,7 +27,9 @@ class ListicleEditors extends ArticleEditors {
 		// Decode html file with Angular $sce
 		_.map(dataListicle.models, (item, key) => {
 			dataListicle.models[key].content = self._$sce.trustAsHtml(item.content);
+
 		});
+		dataListicle.content = self._$sce.trustAsHtml(dataListicle.content);
 
 		scope.dataListicle = dataListicle;
 

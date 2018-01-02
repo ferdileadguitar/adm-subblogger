@@ -34,7 +34,7 @@ module.exports = merge(common, {
 	// 		'http://localhost:8000'
 	// 	],
 	// 	historyApiFallback: false
-	// watch  : true,
+	watch  : true,
 	plugins : [
 		// new webpack.HotModuleReplacementPlugin(),
 		new BrowserSyncPlugin({

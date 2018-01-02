@@ -27,9 +27,6 @@ class LoginController extends Controller
 
         // Override Original Middleware
         $this->middleware('login');
-
-        // dd( $request->session() );
-        
     }
 
     // ------------------------------------------------------------------------
@@ -62,14 +59,12 @@ class LoginController extends Controller
         if (FALSE === ($postLogin = User::getUser($credentials)))
         { abort(500, 'Invalid Username or Password!'); }
 
-        // Auth::login($user, FALSE);
-
         // // Override postLogin
         if ( !empty($postLogin) )
         {   
             $msg = array( 'username' => $postLogin->username, 'display_name' => $postLogin->display_name, 'email' => $postLogin->email, 'ip' => $request->ip(), 'user-agent' => $request->header('User-Agent'));
             $request->session()->put('admin:username', $msg);
-
+            
             Log::useFiles(base_path() . '/storage/logs/login/debug.log', 'info');
             Log::info(json_encode($msg));
         }

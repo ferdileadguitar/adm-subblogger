@@ -99,9 +99,9 @@ class Post extends Model
 		$total     = @DB::table(DB::raw("({$postData->toSql()}) as ttl_post"))->setBindings($postData->getBindings())->select(DB::raw('COUNT(*) total'))->first()->total;
 		$paginate  = $postData->groupBy('posts.id')->paginate($take)->toArray();
 
-		$page      = ($this->request->input('page') < 2) ? $page : ($this->request->input('page') - 1) * 10;
+		$page      = ($this->request->input('page') < 2) ? $page : ($this->request->input('page') - 1) * $take;
 
-		$paginate  =  $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()->toArray(), 'total' => $total, 'last_page' => (int) ceil($total / 10), 'current_page' => (int) $this->request->input('page')];
+		$paginate  =  $paginate['data'] ? $paginate : ['data'=> $postData->skip($page)->take($take)->get()->toArray(), 'total' => $total, 'last_page' => (int) ceil($total / $take), 'current_page' => (int) $this->request->input('page')];
 
 		$paginate['data'] = collect($paginate['data'])->map(function($post) {
 
@@ -360,14 +360,14 @@ class Post extends Model
 
 	public function updatePostCreated($postID = FALSE, $postCreated = FALSE) {
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
-		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');
+		$convDate = date('Y-m-d H:i:s', strtotime($postCreated));
 
 		$post     = $this->where(function($query) use ($postID, $postCreated, $convDate) {
 			$query->where(['id' => $postID])->update(['created_on' => $convDate]);
 			return $query;
 		});
 		
-		$newDate = date('d M Y H:i:s', strtotime($post->first()->created_on));
+		$newDate = date('d M Y H:i', strtotime($post->first()->created_on));
 		
 		// Flush cache
 		event(new KeepoCache($post));
@@ -375,17 +375,17 @@ class Post extends Model
 		return ['created' => $newDate];
 	}
 
-	public function updatePostUpContent($postID = FALSE, $postCreated) {
+	public function updatePostUpContent($postID = FALSE, $postCreated = FALSE) {
 		if ( empty($postID) ) { return ['error' => 'Post not found']; }
 		
-		$convDate = date('Y-m-d', strtotime($postCreated)).' '.date('H:i:s');
+		$convDate = date('Y-m-d H:i:s', strtotime($postCreated));
 
 		$post  = $this->where(function($query) use ($postID, $convDate) {
 			$query->where(['id' => $postID])->update(['is_up_contents' => 1,'created_on' => $convDate]);
 			return $query;
 		});
 
-		$newDate  = date('d M Y H:i:s', strtotime($post->first()->created_on));
+		$newDate  = date('d M Y H:i', strtotime($post->first()->created_on));
 
 		// Flush cache
 		event(new KeepoCache($post));
@@ -466,7 +466,7 @@ class Post extends Model
 	
 	private function setContributorOnly($model)
 	{
-		$contributorList = [5, 241];
+		$contributorList = config('list.contributor');
 
 		return $model->where(function($query) use($contributorList) {
 			$query->whereIn('posts.user_id', $contributorList);

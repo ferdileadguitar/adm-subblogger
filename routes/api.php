@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 // API
 // ------------------------------------------------------------------------
 
-Route::group(['middleware' => array('api', 'api.auth')], function() {
+Route::group(['middleware' => array('api', 'admin')], function() {
 
 	// Contents
 	Route::get('contents', 'Api\ContentController@getContents');
